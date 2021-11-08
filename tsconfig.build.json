@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "references": [{ "path": "packages/next" }, { "path": "packages/plugin" }],
+  "files": []
+}

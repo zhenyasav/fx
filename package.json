@@ -1,0 +1,20 @@
+{
+  "name": "fx",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "build": "tsc -b tsconfig.build.json"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fx/cli": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.4.4"
+  }
+}
