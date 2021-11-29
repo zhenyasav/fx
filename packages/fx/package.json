@@ -1,0 +1,21 @@
+{
+  "name": "@nice/fx",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node build/index.js",
+    "build": "node scripts/build.js"
+  },
+  "bin": {
+    "fx": "build/main.js"
+  },
+  "type": "module",
+  "main": "build/index.js",
+  "devDependencies": {
+    "@nice/ts-template": "workspace:^1.0.0",
+    "chalk": "^5.0.0",
+    "esbuild": "^0.14.0",
+    "glob": "^7.2.0",
+    "lodash": "^4.17.21",
+    "yargs": "^17.2.1"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src/*"],
+  "compilerOptions": {
+    "outDir": "build",
+    "rootDir": "src",
+    "module": "ESNext",
+    "target": "ES6"
+  },
+  "references": [{
+    "path": "../ts-template"
+  }]
+}

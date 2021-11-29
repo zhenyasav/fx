@@ -1,21 +1,21 @@
 {
-  "name": "fx",
+  "name": "@nice/fx-repo",
   "version": "1.0.0",
-  "description": "",
-  "private": true,
+  "description": "developer automation",
   "scripts": {
-    "build": "tsc -b tsconfig.build.json"
+    "build": "pnpm run build -r --if-present --filter @nice/*",
+    "fx": "pnpm exec fx"
   },
-  "workspaces": [
-    "packages/*",
-    "samples/*"
-  ],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@fx/cli": "^1.0.0"
+  "engines": {
+    "node": "=16",
+    "pnpm": "=6"
   },
+  "type": "module",
   "devDependencies": {
-    "typescript": "^4.4.4"
+    "@nice/fx": "workspace:^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhenyasav/fx.git"
   }
 }

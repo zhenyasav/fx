@@ -1,0 +1,22 @@
+{
+  "name": "@nice/ts-template",
+  "version": "1.0.0",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "node scripts/build.js"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/lodash": "^4.14.177",
+    "@types/mkdirp": "^1.0.2",
+    "@types/recursive-readdir": "^2.2.0",
+    "esbuild": "^0.14.0",
+    "glob": "^7.2.0",
+    "lodash": "^4.17.21",
+    "lodash.flatten": "^4.4.0",
+    "lodash.zip": "^4.2.0",
+    "mkdirp": "^1.0.4",
+    "recursive-readdir": "^2.2.2",
+    "typescript": "^4.5.2"
+  }
+}

@@ -1,6 +1,24 @@
 {
   "compilerOptions": {
+    "strict": true,
+    "baseUrl": ".",
+    "module": "ESNext",
+    "target": "es2016",
+    "lib": ["DOM", "ESNext"],
+    "jsx": "react",
+    "esModuleInterop": true,
+    "incremental": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "noUnusedLocals": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
     "composite": true,
-    "declaration": true
-  }
+    "declaration": true,
+    "sourceMap": true
+  },
+  "exclude": ["dist", "node_modules"],
+  "include": ["./**/*.ts"]
 }
