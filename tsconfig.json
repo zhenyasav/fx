@@ -20,5 +20,10 @@
     "sourceMap": true
   },
   "exclude": ["dist", "node_modules"],
-  "include": ["./**/*.ts"]
+  "include": ["./**/*.ts"],
+  "references": [
+    {
+      "path": "./packages/fx"
+    }
+  ]
 }

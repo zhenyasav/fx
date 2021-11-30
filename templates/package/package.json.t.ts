@@ -7,7 +7,7 @@ export type Input = {
 export default ({ input }: TemplateContext<Input>) =>
 /*javascript*/`
 {
-  "name": "${input.name}",
+  "name": "${input?.name}",
   "version": "1.0.0",
   "type": "module",
   "private": true

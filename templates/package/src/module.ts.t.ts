@@ -4,15 +4,15 @@ import { TemplateFunction, File } from "@nice/fx";
 
 const template: TemplateFunction<{ name: string }> = async ({
   input,
-  outputPath,
+  outputDirectory,
 }) => {
   return [
     new File({
-      path: path.join(outputPath, "src/one.ts"),
+      path: path.join(outputDirectory, "src/one.ts"),
       content: `// comment for file one in package ${input?.name}`,
     }),
     new File({
-      path: path.join(outputPath, "src/two.ts"),
+      path: path.join(outputDirectory, "src/two.ts"),
       content: `// comment for file two in package ${input?.name}`,
     }),
   ];

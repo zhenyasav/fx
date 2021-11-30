@@ -1,0 +1,1 @@
+// comment for file two in package foobar

@@ -94,7 +94,7 @@ export class Fx {
   private async time(fn: () => Promise<void>): Promise<void> {
     const t = timer();
     await fn?.();
-    console.info(`done ${t()}`);
+    console.info(`done ${t()}\n`);
   }
   async createResource(type: string, name: string, dryRun = true) {
     this.time(async () => {

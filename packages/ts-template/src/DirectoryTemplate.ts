@@ -13,7 +13,7 @@ export class DirectoryTemplate<I = {}> extends Template<I> {
   }
   async generate(context: TemplateContext<I>): Promise<File[]> {
     const { path: templatePath } = this.options;
-    const { outputPath } = context;
+    const { outputDirectory: outputPath } = context;
     const allFiles = await readDir(templatePath);
 
     const templateFiles = allFiles.filter(isTemplate);

@@ -31,7 +31,7 @@ export function templateResource(options: Options): Plugin {
             });
             const files = await template.generate({
               input: { name },
-              outputPath: path.resolve(outputPath, name),
+              outputDirectory: path.resolve(outputPath, name),
             });
             return files?.map((file) =>
               file?.sourcePath

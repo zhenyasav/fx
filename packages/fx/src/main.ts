@@ -51,6 +51,7 @@ yargs(process.argv.slice(2))
           );
         });
       }
+      console.log('')
     }
   )
   .command(
@@ -76,4 +77,4 @@ yargs(process.argv.slice(2))
   )
   .showHelpOnFail(false)
   .demandCommand(1, 'need to specify a command')
-  .parse();
+  .parse()

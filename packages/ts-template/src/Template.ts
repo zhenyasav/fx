@@ -53,7 +53,7 @@ export class Template<I = {}> {
   }
   async generate(context: TemplateContext<I>): Promise<File[]> {
     const { path: templatePath, rootPath } = this.options;
-    const { outputPath } = context;
+    const { outputDirectory } = context;
     const templateFullPath = path.resolve(rootPath, templatePath);
     const templateFunction = await importTemplate(templateFullPath);
     if (!templateFunction) return [];
@@ -64,7 +64,7 @@ export class Template<I = {}> {
             new File({
               content: result,
               path: path.join(
-                outputPath,
+                outputDirectory,
                 getOutputNameFromTemplateName(templatePath).slice(
                   rootPath.length
                 )
