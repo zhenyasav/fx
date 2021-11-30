@@ -2,3 +2,4 @@ node_modules
 build
 .DS_Store
 packages/foo
+.pnpm-debug.log
