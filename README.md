@@ -32,3 +32,12 @@ export default {
   plugins: [ /* plugins go here, instances of { Plugin } from "@nice/fx" ... */ ]
 } 
 ```
+
+## Next steps
+- [ ] drop in a teams manifest template
+- [ ] add SSO auth to my existing SPA / serverless app
+- [ ] add hosting / deploy ops with azure and github
+- [ ] add teams communications features
+  - [ ] add an adaptive card notification
+  - [ ] add a messaging extension
+  - [ ] add a bot
