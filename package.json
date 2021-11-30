@@ -4,6 +4,7 @@
   "description": "developer automation",
   "scripts": {
     "build": "pnpm run build -r --if-present --filter @nice/*",
+    "build:tsc": "pnpm run build:tsc -r --if-present --filter @nice/*",
     "fx": "pnpm exec fx"
   },
   "engines": {
