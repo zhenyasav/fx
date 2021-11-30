@@ -18,7 +18,7 @@ pnpm fx ls                  # shows what resources are available to create
 
 ## Create a new package:
 ```bash
-pnpm fx new package foobar 
+pnpm fx add package foobar 
 ```
 This will execute the template found in `./templates/package`. Every file with a `.t.ts` extension will be treated as a typescript template, every other file will be copied over to the new package directory.
 
