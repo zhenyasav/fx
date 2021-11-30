@@ -1,6 +1,5 @@
 import * as path from "path";
 import _ from "lodash";
-// import { promises as fs } from "fs";
 import { File } from "./File.js";
 import { TemplateContext } from "./models.js";
 import { Template, TemplateOptions, isTemplate } from "./Template.js";
@@ -26,7 +25,7 @@ export class DirectoryTemplate<I = {}> extends Template<I> {
         new Template({
           path: path.join(templatePath, t),
           rootPath: templatePath
-        }).generate({ outputPath })
+        }).generate(context)
       )
     );
     return [

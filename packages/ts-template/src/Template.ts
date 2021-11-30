@@ -1,6 +1,8 @@
 import * as path from "path";
 import { TemplateContext } from "./models.js";
 import { File } from "./File.js";
+import * as esbuild from "esbuild";
+import { promises as fs } from "fs";
 
 export const TEMPLATE_REGEX = /(.*)\.t\.ts$/;
 
@@ -25,6 +27,26 @@ export type TemplateFunction<I = {}> = (
   context: TemplateContext<I>
 ) => Promise<TemplateFunctionResult>;
 
+
+async function importTemplate<I = {}>(p: string): Promise<TemplateFunction<I>> {
+  if (!isTemplate(p)) throw new Error("only t.ts templates are supported");
+  const outpath = p.replace(/\.t\.ts$/, ".t.js");
+  await esbuild.build({
+    entryPoints: [p],
+    outfile: outpath,
+    target: 'node16',
+    platform: 'node'
+  });
+  let mod;
+  try {
+    mod = await import(outpath);
+  } finally {
+    await fs.unlink(outpath);
+  }
+  const fn = mod?.["default"] ?? mod;
+  return typeof fn == 'function' ? fn : null;
+}
+
 export class Template<I = {}> {
   public options: TemplateOptions;
   constructor(options: TemplateOptions) {
@@ -34,19 +56,24 @@ export class Template<I = {}> {
     const { path: templatePath, rootPath } = this.options;
     const { outputPath } = context;
     const templateFullPath = path.resolve(rootPath, templatePath);
-    console.log('loading template', templateFullPath);
-    const template = await import(templateFullPath);
-    const templateFunction: TemplateFunction<I> =
-      template?.["default"] ?? template;
-    const result = await templateFunction(context);
-    return typeof result == "string"
-      ? [new File({
-          content: result,
-          path: path.resolve(
-            outputPath,
-            getOutputNameFromTemplateName(templatePath)
-          ),
-        })]
-      : result;
+    const templateFunction = await importTemplate(templateFullPath);
+    if (!templateFunction) return [];
+    try {
+      const result = await templateFunction(context);
+      return typeof result == "string"
+        ? [
+            new File({
+              content: result,
+              path: path.resolve(
+                outputPath,
+                getOutputNameFromTemplateName(templatePath)
+              ),
+            }),
+          ]
+        : result;
+    } catch (err) {
+      console.error(`problem in template ${templateFullPath}`);
+      throw err;
+    }
   }
 }

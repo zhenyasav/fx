@@ -20,6 +20,7 @@ var __async = (__this, __arguments, generator) => {
 };
 import path from "path";
 import { promises as fs } from "fs";
+import { handler } from "./effects.js";
 const CONFIG_FILE_NAME = `.fx.js`;
 export class Fx {
   constructor() {
@@ -82,6 +83,26 @@ export class Fx {
       return this.resourcesByType;
     });
   }
+  invokeEffects(effects, dryRun = true, caption) {
+    return __async(this, null, function* () {
+      if (caption)
+        console.info(`${dryRun ? "dry run" : "executing"}: ${caption}`);
+      if (effects) {
+        console.info(`${effects.length} actions:`);
+        if (dryRun) {
+          effects == null ? void 0 : effects.forEach((effect) => console.log(handler(effect).describe(effect)));
+        } else {
+          yield Promise.all(effects == null ? void 0 : effects.map((effect) => {
+            const h = handler(effect);
+            console.log(h.describe(effect));
+            return h.apply(effect);
+          }));
+        }
+      } else {
+        console.log("nothing to do");
+      }
+    });
+  }
   createResource(type, name, dryRun = true) {
     return __async(this, null, function* () {
       yield this.loadConfig();
@@ -91,18 +112,7 @@ export class Fx {
           name
         }
       });
-      if (dryRun) {
-        console.info(`dry run: create ${type} ${name}`);
-        console.info(`${effects == null ? void 0 : effects.length} actions:`);
-        effects == null ? void 0 : effects.forEach((effect) => {
-          if (effect.type == "create-file") {
-            console.log(effect.file.shortDescription());
-          }
-        });
-      } else {
-        console.info(`executing: create ${type} ${name}`);
-        console.error(`not implemented`);
-      }
+      yield this.invokeEffects(effects, dryRun, `create ${type} ${name}`);
     });
   }
 }

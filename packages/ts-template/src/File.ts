@@ -2,6 +2,8 @@ import { promises as fs } from "fs";
 import * as path from "path";
 import mkdirp from "mkdirp";
 
+const SHORT_PATH_MAX_LENGTH = 100;
+
 export interface LoadOptions {}
 
 export type FileOptions<D> = {
@@ -20,7 +22,7 @@ const fileExists = async (path: string) => {
   return true;
 };
 
-const ellipsis = (s: string, n = 30) =>
+const ellipsis = (s: string, n = SHORT_PATH_MAX_LENGTH) =>
   s.length > n
     ? s.slice(0, n / 2 - 3) + "..." + s.slice(s.length - n / 2 - 3)
     : s;

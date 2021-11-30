@@ -58,8 +58,12 @@ yargs(process.argv.slice(2)).scriptName("fx").command("ls", "list resources", (y
   if (!name)
     throw new Error("a resource name is required");
   yield fx.createResource(type, name);
-})).option("verbose", {
+})).option("dry", {
+  alias: "d",
+  type: "boolean",
+  description: "do not touch anything, just show the plan"
+}).option("verbose", {
   alias: "v",
   type: "boolean",
   description: "print more stuff"
-}).demandCommand().parse();
+}).showHelpOnFail(false).demandCommand().parse();

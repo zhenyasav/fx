@@ -1,7 +1,3 @@
-import * as fs from "fs";
-
-console.log(fs.statSync(process.cwd()));
-
 import { TemplateContext } from "@nice/fx";
 
 export type Input = {

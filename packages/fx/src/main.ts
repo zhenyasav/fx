@@ -62,10 +62,16 @@ yargs(process.argv.slice(2))
       await fx.createResource(type, name);
     }
   )
+  .option("dry", {
+    alias: "d",
+    type: "boolean",
+    description: "do not touch anything, just show the plan",
+  })
   .option("verbose", {
     alias: "v",
     type: "boolean",
     description: "print more stuff",
   })
+  .showHelpOnFail(false)
   .demandCommand()
   .parse();

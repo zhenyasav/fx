@@ -36,6 +36,8 @@ var __async = (__this, __arguments, generator) => {
 };
 import * as path from "path";
 import { File } from "./File.js";
+import * as esbuild from "esbuild";
+import { promises as fs } from "fs";
 export const TEMPLATE_REGEX = /(.*)\.t\.ts$/;
 export function isTemplate(file) {
   return TEMPLATE_REGEX.test(file);
@@ -45,24 +47,52 @@ export function getOutputNameFromTemplateName(s) {
   const out = e == null ? void 0 : e[1];
   return out != null ? out : s;
 }
+function importTemplate(p) {
+  return __async(this, null, function* () {
+    var _a;
+    if (!isTemplate(p))
+      throw new Error("only t.ts templates are supported");
+    const outpath = p.replace(/\.t\.ts$/, ".t.js");
+    yield esbuild.build({
+      entryPoints: [p],
+      outfile: outpath,
+      target: "node16",
+      platform: "node"
+    });
+    let mod;
+    try {
+      mod = yield import(outpath);
+    } finally {
+      yield fs.unlink(outpath);
+    }
+    const fn = (_a = mod == null ? void 0 : mod["default"]) != null ? _a : mod;
+    return typeof fn == "function" ? fn : null;
+  });
+}
 export class Template {
   constructor(options) {
     this.options = __spreadValues({}, options);
   }
   generate(context) {
     return __async(this, null, function* () {
-      var _a;
       const { path: templatePath, rootPath } = this.options;
       const { outputPath } = context;
       const templateFullPath = path.resolve(rootPath, templatePath);
-      console.log("loading template", templateFullPath);
-      const template = yield import(templateFullPath);
-      const templateFunction = (_a = template == null ? void 0 : template["default"]) != null ? _a : template;
-      const result = yield templateFunction(context);
-      return typeof result == "string" ? [new File({
-        content: result,
-        path: path.resolve(outputPath, getOutputNameFromTemplateName(templatePath))
-      })] : result;
+      const templateFunction = yield importTemplate(templateFullPath);
+      if (!templateFunction)
+        return [];
+      try {
+        const result = yield templateFunction(context);
+        return typeof result == "string" ? [
+          new File({
+            content: result,
+            path: path.resolve(outputPath, getOutputNameFromTemplateName(templatePath))
+          })
+        ] : result;
+      } catch (err) {
+        console.error(`problem in template ${templateFullPath}`);
+        throw err;
+      }
     });
   }
 }

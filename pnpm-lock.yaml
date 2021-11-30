@@ -11,6 +11,7 @@ importers:
   packages/fx:
     specifiers:
       '@nice/ts-template': workspace:^1.0.0
+      '@types/yargs': ^17.0.7
       chalk: ^5.0.0
       esbuild: ^0.14.0
       glob: ^7.2.0
@@ -18,6 +19,7 @@ importers:
       yargs: ^17.2.1
     devDependencies:
       '@nice/ts-template': link:../ts-template
+      '@types/yargs': 17.0.7
       chalk: 5.0.0
       esbuild: 0.14.0
       glob: 7.2.0
@@ -70,6 +72,16 @@ packages:
     resolution: {integrity: sha512-HGk753KRu2N4mWduovY4BLjYq4jTOL29gV2OfGdGxHcPSWGFkC5RRIdk+VTs5XmYd7MVAD+JwKrcb5+5Y7FOCg==}
     dependencies:
       '@types/node': 16.11.10
+    dev: true
+
+  /@types/yargs-parser/20.2.1:
+    resolution: {integrity: sha512-7tFImggNeNBVMsn0vLrpn1H1uPrUBdnARPTpZoitY37ZrdJREzf7I16tMrlK3hen349gr1NYh8CmZQa7CTG6Aw==}
+    dev: true
+
+  /@types/yargs/17.0.7:
+    resolution: {integrity: sha512-OvLKmpKdea1aWtqHv9bxVVcMoT6syAeK+198dfETIFkAevYRGwqh4H+KFxfjUETZuUuE5sQCAFwdOdoHUdo8eg==}
+    dependencies:
+      '@types/yargs-parser': 20.2.1
     dev: true
 
   /ansi-regex/5.0.1:

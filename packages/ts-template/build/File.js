@@ -37,6 +37,7 @@ var __async = (__this, __arguments, generator) => {
 import { promises as fs } from "fs";
 import * as path from "path";
 import mkdirp from "mkdirp";
+const SHORT_PATH_MAX_LENGTH = 100;
 const fileExists = (path2) => __async(this, null, function* () {
   try {
     yield fs.stat(path2);
@@ -45,7 +46,7 @@ const fileExists = (path2) => __async(this, null, function* () {
   }
   return true;
 });
-const ellipsis = (s, n = 30) => s.length > n ? s.slice(0, n / 2 - 3) + "..." + s.slice(s.length - n / 2 - 3) : s;
+const ellipsis = (s, n = SHORT_PATH_MAX_LENGTH) => s.length > n ? s.slice(0, n / 2 - 3) + "..." + s.slice(s.length - n / 2 - 3) : s;
 const kib = (bytes) => `${Math.round(bytes / 1024)} KiB`;
 export class File {
   constructor(options) {

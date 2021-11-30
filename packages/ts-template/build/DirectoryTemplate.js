@@ -57,7 +57,7 @@ export class DirectoryTemplate extends Template {
       const templateOutputs = yield Promise.all(templateFiles == null ? void 0 : templateFiles.map((t) => new Template({
         path: path.join(templatePath, t),
         rootPath: templatePath
-      }).generate({ outputPath })));
+      }).generate(context)));
       return [
         ...regularFiles == null ? void 0 : regularFiles.map((r) => new File({
           path: path.join(outputPath, r)
