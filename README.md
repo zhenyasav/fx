@@ -6,8 +6,9 @@ use [`pnpm`](https://pnpm.io/) to drive this repo.
 
 installation:
 ```bash
-pnpm i
+pnpm i # this will fail at first, that's ok
 pnpm build
+pnpm i # this will succeed
 ```
 
 test some fx commands:
