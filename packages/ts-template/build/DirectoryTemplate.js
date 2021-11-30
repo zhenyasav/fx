@@ -51,16 +51,16 @@ export class DirectoryTemplate extends Template {
       const { path: templatePath } = this.options;
       const { outputPath } = context;
       const allFiles = yield readDir(templatePath);
-      const relativeFiles = allFiles == null ? void 0 : allFiles.map((file) => file.slice(templatePath.length));
-      const templateFiles = relativeFiles.filter(isTemplate);
-      const regularFiles = relativeFiles.filter((file) => !isTemplate(file));
+      const templateFiles = allFiles.filter(isTemplate);
+      const regularFiles = allFiles.filter((file) => !isTemplate(file));
       const templateOutputs = yield Promise.all(templateFiles == null ? void 0 : templateFiles.map((t) => new Template({
-        path: path.join(templatePath, t),
+        path: t,
         rootPath: templatePath
       }).generate(context)));
       return [
         ...regularFiles == null ? void 0 : regularFiles.map((r) => new File({
-          path: path.join(outputPath, r)
+          path: path.join(outputPath, r.slice(templatePath.length)),
+          sourcePath: r
         })),
         ..._.flatten(templateOutputs)
       ];

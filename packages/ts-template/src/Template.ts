@@ -27,15 +27,14 @@ export type TemplateFunction<I = {}> = (
   context: TemplateContext<I>
 ) => Promise<TemplateFunctionResult>;
 
-
 async function importTemplate<I = {}>(p: string): Promise<TemplateFunction<I>> {
   if (!isTemplate(p)) throw new Error("only t.ts templates are supported");
   const outpath = p.replace(/\.t\.ts$/, ".t.js");
   await esbuild.build({
     entryPoints: [p],
     outfile: outpath,
-    target: 'node16',
-    platform: 'node'
+    target: "node16",
+    platform: "node",
   });
   let mod;
   try {
@@ -44,7 +43,7 @@ async function importTemplate<I = {}>(p: string): Promise<TemplateFunction<I>> {
     await fs.unlink(outpath);
   }
   const fn = mod?.["default"] ?? mod;
-  return typeof fn == 'function' ? fn : null;
+  return typeof fn == "function" ? fn : null;
 }
 
 export class Template<I = {}> {
@@ -64,9 +63,11 @@ export class Template<I = {}> {
         ? [
             new File({
               content: result,
-              path: path.resolve(
+              path: path.join(
                 outputPath,
-                getOutputNameFromTemplateName(templatePath)
+                getOutputNameFromTemplateName(templatePath).slice(
+                  rootPath.length
+                )
               ),
             }),
           ]

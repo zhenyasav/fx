@@ -33,7 +33,15 @@ export function templateResource(options: Options): Plugin {
               input: { name },
               outputPath: path.resolve(outputPath, name),
             });
-            return files?.map((file) => ({ type: "create-file", file }));
+            return files?.map((file) =>
+              file?.sourcePath
+                ? {
+                    type: "copy-file",
+                    source: file.sourcePath,
+                    dest: file.path,
+                  }
+                : { type: "create-file", file }
+            );
           },
         },
       ];

@@ -1,4 +1,5 @@
 import { File } from "@nice/ts-template";
+import { ellipsis } from "./utils.js";
 
 export type CreateFileEffect = {
   type: "create-file";
@@ -34,7 +35,7 @@ export const CreateFileHandler: EffectHandler<CreateFileEffect> = {
 
 export const CopyFileHandler: EffectHandler<CopyFileEffect> = {
   describe(e) {
-    return `copy file ${e.source} to ${e.dest}`;
+    return `copy file ${ellipsis(e.source)} to ${ellipsis(e.dest)}`;
   },
   async apply(e) {
     throw new Error("not implemented");

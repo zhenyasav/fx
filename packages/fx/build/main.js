@@ -22,13 +22,11 @@ var __async = (__this, __arguments, generator) => {
 import yargs from "yargs";
 import { Fx } from "./fx.js";
 import chalk from "chalk";
-const logo = `
-  _______  __
- |  ___\\ \\/ /
- | |_   \\  / 
- |  _|  /  \\ 
- |_|   /_/\\_\\
- 
+const logo = ` _______  __
+|  ___\\ \\/ /
+| |_   \\  / 
+|  _|  /  \\ 
+|_|   /_/\\_\\
 `;
 console.info(chalk.cyan(logo));
 const fx = new Fx();
@@ -43,7 +41,7 @@ yargs(process.argv.slice(2)).scriptName("fx").command("ls", "list resources", (y
       console.log(`${cyan(resource.type)} ${gray("-")} ${resource.description}`);
     });
   }
-})).command("new <type> <name>", "create something", (yargs2) => {
+})).command("add <type> <name>", "create a new resource", (yargs2) => {
   return yargs2.positional("type", {
     type: "string",
     describe: "the type of thing to create"

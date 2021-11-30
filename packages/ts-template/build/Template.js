@@ -86,7 +86,7 @@ export class Template {
         return typeof result == "string" ? [
           new File({
             content: result,
-            path: path.resolve(outputPath, getOutputNameFromTemplateName(templatePath))
+            path: path.join(outputPath, getOutputNameFromTemplateName(templatePath).slice(rootPath.length))
           })
         ] : result;
       } catch (err) {

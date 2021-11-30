@@ -8,6 +8,7 @@ export interface LoadOptions {}
 
 export type FileOptions<D> = {
   path: string | string[];
+  sourcePath?: string | string[];
   content?: string;
   parsed?: D;
   overwrite?: boolean;
@@ -27,7 +28,8 @@ const ellipsis = (s: string, n = SHORT_PATH_MAX_LENGTH) =>
     ? s.slice(0, n / 2 - 3) + "..." + s.slice(s.length - n / 2 - 3)
     : s;
 
-const kib = (bytes: number) => `${Math.round(bytes / 1024)} KiB`;
+const kib = (bytes: number) =>
+  bytes < 1024 ? `${bytes} B` : `${Math.round(bytes / 1024)} KiB`;
 
 export class File<D = any> {
   public content: string = "";
@@ -39,15 +41,22 @@ export class File<D = any> {
   public base: string = "";
   public ext: string = "";
   public overwrite: boolean;
+  public sourcePath: string = "";
   constructor(options: FileOptions<D>) {
     const {
       path: p,
       content,
       parsed,
+      sourcePath,
       overwrite,
     } = { overwrite: true, ...options };
     this.path = Array.isArray(p) ? path.join(...p) : p;
     if (!this.path) throw new Error("File must have an output path");
+    if (sourcePath) {
+      this.sourcePath = Array.isArray(sourcePath)
+        ? path.join(...sourcePath)
+        : sourcePath ?? "";
+    }
     if (content) this.content = content;
     if (parsed) this.parsed = parsed;
     const { root, base, dir, ext, name } = path.parse(this.path);
@@ -57,22 +66,27 @@ export class File<D = any> {
   isLoaded() {
     return this.content != null;
   }
+  isCopy() {
+    return !!this.sourcePath && !this.content && !this.parsed;
+  }
   async save() {
+    const text = this.parsed !== null ? await this.serialize() : this.content;
+    this.content = text;
+
     const parsedPath = path.parse(this.path);
     const exists = await fileExists(this.path);
     if (exists && !this.overwrite)
       throw new Error("file save failed, file exists: " + this.path);
     if (!exists) await mkdirp(parsedPath.dir);
-    const handle = await fs.open(this.path, "w");
-    const text = this.parsed !== null ? await this.serialize() : this.content;
-    this.content = text;
-    if (!this.content || !this.content.length) {
-      console.warn("skipping writing file, contents empty: " + this.path);
-      return;
+    
+    if (this.content) {
+      const handle = await fs.open(this.path, "w");
+      await handle.writeFile(text, "utf-8");
+      handle.close();
+      console.info("wrote", this.shortDescription());
+    } else if (this.sourcePath) {
+      await fs.copyFile(this.sourcePath, this.path);
     }
-    await handle.writeFile(text, "utf-8");
-    handle.close();
-    console.info("wrote", this.shortDescription());
   }
   async load(loadOptions?: LoadOptions): Promise<File<D>> {
     const handle = await fs.open(this.path, "r");

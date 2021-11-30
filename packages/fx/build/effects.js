@@ -18,6 +18,7 @@ var __async = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
+import { ellipsis } from "./utils.js";
 export const CreateFileHandler = {
   describe(e) {
     return `create file: ${e.file.shortDescription()}`;
@@ -30,7 +31,7 @@ export const CreateFileHandler = {
 };
 export const CopyFileHandler = {
   describe(e) {
-    return `copy file ${e.source} to ${e.dest}`;
+    return `copy file ${ellipsis(e.source)} to ${ellipsis(e.dest)}`;
   },
   apply(e) {
     return __async(this, null, function* () {

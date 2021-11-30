@@ -112,7 +112,7 @@ export class Fx {
           name
         }
       });
-      yield this.invokeEffects(effects, dryRun, `create ${type} ${name}`);
+      yield this.invokeEffects(effects, dryRun, `create '${type}' named '${name}'`);
     });
   }
 }

@@ -59,7 +59,11 @@ export function templateResource(options) {
                   input: { name: name2 },
                   outputPath: path.resolve(outputPath, name2)
                 });
-                return files == null ? void 0 : files.map((file) => ({ type: "create-file", file }));
+                return files == null ? void 0 : files.map((file) => (file == null ? void 0 : file.sourcePath) ? {
+                  type: "copy-file",
+                  source: file.sourcePath,
+                  dest: file.path
+                } : { type: "create-file", file });
               });
             }
           }

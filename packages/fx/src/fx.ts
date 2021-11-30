@@ -95,6 +95,10 @@ export class Fx {
         name,
       },
     });
-    await this.invokeEffects(effects, dryRun, `create ${type} ${name}`);
+    await this.invokeEffects(
+      effects,
+      dryRun,
+      `create '${type}' named '${name}'`
+    );
   }
 }

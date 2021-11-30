@@ -3,13 +3,12 @@ import yargs from "yargs";
 import { Fx } from "./fx.js";
 import chalk from "chalk";
 
-const logo = `
-  _______  __
- |  ___\\ \\/ /
- | |_   \\  / 
- |  _|  /  \\ 
- |_|   /_/\\_\\
- 
+const logo = 
+` _______  __
+|  ___\\ \\/ /
+| |_   \\  / 
+|  _|  /  \\ 
+|_|   /_/\\_\\
 `;
 
 console.info(chalk.cyan(logo));
@@ -42,8 +41,8 @@ yargs(process.argv.slice(2))
     }
   )
   .command(
-    "new <type> <name>",
-    "create something",
+    "add <type> <name>",
+    "create a new resource",
     (yargs) => {
       return yargs
         .positional("type", {

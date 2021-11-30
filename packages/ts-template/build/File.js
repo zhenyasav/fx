@@ -47,7 +47,7 @@ const fileExists = (path2) => __async(this, null, function* () {
   return true;
 });
 const ellipsis = (s, n = SHORT_PATH_MAX_LENGTH) => s.length > n ? s.slice(0, n / 2 - 3) + "..." + s.slice(s.length - n / 2 - 3) : s;
-const kib = (bytes) => `${Math.round(bytes / 1024)} KiB`;
+const kib = (bytes) => bytes < 1024 ? `${bytes} B` : `${Math.round(bytes / 1024)} KiB`;
 export class File {
   constructor(options) {
     this.content = "";
@@ -58,15 +58,20 @@ export class File {
     this.dir = "";
     this.base = "";
     this.ext = "";
+    this.sourcePath = "";
     const {
       path: p,
       content,
       parsed,
+      sourcePath,
       overwrite
     } = __spreadValues({ overwrite: true }, options);
     this.path = Array.isArray(p) ? path.join(...p) : p;
     if (!this.path)
       throw new Error("File must have an output path");
+    if (sourcePath) {
+      this.sourcePath = Array.isArray(sourcePath) ? path.join(...sourcePath) : sourcePath != null ? sourcePath : "";
+    }
     if (content)
       this.content = content;
     if (parsed)
@@ -78,24 +83,27 @@ export class File {
   isLoaded() {
     return this.content != null;
   }
+  isCopy() {
+    return !!this.sourcePath && !this.content && !this.parsed;
+  }
   save() {
     return __async(this, null, function* () {
+      const text = this.parsed !== null ? yield this.serialize() : this.content;
+      this.content = text;
       const parsedPath = path.parse(this.path);
       const exists = yield fileExists(this.path);
       if (exists && !this.overwrite)
         throw new Error("file save failed, file exists: " + this.path);
       if (!exists)
         yield mkdirp(parsedPath.dir);
-      const handle = yield fs.open(this.path, "w");
-      const text = this.parsed !== null ? yield this.serialize() : this.content;
-      this.content = text;
-      if (!this.content || !this.content.length) {
-        console.warn("skipping writing file, contents empty: " + this.path);
-        return;
+      if (this.content) {
+        const handle = yield fs.open(this.path, "w");
+        yield handle.writeFile(text, "utf-8");
+        handle.close();
+        console.info("wrote", this.shortDescription());
+      } else if (this.sourcePath) {
+        yield fs.copyFile(this.sourcePath, this.path);
       }
-      yield handle.writeFile(text, "utf-8");
-      handle.close();
-      console.info("wrote", this.shortDescription());
     });
   }
   load(loadOptions) {
