@@ -2,9 +2,9 @@
 
 > This is a demonstration of an extensible CLI which can be used to scaffold repetitive boilerplate, such as the creation of a standard package in a monorepo (let's say all your packages are typescript packages with a pre configured build and test pattern, etc).
 
-use [`pnpm`](https://pnpm.io/) to drive this repo.
+Use [`pnpm`](https://pnpm.io/) to drive this repo. node16, pnpm6. See [`nvm`](https://github.com/nvm-sh/nvm) (optional).
 
-installation:
+## Installation:
 ```bash
 pnpm i # this will fail at first, that's ok
 pnpm build
@@ -18,7 +18,7 @@ pnpm fx ls                  # shows what resources are available to create
 ```
 Note that a double dash is required for pnpm to pass flags to the fx process, so only in this repo when debugging we have to say `pnpm fx -- -d add package foo` instead of the production command `fx -d add package foo`.
 
-## Create a new package:
+## Create a new package (add resource):
 ```bash
 pnpm fx add package foobar 
 ```
