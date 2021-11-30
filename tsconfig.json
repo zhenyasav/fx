@@ -19,7 +19,7 @@
     "declaration": true,
     "sourceMap": true
   },
-  "exclude": ["dist", "node_modules"],
+  "exclude": ["dist", "build", "node_modules"],
   "include": ["./**/*.ts"],
   "references": [
     {
