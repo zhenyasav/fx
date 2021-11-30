@@ -17,6 +17,19 @@ const fx = new Fx();
 
 yargs(process.argv.slice(2))
   .scriptName("fx")
+  .usage("$0 [-d] <cmd> [args]")
+  .option("dry", {
+    alias: "d",
+    type: "boolean",
+    default: false,
+    description: "do not touch anything, just show the plan",
+  })
+  .option("verbose", {
+    alias: "v",
+    type: "boolean",
+    default: false,
+    description: "print more stuff",
+  })
   .command(
     "ls",
     "list resources",
@@ -55,22 +68,12 @@ yargs(process.argv.slice(2))
         });
     },
     async (argv) => {
-      const { type, name } = argv;
+      const { type, name, dry } = argv;
       if (!type) throw new Error("type is required");
       if (!name) throw new Error("a resource name is required");
-      await fx.createResource(type, name);
+      await fx.createResource(type, name, !!dry);
     }
   )
-  .option("dry", {
-    alias: "d",
-    type: "boolean",
-    description: "do not touch anything, just show the plan",
-  })
-  .option("verbose", {
-    alias: "v",
-    type: "boolean",
-    description: "print more stuff",
-  })
   .showHelpOnFail(false)
-  .demandCommand()
+  .demandCommand(1, 'need to specify a command')
   .parse();

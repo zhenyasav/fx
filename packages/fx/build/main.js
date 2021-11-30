@@ -30,7 +30,17 @@ const logo = ` _______  __
 `;
 console.info(chalk.cyan(logo));
 const fx = new Fx();
-yargs(process.argv.slice(2)).scriptName("fx").command("ls", "list resources", (yargs2) => yargs2, () => __async(this, null, function* () {
+yargs(process.argv.slice(2)).scriptName("fx").usage("$0 [-d] <cmd> [args]").option("dry", {
+  alias: "d",
+  type: "boolean",
+  default: false,
+  description: "do not touch anything, just show the plan"
+}).option("verbose", {
+  alias: "v",
+  type: "boolean",
+  default: false,
+  description: "print more stuff"
+}).command("ls", "list resources", (yargs2) => yargs2, () => __async(this, null, function* () {
   const resources = yield fx.getAllResources();
   if (!resources.size) {
     console.info(chalk.gray("there are no resource definitions installed in this project"));
@@ -50,18 +60,10 @@ yargs(process.argv.slice(2)).scriptName("fx").command("ls", "list resources", (y
     describe: "how to name the new thing"
   });
 }, (argv) => __async(this, null, function* () {
-  const { type, name } = argv;
+  const { type, name, dry } = argv;
   if (!type)
     throw new Error("type is required");
   if (!name)
     throw new Error("a resource name is required");
-  yield fx.createResource(type, name);
-})).option("dry", {
-  alias: "d",
-  type: "boolean",
-  description: "do not touch anything, just show the plan"
-}).option("verbose", {
-  alias: "v",
-  type: "boolean",
-  description: "print more stuff"
-}).showHelpOnFail(false).demandCommand().parse();
+  yield fx.createResource(type, name, !!dry);
+})).showHelpOnFail(false).demandCommand(1, "need to specify a command").parse();

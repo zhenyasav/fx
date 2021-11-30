@@ -2,6 +2,7 @@ import path from "path";
 import { promises as fs } from "fs";
 import { Plugin, ResourceDefinition } from "./plugin.js";
 import { Effect, handler } from "./effects.js";
+import { timer } from "./timer.js";
 
 const CONFIG_FILE_NAME = `.fx.js`;
 
@@ -67,38 +68,48 @@ export class Fx {
     caption: string
   ) {
     if (caption)
-      console.info(`${dryRun ? "dry run" : "executing"}: ${caption}`);
+      console.info(`${dryRun ? "dry run" : "plan"}: ${caption}`);
+    console.info('cwd:', process.cwd());
     if (effects) {
-      console.info(`${effects.length} actions:`);
+      console.info(`\n${effects.length} actions:`);
       if (dryRun) {
         effects?.forEach((effect) =>
           console.log(handler(effect).describe(effect))
         );
       } else {
-        await Promise.all(
+        const tasks = Promise.all(
           effects?.map((effect) => {
             const h = handler(effect);
             console.log(h.describe(effect));
             return h.apply(effect);
           })
         );
+        console.log('\nexecuting ...');
+        await tasks;
       }
     } else {
       console.log("nothing to do");
     }
   }
+  private async time(fn: () => Promise<void>): Promise<void> {
+    const t = timer();
+    await fn?.();
+    console.info(`done ${t()}`);
+  }
   async createResource(type: string, name: string, dryRun = true) {
-    await this.loadConfig();
-    const resource = await this.getResource(type);
-    const effects = await resource?.create({
-      inputs: {
-        name,
-      },
-    });
-    await this.invokeEffects(
-      effects,
-      dryRun,
-      `create '${type}' named '${name}'`
-    );
+    this.time(async () => {
+      await this.loadConfig();
+      const resource = await this.getResource(type);
+      const effects = await resource?.create({
+        inputs: {
+          name,
+        },
+      });
+      await this.invokeEffects(
+        effects,
+        dryRun,
+        `create '${type}' named '${name}'`
+      );
+    })
   }
 }

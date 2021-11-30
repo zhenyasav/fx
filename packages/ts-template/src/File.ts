@@ -78,7 +78,7 @@ export class File<D = any> {
     if (exists && !this.overwrite)
       throw new Error("file save failed, file exists: " + this.path);
     if (!exists) await mkdirp(parsedPath.dir);
-    
+
     if (this.content) {
       const handle = await fs.open(this.path, "w");
       await handle.writeFile(text, "utf-8");
@@ -103,8 +103,8 @@ export class File<D = any> {
     return this.content;
   }
   shortDescription() {
-    return `${ellipsis(this.dir)}/${this.name}${this.ext}: ${kib(
-      this.content?.length ?? 0
-    )}`;
+    return `${ellipsis(path.relative(process.cwd(), this.dir))}/${this.name}${
+      this.ext
+    }: ${kib(this.content?.length ?? 0)}`;
   }
 }

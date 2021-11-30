@@ -128,6 +128,6 @@ export class File {
   }
   shortDescription() {
     var _a, _b;
-    return `${ellipsis(this.dir)}/${this.name}${this.ext}: ${kib((_b = (_a = this.content) == null ? void 0 : _a.length) != null ? _b : 0)}`;
+    return `${ellipsis(path.relative(process.cwd(), this.dir))}/${this.name}${this.ext}: ${kib((_b = (_a = this.content) == null ? void 0 : _a.length) != null ? _b : 0)}`;
   }
 }

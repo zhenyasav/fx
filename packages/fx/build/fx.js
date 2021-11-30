@@ -21,6 +21,7 @@ var __async = (__this, __arguments, generator) => {
 import path from "path";
 import { promises as fs } from "fs";
 import { handler } from "./effects.js";
+import { timer } from "./timer.js";
 const CONFIG_FILE_NAME = `.fx.js`;
 export class Fx {
   constructor() {
@@ -86,33 +87,46 @@ export class Fx {
   invokeEffects(effects, dryRun = true, caption) {
     return __async(this, null, function* () {
       if (caption)
-        console.info(`${dryRun ? "dry run" : "executing"}: ${caption}`);
+        console.info(`${dryRun ? "dry run" : "plan"}: ${caption}`);
+      console.info("cwd:", process.cwd());
       if (effects) {
-        console.info(`${effects.length} actions:`);
+        console.info(`
+${effects.length} actions:`);
         if (dryRun) {
           effects == null ? void 0 : effects.forEach((effect) => console.log(handler(effect).describe(effect)));
         } else {
-          yield Promise.all(effects == null ? void 0 : effects.map((effect) => {
+          const tasks = Promise.all(effects == null ? void 0 : effects.map((effect) => {
             const h = handler(effect);
             console.log(h.describe(effect));
             return h.apply(effect);
           }));
+          console.log("\nexecuting ...");
+          yield tasks;
         }
       } else {
         console.log("nothing to do");
       }
     });
   }
+  time(fn) {
+    return __async(this, null, function* () {
+      const t = timer();
+      yield fn == null ? void 0 : fn();
+      console.info(`done ${t()}`);
+    });
+  }
   createResource(type, name, dryRun = true) {
     return __async(this, null, function* () {
-      yield this.loadConfig();
-      const resource = yield this.getResource(type);
-      const effects = yield resource == null ? void 0 : resource.create({
-        inputs: {
-          name
-        }
-      });
-      yield this.invokeEffects(effects, dryRun, `create '${type}' named '${name}'`);
+      this.time(() => __async(this, null, function* () {
+        yield this.loadConfig();
+        const resource = yield this.getResource(type);
+        const effects = yield resource == null ? void 0 : resource.create({
+          inputs: {
+            name
+          }
+        });
+        yield this.invokeEffects(effects, dryRun, `create '${type}' named '${name}'`);
+      }));
     });
   }
 }

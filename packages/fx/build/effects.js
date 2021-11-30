@@ -18,24 +18,34 @@ var __async = (__this, __arguments, generator) => {
     step((generator = generator.apply(__this, __arguments)).next());
   });
 };
-import { ellipsis } from "./utils.js";
+import { ellipsis } from "./ellipsis.js";
+import * as path from "path";
+import { promises as fs } from "fs";
+import mkdirp from "mkdirp";
+function relative(s) {
+  return path.relative(process.cwd(), s);
+}
 export const CreateFileHandler = {
   describe(e) {
     return `create file: ${e.file.shortDescription()}`;
   },
   apply(e) {
     return __async(this, null, function* () {
-      throw new Error("not implemented");
+      const { file } = e;
+      yield file.save();
     });
   }
 };
 export const CopyFileHandler = {
   describe(e) {
-    return `copy file ${ellipsis(e.source)} to ${ellipsis(e.dest)}`;
+    return `copy file ${ellipsis(relative(e.source))} to ${ellipsis(relative(e.dest))}`;
   },
   apply(e) {
     return __async(this, null, function* () {
-      throw new Error("not implemented");
+      const { dest, source } = e;
+      yield mkdirp(path.dirname(dest));
+      yield fs.copyFile(source, dest);
+      console.info(`wrote ${ellipsis(relative(e.dest))}`);
     });
   }
 };

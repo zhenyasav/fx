@@ -1,5 +1,12 @@
 import { File } from "@nice/ts-template";
-import { ellipsis } from "./utils.js";
+import { ellipsis } from "./ellipsis.js";
+import * as path from "path";
+import { promises as fs } from "fs";
+import mkdirp from "mkdirp";
+
+function relative(s: string) {
+  return path.relative(process.cwd(), s);
+}
 
 export type CreateFileEffect = {
   type: "create-file";
@@ -29,16 +36,22 @@ export const CreateFileHandler: EffectHandler<CreateFileEffect> = {
     return `create file: ${e.file.shortDescription()}`;
   },
   async apply(e) {
-    throw new Error("not implemented");
+    const { file } = e;
+    await file.save();
   },
 };
 
 export const CopyFileHandler: EffectHandler<CopyFileEffect> = {
   describe(e) {
-    return `copy file ${ellipsis(e.source)} to ${ellipsis(e.dest)}`;
+    return `copy file ${ellipsis(relative(e.source))} to ${ellipsis(
+      relative(e.dest)
+    )}`;
   },
   async apply(e) {
-    throw new Error("not implemented");
+    const { dest, source } = e;
+    await mkdirp(path.dirname(dest));
+    await fs.copyFile(source, dest);
+    console.info(`wrote ${ellipsis(relative(e.dest))}`);
   },
 };
 
