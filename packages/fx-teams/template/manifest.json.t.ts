@@ -1,19 +1,17 @@
 import { TemplateFunction } from "@nice/fx";
 
-export type Input = {
-  appId: string;
-};
+export type Input = {};
 
 const template: TemplateFunction<Input> = async (context) => {
-  const {
-    input,
-  } = context;
+  // const {
+  //   input,
+  // } = context;
   const manifest = {
     $schema:
       "https://developer.microsoft.com/json-schemas/teams/v1.11/MicrosoftTeams.schema.json",
     manifestVersion: "1.11",
     version: "1.0.0",
-    id: input?.appId,
+    id: "%APP_ID%",
     packageName: "com.example.myapp",
     localizationInfo: {
       defaultLanguageTag: "en-us",

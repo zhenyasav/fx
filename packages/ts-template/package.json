@@ -2,10 +2,14 @@
   "name": "@nice/ts-template",
   "version": "1.0.0",
   "main": "build/index.js",
+  "publishConfig": {
+    "main": "build/index.ts",
+    "typings": "build/index.d.ts"
+  },
   "scripts": {
     "build": "node scripts/build.js && tsc --declaration --emitDeclarationOnly",
-    "build:tsc": "tsc --showConfig",
-    "decl": "tsc --declaration --emitDeclarationOnly",
+    "build:tsc": "tsc --build",
+    "build:dts": "tsc --emitDeclarationOnly",
     "clean": "rm -rf build"
   },
   "type": "module",
