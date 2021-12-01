@@ -8,10 +8,19 @@ export type Options = {
   description?: string;
   templatePath: string;
   outputPath: string;
+  flattenScopes?: boolean;
 };
 
+export function removeScope(s: string) {
+  const split = s.split("/");
+  return split.length > 1 ? split.slice(1).join("/") : split[0];
+}
+
 export function templateResource(options: Options): Plugin {
-  const { name, templatePath, description, outputPath } = { ...options };
+  const { name, templatePath, description, outputPath, flattenScopes } = {
+    flattenScopes: true,
+    ...options,
+  };
   if (!name) throw new Error("a name for the resource is required");
   if (!templatePath)
     throw new Error(
@@ -31,17 +40,15 @@ export function templateResource(options: Options): Plugin {
             });
             const files = await template.generate({
               input: { name },
-              outputDirectory: path.resolve(outputPath, name),
+              outputDirectory: path.resolve(
+                outputPath,
+                flattenScopes ? removeScope(name) : name
+              ),
             });
-            return files?.map((file) =>
-              file?.sourcePath
-                ? {
-                    type: "copy-file",
-                    source: file.sourcePath,
-                    dest: file.path,
-                  }
-                : { type: "create-file", file }
-            );
+            return files?.map((file) => ({
+              type: "write-file",
+              file,
+            }));
           },
         },
       ];

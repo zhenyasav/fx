@@ -1,12 +1,6 @@
-import { TemplateContext } from "@nice/fx";
 
-export type Input = {
-  name: string;
-};
-
-export default ({ input }: TemplateContext<Input>) => /*javascript*/ `
 {
-  "name": "${input?.name}",
+  "name": "@nice/test",
   "version": "1.0.0",
   "type": "module",
   "private": true,
@@ -20,4 +14,3 @@ export default ({ input }: TemplateContext<Input>) => /*javascript*/ `
     "glob": "^7.2.0"
   }
 }
-`;

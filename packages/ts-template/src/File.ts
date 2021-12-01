@@ -4,6 +4,11 @@ import mkdirp from "mkdirp";
 
 const SHORT_PATH_MAX_LENGTH = 100;
 
+function relative(s: string) {
+  return path.relative(process.cwd(), s);
+}
+
+
 export interface LoadOptions {}
 
 export type FileOptions<D> = {
@@ -70,22 +75,28 @@ export class File<D = any> {
     return !!this.sourcePath && !this.content && !this.parsed;
   }
   async save() {
-    const text = this.parsed !== null ? await this.serialize() : this.content;
-    this.content = text;
-
-    const parsedPath = path.parse(this.path);
-    const exists = await fileExists(this.path);
-    if (exists && !this.overwrite)
-      throw new Error("file save failed, file exists: " + this.path);
-    if (!exists) await mkdirp(parsedPath.dir);
-
-    if (this.content) {
-      const handle = await fs.open(this.path, "w");
-      await handle.writeFile(text, "utf-8");
-      handle.close();
-      console.info("wrote", this.shortDescription());
-    } else if (this.sourcePath) {
+    if (this.isCopy()) {
+      await mkdirp(path.dirname(this.path));
       await fs.copyFile(this.sourcePath, this.path);
+      console.info(`copied ${ellipsis(relative(this.path))}`);
+    } else {
+      const text = this.parsed !== null ? await this.serialize() : this.content;
+      this.content = text;
+      if (this.content) {
+        const parsedPath = path.parse(this.path);
+        const exists = await fileExists(this.path);
+        if (exists && !this.overwrite)
+        throw new Error("file save failed, file exists: " + this.path);
+        if (!exists) await mkdirp(parsedPath.dir);
+        let handle;
+        try {
+          handle = await fs.open(this.path, "w");
+          await handle.writeFile(text, "utf-8");
+          console.info("wrote", this.shortDescription());
+        } finally {
+          handle?.close();
+        }
+      }
     }
   }
   async load(loadOptions?: LoadOptions): Promise<File<D>> {
@@ -103,7 +114,7 @@ export class File<D = any> {
     return this.content;
   }
   shortDescription() {
-    return `${ellipsis(path.relative(process.cwd(), this.dir))}/${this.name}${
+    return `${ellipsis(relative(this.dir))}/${this.name}${
       this.ext
     }: ${kib(this.content?.length ?? 0)}`;
   }

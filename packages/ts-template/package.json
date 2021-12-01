@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "main": "build/index.js",
   "scripts": {
-    "build": "node scripts/build.js",
-    "build:tsc": "tsc",
-    "decl": "tsc --declaration --emitDeclarationOnly"
+    "build": "node scripts/build.js && tsc --declaration --emitDeclarationOnly",
+    "build:tsc": "tsc --showConfig",
+    "decl": "tsc --declaration --emitDeclarationOnly",
+    "clean": "rm -rf build"
   },
   "type": "module",
   "devDependencies": {

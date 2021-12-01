@@ -15,10 +15,37 @@ export type ResourceByTypeMap = Map<
   { plugin: Plugin; resource: ResourceDefinition }
 >;
 
+type PromiseFn<R = any> = (...args: any[]) => Promise<R>;
+
+function uniPromise<TFn extends PromiseFn = PromiseFn>(fun: TFn): TFn {
+  let promise: Promise<any>;
+  let value: any;
+  return (async (...args) => {
+    if (value) return value;
+    if (promise) return promise;
+    promise = fun(...args);
+    return promise;
+  }) as TFn;
+}
+
+export type ResourceInstance = {
+  plugin: string;
+  type: string;
+  id: string;
+};
+
+export type Project = {
+  resources: ResourceInstance[];
+}
+
 export class Fx {
   private config: Config | null = null;
   private configPromise: Promise<Config | null> | null = null;
   private resourcesByType: ResourceByTypeMap = new Map();
+  constructor() {
+    this.loadConfig = uniPromise(this.loadConfig.bind(this));
+    this.loadProject = uniPromise(this.loadProject.bind(this));
+  }
   private async findConfigFile(): Promise<string | null> {
     let cd = process.cwd();
     while (cd && cd.split("/").length) {
@@ -31,6 +58,11 @@ export class Fx {
       cd = path.dirname(cd);
     }
     return null;
+  }
+  private async loadProject(): Promise<Project | null> {
+    return {
+      resources: []
+    };
   }
   private async loadConfig(): Promise<Config | null> {
     if (this.config) return this.config;
@@ -67,9 +99,8 @@ export class Fx {
     dryRun = true,
     caption: string
   ) {
-    if (caption)
-      console.info(`${dryRun ? "dry run" : "plan"}: ${caption}`);
-    console.info('cwd:', process.cwd());
+    if (caption) console.info(`${dryRun ? "dry run" : "plan"}: ${caption}`);
+    console.info("cwd:", process.cwd());
     if (effects) {
       console.info(`\n${effects.length} actions:`);
       if (dryRun) {
@@ -84,7 +115,7 @@ export class Fx {
             return h.apply(effect);
           })
         );
-        console.log('\nexecuting ...');
+        console.log("\nexecuting ...");
         await tasks;
       }
     } else {
@@ -110,6 +141,10 @@ export class Fx {
         dryRun,
         `create '${type}' named '${name}'`
       );
-    })
+    });
+  }
+  async runDev(resources: string, dryRun = true) {
+    await this.loadConfig();
+    // concurrently
   }
 }

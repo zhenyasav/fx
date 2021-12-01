@@ -4,8 +4,9 @@
   "scripts": {
     "start": "node build/index.js",
     "build:tsc": "tsc",
-    "build": "node scripts/build.js",
-    "decl": "tsc --declaration --emitDeclarationOnly"
+    "build": "node scripts/build.js && tsc --emitDeclarationOnly",
+    "decl": "tsc --declaration --emitDeclarationOnly",
+    "clean": "rm -rf build"
   },
   "bin": {
     "fx": "build/main.js"
@@ -18,6 +19,7 @@
     "chalk": "^5.0.0",
     "esbuild": "^0.14.0",
     "glob": "^7.2.0",
+    "inquirer": "^8.2.0",
     "lodash": "^4.17.21",
     "mkdirp": "^1.0.4",
     "yargs": "^17.2.1"
