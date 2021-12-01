@@ -4,4 +4,4 @@ build
 packages/foo
 packages/foobar
 .pnpm-debug.log
-.tsbuildinfo
+tsconfig.tsbuildinfo
