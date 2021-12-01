@@ -32,14 +32,6 @@ importers:
       mkdirp: 1.0.4
       yargs: 17.2.1
 
-  packages/test:
-    specifiers:
-      esbuild: ^0.14.0
-      glob: ^7.2.0
-    devDependencies:
-      esbuild: 0.14.0
-      glob: 7.2.0
-
   packages/ts-template:
     specifiers:
       '@types/lodash': ^4.14.177
