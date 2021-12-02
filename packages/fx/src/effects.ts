@@ -1,4 +1,6 @@
 import { File } from "@nice/ts-template";
+import { ellipsis } from "./util/ellipsis.js";
+import { relative } from "./util/relative.js";
 
 export type WriteFileEffect = {
   type: "write-file";
@@ -24,7 +26,12 @@ export type EffectHandler<T extends Effect> = {
 
 export const WriteFileHandler: EffectHandler<WriteFileEffect> = {
   describe(e) {
-    return `create file: ${e.file.shortDescription()}`;
+    const { file } = e;
+    return file.isCopy()
+      ? `copy file: ${ellipsis(relative(e.file.sourcePath))} to ${ellipsis(
+          relative(e.file.path)
+        )}`
+      : `create file: ${e.file.shortDescription()}`;
   },
   async apply(e) {
     const { file } = e;

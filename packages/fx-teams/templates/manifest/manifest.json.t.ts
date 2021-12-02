@@ -57,7 +57,7 @@ const template: TemplateFunction<ManifestInput> = async (context) => {
           "channelTab",
           "privateChatTab",
           "meetingChatTab",
-        "meetingDetailsTab",
+          "meetingDetailsTab",
           "meetingSidePanel",
           "meetingStage",
         ],
