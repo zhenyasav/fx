@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "start": "node build/index.js",
-    "build": "node scripts/build.js && tsc --emitDeclarationOnly",
+    "build:es": "node scripts/build.js && tsc --emitDeclarationOnly",
     "build:dts": "tsc --emitDeclarationOnly",
-    "build:tsc": "tsc --build",
+    "build": "tsc --build",
     "clean": "rm -rf build",
     "test": "mocha --loader ts-node/esm ./test/**/*.test.ts",
     "dev": "node --loader ts-node/esm test.ts"

@@ -1,10 +1,10 @@
 import { TemplateFunction } from "@nice/fx";
-import { Input } from "../src/input";
+import { ManifestInput } from "../../src/manifest";
 
-const template: TemplateFunction<Input> = async (context) => {
+const template: TemplateFunction<ManifestInput> = async (context) => {
   const { input } = context;
   const { full } = input;
-  console.log({ context });
+
   const required = {
     $schema:
       "https://developer.microsoft.com/json-schemas/teams/v1.11/MicrosoftTeams.schema.json",
@@ -57,7 +57,7 @@ const template: TemplateFunction<Input> = async (context) => {
           "channelTab",
           "privateChatTab",
           "meetingChatTab",
-          "meetingDetailsTab",
+        "meetingDetailsTab",
           "meetingSidePanel",
           "meetingStage",
         ],

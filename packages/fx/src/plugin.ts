@@ -20,3 +20,4 @@ export type ResourceDefinition<I = {}> = {
 export abstract class Plugin {
   abstract resourceDefinitions(): Promise<ResourceDefinition[]>;
 }
+

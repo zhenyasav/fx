@@ -1,3 +1,3 @@
 export * from "@nice/ts-template";
-export * from "./templateResource.js";
-export * from "zod";
+export * from "./templateResources.js";
+export { z } from "zod";

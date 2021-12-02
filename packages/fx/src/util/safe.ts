@@ -1,6 +1,6 @@
 import { timer } from "./timer.js";
 
-export async function safe(fn: () => Promise<any>): Promise<any> {
+export async function safelyTimed(fn: () => Promise<any>): Promise<any> {
     const t = timer();
     try {
       const r = await fn?.();

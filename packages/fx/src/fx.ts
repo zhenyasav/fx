@@ -4,7 +4,7 @@ import { promises as fs } from "fs";
 import { Plugin, ResourceDefinition } from "./plugin.js";
 import { randomString } from "./util/random.js";
 import { applyEffects } from "./effects.js";
-import { safe } from "./util/safe.js";
+import { safelyTimed } from "./util/safe.js";
 import { promiseOnce } from "./util/promiseOnce.js";
 import { findAncestorPath } from "./util/findAncestorPath.js";
 
@@ -136,7 +136,7 @@ export class Fx {
     inputs?: { name?: string },
     dryRun = true
   ) {
-    safe(async () => {
+    safelyTimed(async () => {
       const resource = await this.getResourceDefinition(type);
       if (!resource) throw new Error("resource type not found");
       let project: Project | null = null;

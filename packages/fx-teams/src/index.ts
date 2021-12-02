@@ -1,18 +1,9 @@
 // package @nice/fx-teams
-import { templateResource } from "@nice/fx";
+import { templateResources } from "@nice/fx";
 
-import * as path from "path";
-import { fileURLToPath } from "url";
-import { input } from "./input.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { manifest } from "./manifest.js";
+import { tab } from "./tab.js";
 
 export function teams() {
-  return templateResource({
-    typeName: 'manifest',
-    description: "Create a Teams manifest template and build scripts",
-    templateDir: path.resolve(__dirname, '../template'),
-    input
-  });
+  return templateResources(manifest, tab);
 }

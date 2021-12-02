@@ -25,31 +25,32 @@ export type TemplateResourceOptions<
   input?: I;
 };
 
-export function templateResource<
+export function templateResources<
   InputSchema extends z.AnyZodObject = DefaultInputSchema
->(options: TemplateResourceOptions<InputSchema>): Plugin {
-  const {
-    typeName,
-    templateDir,
-    description,
-    flattenScopes,
-    outputDir: od,
-    input,
-  } = {
-    flattenScopes: true,
-    ...options,
-  };
-  if (!typeName) throw new Error("a type name for the resource is required");
-  if (!templateDir)
-    throw new Error(
-      "a template resource must have a path to the root folder of the template"
-    );
-  const inputSchema = input ?? defaultInput;
-  type IType = z.infer<typeof inputSchema>;
-  return new (class extends Plugin {
-    async resourceDefinitions(): Promise<[ResourceDefinition<IType>]> {
-      return [
-        {
+>(...opts: TemplateResourceOptions<InputSchema>[]): Plugin {
+  class C extends Plugin {
+    async resourceDefinitions(): Promise<ResourceDefinition[]> {
+      return opts.map((options) => {
+        const {
+          typeName,
+          templateDir,
+          description,
+          flattenScopes,
+          outputDir: od,
+          input,
+        } = {
+          flattenScopes: true,
+          ...options,
+        };
+        if (!typeName)
+          throw new Error("a type name for the resource is required");
+        if (!templateDir)
+          throw new Error(
+            "a template resource must have a path to the root folder of the template"
+          );
+        const inputSchema = input ?? defaultInput;
+        type IType = z.infer<typeof inputSchema>;
+        return {
           type: typeName,
           description,
           async create({ input }): Promise<CreateResourceResult<IType>> {
@@ -67,7 +68,7 @@ export function templateResource<
               ),
             });
             return {
-              input: (fulfilled as any), 
+              input: fulfilled as any,
               description: `${typeName}${name ? ` named '${name}'` : ""}`,
               effects: files?.map((file) => ({
                 type: "write-file",
@@ -75,8 +76,9 @@ export function templateResource<
               })),
             };
           },
-        },
-      ];
+        };
+      });
     }
-  })();
+  }
+  return new C();
 }

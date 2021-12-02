@@ -7,6 +7,70 @@
         "full": false
       },
       "id": "08ac"
+    },
+    {
+      "type": "manifest",
+      "input": {
+        "outputDir": "./teams"
+      },
+      "id": "a73a"
+    },
+    {
+      "type": "manifest",
+      "input": {
+        "outputDir": "./teams"
+      },
+      "id": "1e9f"
+    },
+    {
+      "type": "manifest",
+      "input": {
+        "outputDir": "./teams"
+      },
+      "id": "3015"
+    },
+    {
+      "type": "manifest",
+      "input": {
+        "outputDir": "./teams"
+      },
+      "id": "8b1a"
+    },
+    {
+      "type": "manifest",
+      "input": {
+        "outputDir": "./teams"
+      },
+      "id": "4d37"
+    },
+    {
+      "type": "manifest",
+      "input": {
+        "outputDir": "./teams"
+      },
+      "id": "7306"
+    },
+    {
+      "type": "manifest",
+      "input": {
+        "outputDir": "./teams"
+      },
+      "id": "baf9"
+    },
+    {
+      "type": "tab",
+      "input": {
+        "outputDir": "./teams"
+      },
+      "id": "516e"
+    },
+    {
+      "type": "manifest",
+      "input": {
+        "outputDir": "./teams",
+        "full": false
+      },
+      "id": "b2de"
     }
   ]
 }

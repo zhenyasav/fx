@@ -4,6 +4,6 @@
   "exclude": ["build", "node_modules"],
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "build"
+    "outDir": "build",
   }
 }

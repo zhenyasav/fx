@@ -7,8 +7,8 @@
     "typings": "build/index.d.ts"
   },
   "scripts": {
-    "build": "node scripts/build.js && tsc --declaration --emitDeclarationOnly",
-    "build:tsc": "tsc --build",
+    "build:es": "node scripts/build.js && tsc --declaration --emitDeclarationOnly",
+    "build": "tsc --build",
     "build:dts": "tsc --emitDeclarationOnly",
     "clean": "rm -rf build"
   },
