@@ -1,9 +1,9 @@
 // package @nice/fx-teams
 import { templateResources } from "@nice/fx";
 import * as path from "path";
+import { fileURLToPath } from "url";
 import { manifestInput } from "./manifest.js";
 import { tabInput } from "./tab.js";
-import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
