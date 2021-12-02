@@ -1,57 +1,34 @@
 import { File } from "@nice/ts-template";
-import { ellipsis } from "./ellipsis.js";
-import * as path from "path";
-import { promises as fs } from "fs";
-import mkdirp from "mkdirp";
 
-function relative(s: string) {
-  return path.relative(process.cwd(), s);
-}
-
-export type CreateFileEffect = {
-  type: "create-file";
+export type WriteFileEffect = {
+  type: "write-file";
   file: File;
 };
 
-export type CopyFileEffect = {
-  type: "copy-file";
-  source: string;
-  dest: string;
-};
+export type StartShellEffect = {
+  type: "shell";
+  command: string;
+}
 
 export type RunPackageScriptEffect = {
   type: "package-script";
   name: string;
 };
 
-export type Effect = CreateFileEffect | RunPackageScriptEffect | CopyFileEffect;
+export type Effect = WriteFileEffect | RunPackageScriptEffect;
 
 export type EffectHandler<T extends Effect> = {
   describe(e: T): string;
   apply(e: T): Promise<any>;
 };
 
-export const CreateFileHandler: EffectHandler<CreateFileEffect> = {
+export const WriteFileHandler: EffectHandler<WriteFileEffect> = {
   describe(e) {
     return `create file: ${e.file.shortDescription()}`;
   },
   async apply(e) {
     const { file } = e;
     await file.save();
-  },
-};
-
-export const CopyFileHandler: EffectHandler<CopyFileEffect> = {
-  describe(e) {
-    return `copy file ${ellipsis(relative(e.source))} to ${ellipsis(
-      relative(e.dest)
-    )}`;
-  },
-  async apply(e) {
-    const { dest, source } = e;
-    await mkdirp(path.dirname(dest));
-    await fs.copyFile(source, dest);
-    console.info(`wrote ${ellipsis(relative(e.dest))}`);
   },
 };
 
@@ -69,8 +46,7 @@ export type AllHandlers = {
 };
 
 export const Effects: AllHandlers = {
-  "copy-file": CopyFileHandler,
-  "create-file": CreateFileHandler,
+  "write-file": WriteFileHandler,
   "package-script": PackageScriptHandler,
 };
 

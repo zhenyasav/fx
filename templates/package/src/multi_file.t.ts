@@ -1,4 +1,6 @@
 // demonstration of a template that can emit multiple files
+/* 
+
 import * as path from "path";
 import { TemplateFunction, File } from "@nice/fx";
 
@@ -19,3 +21,5 @@ const template: TemplateFunction<{ name: string }> = async ({
 };
 
 export default template;
+
+*/

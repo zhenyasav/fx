@@ -5,6 +5,7 @@
   "scripts": {
     "build": "pnpm run build -r --if-present --filter @nice/*",
     "build:tsc": "pnpm run build:tsc -r --if-present --filter @nice/*",
+    "clean": "pnpm run clean -r --if-present",
     "fx": "pnpm exec fx"
   },
   "engines": {
@@ -13,7 +14,9 @@
   },
   "type": "module",
   "devDependencies": {
-    "@nice/fx": "workspace:^1.0.0"
+    "@nice/fx": "workspace:^1.0.0",
+    "@nice/fx-teams": "workspace:^1.0.0",
+    "change-case": "^4.1.2"
   },
   "repository": {
     "type": "git",

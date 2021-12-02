@@ -1,5 +1,6 @@
 {
   "recommendations": [
-    "zjcompt.es6-string-javascript"
+    "zjcompt.es6-string-javascript",
+    "wayou.vscode-todo-highlight"
   ]
 }
