@@ -35,7 +35,7 @@ export default {
 
 ## Next steps
 These would be features this tool should learn to demonstrate next
-- [ ] drop in a teams manifest template
+- [x] drop in a teams manifest template
 - [ ] add SSO auth to my existing SPA / serverless app
 - [ ] add hosting / deploy ops with azure and github
 - [ ] add teams communications features
