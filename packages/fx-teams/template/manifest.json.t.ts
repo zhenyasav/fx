@@ -1,18 +1,36 @@
 import { TemplateFunction } from "@nice/fx";
-
-export type Input = {};
+import { Input } from "../src/input";
 
 const template: TemplateFunction<Input> = async (context) => {
-  // const {
-  //   input,
-  // } = context;
-  const manifest = {
+  const { input } = context;
+  const { full } = input;
+
+  const required = {
     $schema:
       "https://developer.microsoft.com/json-schemas/teams/v1.11/MicrosoftTeams.schema.json",
     manifestVersion: "1.11",
     version: "1.0.0",
     id: "%APP_ID%",
     packageName: "com.example.myapp",
+    developer: {
+      name: "Publisher Name",
+    },
+    name: {
+      short: "Name of your app (<=30 chars)",
+      full: "Full name of app, if longer than 30 characters (<=100 chars)",
+    },
+    description: {
+      short: "Short description of your app (<= 80 chars)",
+      full: "Full description of your app (<= 4000 chars)",
+    },
+    icons: {
+      outline: "A relative path to a transparent .png icon — 32px X 32px",
+      color: "A relative path to a full color .png icon — 192px X 192px",
+    },
+  };
+
+  const allfields = {
+    ...required,
     localizationInfo: {
       defaultLanguageTag: "en-us",
       additionalLanguages: [
@@ -28,18 +46,6 @@ const template: TemplateFunction<Input> = async (context) => {
       privacyUrl: "https://website.com/privacy",
       termsOfUseUrl: "https://website.com/app-tos",
       mpnId: "1234567890",
-    },
-    name: {
-      short: "Name of your app (<=30 chars)",
-      full: "Full name of app, if longer than 30 characters (<=100 chars)",
-    },
-    description: {
-      short: "Short description of your app (<= 80 chars)",
-      full: "Full description of your app (<= 4000 chars)",
-    },
-    icons: {
-      outline: "A relative path to a transparent .png icon — 32px X 32px",
-      color: "A relative path to a full color .png icon — 192px X 192px",
     },
     accentColor: "A valid HTML color code.",
     configurableTabs: [
@@ -262,7 +268,7 @@ const template: TemplateFunction<Input> = async (context) => {
     },
   };
 
-  return JSON.stringify(manifest, null, 2);
+  return JSON.stringify(full ? allfields : required, null, 2);
 };
 
 export default template;

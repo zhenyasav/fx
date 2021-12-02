@@ -10,7 +10,7 @@ export default {
   plugins: [
     teams(),
     templateResource({
-      name: "package",
+      typeName: "package",
       description: "creates a new typescript package in ./packages/",
       templateDir: path.resolve(__dirname, "templates/package"),
       outputDir: path.resolve(__dirname, "packages")

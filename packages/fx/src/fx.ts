@@ -2,7 +2,7 @@ import path from "path";
 import { promises as fs } from "fs";
 import { Plugin, ResourceDefinition } from "./plugin.js";
 import { Effect, handler } from "./effects.js";
-import { timer } from "./timer.js";
+import { timer } from "./util/timer.js";
 
 const CONFIG_FILE_NAME = `.fx.js`;
 
@@ -36,7 +36,7 @@ export type ResourceInstance = {
 
 export type Project = {
   resources: ResourceInstance[];
-}
+};
 
 export class Fx {
   private config: Config | null = null;
@@ -61,7 +61,7 @@ export class Fx {
   }
   private async loadProject(): Promise<Project | null> {
     return {
-      resources: []
+      resources: [],
     };
   }
   private async loadConfig(): Promise<Config | null> {
@@ -124,22 +124,29 @@ export class Fx {
   }
   private async time(fn: () => Promise<void>): Promise<void> {
     const t = timer();
-    await fn?.();
+    try {
+      await fn?.();
+    } catch (err) {
+      console.error(err);
+      process.exit(1);
+    }
     console.info(`done ${t()}\n`);
   }
-  async createResource(type: string, name: string, dryRun = true) {
+  async createResource(
+    type: string,
+    inputs?: { name?: string },
+    dryRun = true
+  ) {
     this.time(async () => {
       await this.loadConfig();
       const resource = await this.getResource(type);
       const effects = await resource?.create({
-        inputs: {
-          name,
-        },
+        input: inputs ?? {},
       });
       await this.invokeEffects(
         effects,
         dryRun,
-        `create '${type}' named '${name}'`
+        `create ${type}${!!inputs?.name ? ` named '${inputs.name}'` : ""}`
       );
     });
   }

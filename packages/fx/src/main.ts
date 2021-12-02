@@ -31,10 +31,11 @@ yargs(process.argv.slice(2))
     description: "print more stuff",
   })
   .command(
-    "ls",
-    "list resources",
+    "se",
+    "search resources",
     (yargs) => yargs,
-    async () => {
+    async (args) => {
+      console.log(args);
       const resources = await fx.getAllResources();
       if (!resources.size) {
         console.info(
@@ -55,7 +56,7 @@ yargs(process.argv.slice(2))
     }
   )
   .command(
-    "add <type> <name>",
+    "add <type> [name]",
     "create a new resource",
     (yargs) => {
       return yargs
@@ -69,10 +70,9 @@ yargs(process.argv.slice(2))
         });
     },
     async (argv) => {
-      const { type, name, dry } = argv;
+      const { type, name, dry, d, v, verbose, $0, _, ...rest } = argv;
       if (!type) throw new Error("type is required");
-      if (!name) throw new Error("a resource name is required");
-      await fx.createResource(type, name, !!dry);
+      await fx.createResource(type, { ...rest, name }, !!dry);
     }
   )
   .showHelpOnFail(false)
