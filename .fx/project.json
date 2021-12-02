@@ -71,6 +71,14 @@
         "full": false
       },
       "id": "b2de"
+    },
+    {
+      "type": "manifest",
+      "input": {
+        "outputDir": "./teams",
+        "full": false
+      },
+      "id": "55da"
     }
   ]
 }
