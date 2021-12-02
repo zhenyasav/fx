@@ -1,0 +1,12 @@
+{
+  "resources": [
+    {
+      "type": "manifest",
+      "input": {
+        "outputDir": ".",
+        "full": false
+      },
+      "id": "08ac"
+    }
+  ]
+}

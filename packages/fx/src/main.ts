@@ -35,8 +35,7 @@ yargs(process.argv.slice(2))
     "search resources",
     (yargs) => yargs,
     async (args) => {
-      console.log(args);
-      const resources = await fx.getAllResources();
+      const resources = await fx.getAllResourceDefinitions();
       if (!resources.size) {
         console.info(
           chalk.gray(

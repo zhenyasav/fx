@@ -1,13 +1,23 @@
-import path from "path";
+import * as path from "path";
+import mkdirp from "mkdirp";
 import { promises as fs } from "fs";
 import { Plugin, ResourceDefinition } from "./plugin.js";
-import { Effect, handler } from "./effects.js";
-import { timer } from "./util/timer.js";
+import { randomString } from "./util/random.js";
+import { applyEffects } from "./effects.js";
+import { safe } from "./util/safe.js";
+import { promiseOnce } from "./util/promiseOnce.js";
+import { findAncestorPath } from "./util/findAncestorPath.js";
 
-const CONFIG_FILE_NAME = `.fx.js`;
+const CONFIG_FILE_NAME = ".fx.js";
+const FRAMEWORK_FOLDER = ".fx";
+const PROJECT_FILE = "project.json";
 
 export type Config = {
   plugins?: Plugin[];
+};
+
+type LoadedConfig = Config & {
+  rootPath: string;
 };
 
 export type ResourceByTypeMap = Map<
@@ -15,22 +25,9 @@ export type ResourceByTypeMap = Map<
   { plugin: Plugin; resource: ResourceDefinition }
 >;
 
-type PromiseFn<R = any> = (...args: any[]) => Promise<R>;
-
-function uniPromise<TFn extends PromiseFn = PromiseFn>(fun: TFn): TFn {
-  let promise: Promise<any>;
-  let value: any;
-  return (async (...args) => {
-    if (value) return value;
-    if (promise) return promise;
-    promise = fun(...args);
-    return promise;
-  }) as TFn;
-}
-
 export type ResourceInstance = {
-  plugin: string;
   type: string;
+  input: any;
   id: string;
 };
 
@@ -39,119 +36,135 @@ export type Project = {
 };
 
 export class Fx {
-  private config: Config | null = null;
-  private configPromise: Promise<Config | null> | null = null;
+  private config: LoadedConfig | null = null;
+  private project: Project | null = null;
   private resourcesByType: ResourceByTypeMap = new Map();
   constructor() {
-    this.loadConfig = uniPromise(this.loadConfig.bind(this));
-    this.loadProject = uniPromise(this.loadProject.bind(this));
-  }
-  private async findConfigFile(): Promise<string | null> {
-    let cd = process.cwd();
-    while (cd && cd.split("/").length) {
-      try {
-        const exists = await fs.stat(path.resolve(cd, CONFIG_FILE_NAME));
-        if (exists) {
-          return path.resolve(cd, CONFIG_FILE_NAME);
-        }
-      } catch (err) {}
-      cd = path.dirname(cd);
-    }
-    return null;
+    this.loadConfig = promiseOnce(this.loadConfig.bind(this));
   }
   private async loadProject(): Promise<Project | null> {
-    return {
-      resources: [],
-    };
+    const c = await this.loadConfig();
+    if (!c) throw new Error("unable to locate .fx.js config file");
+    const folder = path.join(c.rootPath, FRAMEWORK_FOLDER);
+    if (!folder) return null;
+    let raw: string;
+    try {
+      raw = (
+        await fs.readFile(path.resolve(folder, PROJECT_FILE))
+      ).toString();
+    } catch (err) {
+      raw = ''
+    }
+    try {
+      const project: Project = raw
+        ? (JSON.parse(raw) as Project)
+        : {
+            resources: [],
+          };
+      this.project = project;
+      return project;
+    } catch (err) {
+      throw new Error("failed to parse fx project file");
+    }
   }
-  private async loadConfig(): Promise<Config | null> {
-    if (this.config) return this.config;
-    if (this.configPromise) return await this.configPromise;
-    return await (this.configPromise = new Promise<Config | null>(
-      async (resolve) => {
-        const file = await this.findConfigFile();
-        if (!file) return resolve({});
-        const configmodule = await import(file);
-        const config: Config = configmodule?.["default"] ?? configmodule;
-        for (let p of config.plugins ?? []) {
-          const resources = await p.resourceDefinitions();
-          resources.forEach((resource) => {
-            this.resourcesByType.set(resource.type, {
-              plugin: p,
-              resource,
-            });
-          });
-        }
-        resolve(config);
-      }
-    ));
+  private async ensureProject(): Promise<Project | null> {
+    await this.loadConfig();
+    await this.loadProject();
+    if (!this.project && !!this.config) {
+      const { rootPath } = this.config;
+      await mkdirp(path.resolve(rootPath, FRAMEWORK_FOLDER));
+      const content = JSON.stringify(
+        {
+          resources: [],
+        },
+        null,
+        2
+      );
+      await fs.writeFile(
+        path.resolve(rootPath, FRAMEWORK_FOLDER, PROJECT_FILE),
+        content
+      );
+    }
+    return await this.loadProject();
   }
-  private async getResource(type: string): Promise<ResourceDefinition | null> {
+  private async loadConfig(): Promise<LoadedConfig | null> {
+    const file = await findAncestorPath(CONFIG_FILE_NAME);
+    if (!file) return null;
+    const configmodule = await import(file);
+    const config: Config = configmodule?.["default"] ?? configmodule;
+    for (let p of config.plugins ?? []) {
+      const resources = await p.resourceDefinitions();
+      resources.forEach((resource) => {
+        this.resourcesByType.set(resource.type, {
+          plugin: p,
+          resource,
+        });
+      });
+    }
+    this.config = { ...config, rootPath: path.dirname(file) };
+    return this.config;
+  }
+  private async getResourceDefinition(
+    type: string
+  ): Promise<ResourceDefinition | null> {
     await this.loadConfig();
     return this.resourcesByType.get(type)?.resource ?? null;
   }
-  async getAllResources(): Promise<ResourceByTypeMap> {
+  async getAllResourceDefinitions(): Promise<ResourceByTypeMap> {
     await this.loadConfig();
     return this.resourcesByType;
   }
-  private async invokeEffects(
-    effects: Effect[] | undefined,
-    dryRun = true,
-    caption: string
+  private addResourceToProject(
+    project: Project,
+    resourceResult: ResourceInstance
   ) {
-    if (caption) console.info(`${dryRun ? "dry run" : "plan"}: ${caption}`);
-    console.info("cwd:", process.cwd());
-    if (effects) {
-      console.info(`\n${effects.length} actions:`);
-      if (dryRun) {
-        effects?.forEach((effect) =>
-          console.log(handler(effect).describe(effect))
-        );
-      } else {
-        const tasks = Promise.all(
-          effects?.map((effect) => {
-            const h = handler(effect);
-            console.log(h.describe(effect));
-            return h.apply(effect);
-          })
-        );
-        console.log("\nexecuting ...");
-        await tasks;
-      }
-    } else {
-      console.log("nothing to do");
-    }
+    project.resources = project.resources || [];
+    project.resources.push(resourceResult);
+    return project;
   }
-  private async time(fn: () => Promise<void>): Promise<void> {
-    const t = timer();
-    try {
-      await fn?.();
-    } catch (err) {
-      console.error(err);
-      process.exit(1);
-    }
-    console.info(`done ${t()}\n`);
+  private async saveProject(project: Project) {
+    const config = await this.loadConfig();
+    if (!config)
+      throw new Error("unable to save project, config file not found");
+    const dir = path.resolve(config?.rootPath, FRAMEWORK_FOLDER);
+    await mkdirp(dir);
+    const file = path.resolve(dir, PROJECT_FILE);
+    await fs.writeFile(file, JSON.stringify(project, null, 2));
   }
   async createResource(
     type: string,
     inputs?: { name?: string },
     dryRun = true
   ) {
-    this.time(async () => {
-      await this.loadConfig();
-      const resource = await this.getResource(type);
-      const effects = await resource?.create({
+    safe(async () => {
+      const resource = await this.getResourceDefinition(type);
+      if (!resource) throw new Error("resource type not found");
+      let project: Project | null = null;
+      if (!dryRun) {
+        project = await this.ensureProject();
+        if (!project) throw new Error("unable to create a project file");
+      }
+      const createdResource = await resource.create({
         input: inputs ?? {},
       });
-      await this.invokeEffects(
-        effects,
-        dryRun,
-        `create ${type}${!!inputs?.name ? ` named '${inputs.name}'` : ""}`
-      );
+      const { effects, description } = createdResource;
+      if (effects) {
+        await applyEffects(
+          effects,
+          dryRun,
+          description
+            ? `create ${description}`
+            : `create ${type}${!!inputs?.name ? ` named '${inputs.name}'` : ""}`
+        );
+      }
+      if (!dryRun && !!project) {
+        const p = this.addResourceToProject(project, {
+          type,
+          input: createdResource.input,
+          id: randomString(),
+        });
+        await this.saveProject(p);
+      }
     });
-  }
-  async runDev(resources: string, dryRun = true) {
-    await this.loadConfig();
-    // concurrently
   }
 }

@@ -1,7 +1,6 @@
 import * as path from "path";
 import { DirectoryTemplate } from "@nice/ts-template";
-import { Plugin, ResourceDefinition } from "./plugin.js";
-import { Effect } from "./effects.js";
+import { CreateResourceResult, Plugin, ResourceDefinition } from "./plugin.js";
 import { fulfillWithQuestions } from "./util/inputs.js";
 import { removeScope } from "./util/scope.js";
 import { z } from "zod";
@@ -25,7 +24,6 @@ export type TemplateResourceOptions<
   flattenScopes?: boolean;
   input?: I;
 };
-
 
 export function templateResource<
   InputSchema extends z.AnyZodObject = DefaultInputSchema
@@ -54,7 +52,7 @@ export function templateResource<
         {
           type: typeName,
           description,
-          async create({ input }): Promise<Effect[]> {
+          async create({ input }): Promise<CreateResourceResult<IType>> {
             const defaults: any = { outputDir: od, ...input };
             const template = new DirectoryTemplate<IType>({
               path: templateDir,
@@ -62,16 +60,20 @@ export function templateResource<
             const fulfilled = await fulfillWithQuestions(inputSchema, defaults);
             const { outputDir, name } = fulfilled;
             const files = await template.generate({
-              input: { name },
+              input: fulfilled as any,
               outputDirectory: path.resolve(
                 outputDir,
                 !!name ? (flattenScopes ? removeScope(name) : name) : ""
               ),
             });
-            return files?.map((file) => ({
-              type: "write-file",
-              file,
-            }));
+            return {
+              input: (fulfilled as any), 
+              description: `${typeName}${name ? ` named '${name}'` : ""}`,
+              effects: files?.map((file) => ({
+                type: "write-file",
+                file,
+              })),
+            };
           },
         },
       ];

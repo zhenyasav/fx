@@ -1,4 +1,4 @@
 export type TemplateContext<T> = {
-  input?: T;
+  input: T;
   outputDirectory: string;
 };

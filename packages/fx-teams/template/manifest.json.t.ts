@@ -4,7 +4,7 @@ import { Input } from "../src/input";
 const template: TemplateFunction<Input> = async (context) => {
   const { input } = context;
   const { full } = input;
-
+  console.log({ context });
   const required = {
     $schema:
       "https://developer.microsoft.com/json-schemas/teams/v1.11/MicrosoftTeams.schema.json",
