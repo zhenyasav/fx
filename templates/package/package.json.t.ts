@@ -16,9 +16,9 @@ export default ({ input }: TemplateContext<Input>) => /*javascript*/ `
     "typings": "build/index.d.ts"
   },
   "scripts": {
-    "build": "node scripts/build.js && tsc --emitDeclarationOnly",
+    "build:es": "node scripts/build.js && tsc --emitDeclarationOnly",
     "build:dts": "tsc --emitDeclarationOnly",
-    "build:tsc": "tsc --build",
+    "build": "tsc --build",
     "clean": "rm -rf build"
   },
   "devDependencies": {

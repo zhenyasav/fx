@@ -16,7 +16,7 @@ test some fx commands:
 
 ```bash
 pnpm fx -- --help
-pnpm fx ls                  # shows what resources are available to create
+pnpm fx se                  # shows what resources are available to create
 ```
 
 Note that a double dash is required for pnpm to pass flags to the fx process, so only in this repo when debugging we have to say `pnpm fx -- -d add package foo` instead of the production command `fx -d add package foo`.
