@@ -1,12 +1,5 @@
-import { TemplateContext } from "@fx/templates";
-
-export type Input = {
-  name: string;
-};
-
-export default ({ input }: TemplateContext<Input>) => /*javascript*/ `
 {
-  "name": "${input?.name}",
+  "name": "@fx/zod-inquirer",
   "version": "1.0.0",
   "type": "module",
   "private": true,
@@ -20,6 +13,9 @@ export default ({ input }: TemplateContext<Input>) => /*javascript*/ `
   "devDependencies": {
     "esbuild": "^0.14.0",
     "glob": "^7.2.0"
+  },
+  "dependencies": {
+    "inquirer": "^8.2.0",
+    "zod": "^3.11.6"
   }
 }
-`;

@@ -1,7 +1,7 @@
 import path from "path";
 import { fileURLToPath } from 'url';
-import { templateResources } from "@nice/fx";
-import { teams } from "@nice/fx-teams";
+import { templateResources } from "@fx/templates";
+import { teams } from "@fx/teams";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

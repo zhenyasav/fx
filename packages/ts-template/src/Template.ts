@@ -1,7 +1,7 @@
 
 import * as path from "path";
 import { TemplateContext } from "./models.js";
-import { File } from "./File.js";
+import { File } from "@nice/file";
 import * as esbuild from "esbuild";
 import { promises as fs } from "fs";
 

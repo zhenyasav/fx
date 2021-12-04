@@ -79,6 +79,54 @@
         "full": false
       },
       "id": "55da"
+    },
+    {
+      "type": "package",
+      "input": {
+        "outputDir": "/Users/zhenya/exp/fx/packages",
+        "name": "@fx/cli"
+      },
+      "id": "ca56"
+    },
+    {
+      "type": "package",
+      "input": {
+        "outputDir": "/Users/zhenya/exp/fx/packages",
+        "name": "@fx/core"
+      },
+      "id": "3f2b"
+    },
+    {
+      "type": "package",
+      "input": {
+        "outputDir": "/Users/zhenya/exp/fx/packages",
+        "name": "@fx/templates"
+      },
+      "id": "f0e5"
+    },
+    {
+      "type": "package",
+      "input": {
+        "outputDir": "/Users/zhenya/exp/fx/packages",
+        "name": "@fx/plugin"
+      },
+      "id": "dce5"
+    },
+    {
+      "type": "package",
+      "input": {
+        "outputDir": "/Users/zhenya/exp/fx/packages",
+        "name": "@fx/util"
+      },
+      "id": "4d18"
+    },
+    {
+      "type": "package",
+      "input": {
+        "outputDir": "/Users/zhenya/exp/fx/packages",
+        "name": "@nice/file"
+      },
+      "id": "c14b"
     }
   ]
 }

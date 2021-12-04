@@ -1,16 +1,13 @@
-import { TemplateContext } from "@fx/templates";
-
-export type Input = {
-  name: string;
-};
-
-export default ({ input }: TemplateContext<Input>) => /*javascript*/ `
 {
-  "name": "${input?.name}",
+  "name": "@fx/teams",
   "version": "1.0.0",
   "type": "module",
   "private": true,
   "main": "build/index.js",
+  "publishConfig": {
+    "main": "build/index.ts",
+    "typings": "build/index.d.ts"
+  },
   "scripts": {
     "build:es": "node scripts/build.js && tsc --emitDeclarationOnly",
     "build:dts": "tsc --emitDeclarationOnly",
@@ -18,8 +15,13 @@ export default ({ input }: TemplateContext<Input>) => /*javascript*/ `
     "clean": "rm -rf build"
   },
   "devDependencies": {
+    "@nice/ts-template": "workspace:^1.0.0",
     "esbuild": "^0.14.0",
     "glob": "^7.2.0"
+  },
+  "dependencies": {
+    "@fx/plugin": "workspace:^1.0.0",
+    "@fx/templates": "workspace:^1.0.0",
+    "zod": "^3.11.6"
   }
 }
-`;

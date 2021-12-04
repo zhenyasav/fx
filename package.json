@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "developer automation",
   "scripts": {
-    "build": "pnpm run build -r --if-present --filter @nice/*",
-    "build:tsc": "pnpm run build:tsc -r --if-present --filter @nice/*",
+    "build": "pnpm run build -r --if-present",
+    "build:tsc": "pnpm run build:tsc -r --if-present",
     "clean": "pnpm run clean -r --if-present",
     "fx": "pnpm exec fx"
   },
@@ -14,8 +14,9 @@
   },
   "type": "module",
   "devDependencies": {
-    "@nice/fx": "workspace:^1.0.0",
-    "@nice/fx-teams": "workspace:^1.0.0",
+    "@fx/cli": "workspace:^1.0.0",
+    "@fx/teams": "workspace:^1.0.0",
+    "@fx/templates": "workspace:^1.0.0",
     "change-case": "^4.1.2"
   },
   "repository": {

@@ -14,6 +14,7 @@
   },
   "type": "module",
   "devDependencies": {
+    "@nice/file": "workspace:^1.0.0",
     "@types/lodash": "^4.14.177",
     "@types/mkdirp": "^1.0.2",
     "@types/recursive-readdir": "^2.2.0",

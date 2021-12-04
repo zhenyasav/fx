@@ -1,6 +1,6 @@
 import * as path from "path";
 import _ from "lodash";
-import { File } from "./File.js";
+import { File } from "@nice/file";
 import { TemplateContext } from "./models.js";
 import { Template, TemplateOptions, isTemplate } from "./Template.js";
 import readDir from "recursive-readdir";

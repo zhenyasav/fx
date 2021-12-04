@@ -1,12 +1,5 @@
-import { TemplateContext } from "@fx/templates";
-
-export type Input = {
-  name: string;
-};
-
-export default ({ input }: TemplateContext<Input>) => /*javascript*/ `
 {
-  "name": "${input?.name}",
+  "name": "@fx/templates",
   "version": "1.0.0",
   "type": "module",
   "private": true,
@@ -18,8 +11,15 @@ export default ({ input }: TemplateContext<Input>) => /*javascript*/ `
     "clean": "rm -rf build"
   },
   "devDependencies": {
+    "@fx/plugin": "workspace:^1.0.0",
+    "@fx/util": "workspace:^1.0.0",
+    "@fx/zod-inquirer": "workspace:^1.0.0",
+    "@nice/ts-template": "workspace:^1.0.0",
     "esbuild": "^0.14.0",
-    "glob": "^7.2.0"
+    "glob": "^7.2.0",
+    "zod": "^3.11.6"
+  },
+  "dependencies": {
+    
   }
 }
-`;

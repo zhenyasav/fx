@@ -19,5 +19,5 @@
     "sourceMap": true,
   },
   "include": ["./**/*.ts"],
-  "references": [{ "path": "packages/fx" }]
+  "references": [{ "path": "packages/cli" }]
 }
