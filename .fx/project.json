@@ -127,6 +127,14 @@
         "name": "@nice/file"
       },
       "id": "c14b"
+    },
+    {
+      "type": "package",
+      "input": {
+        "outputDir": "/Users/zhenya/exp/fx/packages",
+        "name": "@fx/yo"
+      },
+      "id": "a209"
     }
   ]
 }

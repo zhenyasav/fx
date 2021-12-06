@@ -1,7 +1,7 @@
 import * as path from "path";
 import mkdirp from "mkdirp";
 import { promises as fs } from "fs";
-import { Plugin, ResourceDefinition } from "@fx/plugin";
+import { MaybePromise, Plugin, Resource } from "@fx/plugin";
 import {
   randomString,
   safelyTimed,
@@ -10,7 +10,7 @@ import {
 } from "@fx/util";
 import { applyEffects } from "./handlers.js";
 
-const CONFIG_FILE_NAME = ".fx.js";
+const CONFIG_FILE_NAME = ".fx.ts";
 const FRAMEWORK_FOLDER = ".fx";
 const PROJECT_FILE = "project.json";
 
@@ -24,7 +24,7 @@ type LoadedConfig = Config & {
 
 export type ResourceByTypeMap = Map<
   string,
-  { plugin: Plugin; resource: ResourceDefinition }
+  { plugin: Plugin; resource: Resource }
 >;
 
 export type ResourceInstance = {
@@ -36,6 +36,14 @@ export type ResourceInstance = {
 export type Project = {
   resources: ResourceInstance[];
 };
+
+function isPromise<T>(e: any): e is Promise<T> {
+  return typeof e?.then == "function";
+}
+
+async function promise<T>(p: MaybePromise<T>): Promise<T> {
+  return isPromise(p) ? p : Promise.resolve(p);
+}
 
 export class Fx {
   private config: LoadedConfig | null = null;
@@ -90,12 +98,14 @@ export class Fx {
   private async loadConfig(): Promise<LoadedConfig | null> {
     const file = await findAncestorPath(CONFIG_FILE_NAME);
     if (!file) return null;
+
+    // TODO: esbuild the tsc before loading it
     const configmodule = await import(file);
     const config: Config = configmodule?.["default"] ?? configmodule;
     for (let p of config.plugins ?? []) {
-      const resources = await (p as Plugin).resourceDefinitions();
+      const resources = await (p as Plugin).resources();
       resources.forEach((resource) => {
-        this.resourcesByType.set(resource.type, {
+        this.resourcesByType.set(resource.name, {
           plugin: p,
           resource,
         });
@@ -104,9 +114,7 @@ export class Fx {
     this.config = { ...config, rootPath: path.dirname(file) };
     return this.config;
   }
-  private async getResourceDefinition(
-    type: string
-  ): Promise<ResourceDefinition | null> {
+  private async getResourceDefinition(type: string): Promise<Resource | null> {
     await this.loadConfig();
     return this.resourcesByType.get(type)?.resource ?? null;
   }
@@ -144,24 +152,27 @@ export class Fx {
         project = await this.ensureProject();
         if (!project) throw new Error("unable to create a project file");
       }
-      const createdResource = await resource.create({
-        input: inputs ?? {},
-      });
-      const { effects, description } = createdResource;
-      if (effects) {
-        await applyEffects(
-          effects,
-          dryRun,
-          description
-            ? `create ${description}`
-            : `create ${type}${!!inputs?.name ? ` named '${inputs.name}'` : ""}`
-        );
+      const input = await promise(resource.methods.create.input(inputs ?? {}));
+      const createdResource = await promise(resource.methods.create.execute({
+        input
+      }));
+      if (createdResource) {
+        const { effects, description } = createdResource;
+        if (effects) {
+          await applyEffects(
+            effects,
+            dryRun,
+            description
+              ? `create ${description}`
+              : `create ${type}${!!inputs?.name ? ` named '${inputs.name}'` : ""}`
+          );
+        }
       }
       if (!dryRun && !!project) {
         const p = this.addResourceToProject(project, {
           type,
-          input: createdResource.input,
           id: randomString(),
+          input,
         });
         await this.saveProject(p);
       }

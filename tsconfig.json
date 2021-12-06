@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "strict": true,
-    "module": "ESNext",
-    "target": "ESNext",
+    "module": "esnext",
+    "target": "esnext",
     "lib": ["DOM", "ESNext"],
     "jsx": "react",
     "esModuleInterop": true,
@@ -17,7 +17,8 @@
     "composite": true,
     "declaration": true,
     "sourceMap": true,
+    "isolatedModules": true
   },
-  "include": ["./**/*.ts"],
-  "references": [{ "path": "packages/cli" }]
+  "include": ["./**/*.ts", ".fx.ts"],
+  "references": [{ "path": "packages/cli" }, { "path": "packages/util" }, { "path": "packages/core" }]
 }

@@ -1,10 +1,9 @@
-// import { File } from "@nice/ts-template";
+import { exec } from "child_process";
 import { ellipsis } from "@fx/util";
 import { relative } from "@fx/util";
 import { Effects as E } from "@fx/plugin";
 
 export namespace Handlers {
-  
   const WriteFile: E.Handler<E.WriteFile> = {
     describe(e) {
       const { file } = e;
@@ -31,10 +30,22 @@ export namespace Handlers {
 
   const Shell: E.Handler<E.Shell> = {
     describe(e) {
-      return ``;
+      return `invoke: '${e.command}'${
+        e.cwd ? ` in directory ${ellipsis(e.cwd)}` : ``
+      }`;
     },
     async apply(e) {
-      return {};
+      if (!e?.command) return;
+      return new Promise((resolve, reject) => {
+        exec(
+          e.command,
+          { cwd: e?.cwd ? e.cwd : process.cwd() },
+          (err, stdout, stderr) => {
+            if (err || stderr) return reject({ error: err || stderr });
+            resolve(stdout);
+          }
+        );
+      });
     },
   };
 

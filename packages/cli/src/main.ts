@@ -47,7 +47,7 @@ yargs(process.argv.slice(2))
         resources.forEach(({ resource }) => {
           const { cyan, gray } = chalk;
           console.log(
-            `${cyan(resource.type)} ${gray("-")} ${resource.description}`
+            `${cyan(resource.name)} ${gray("-")} ${resource.name}`
           );
         });
       }

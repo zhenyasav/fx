@@ -17,7 +17,7 @@ export function getQuestion(shape: z.ZodTypeAny): inquirer.Question {
   const typesToQnType: { [k: string]: inquirer.Question["type"] } = {
     ZodString: "input",
     ZodNumber: "input",
-    ZodBoolean: "confirm"
+    ZodBoolean: "confirm",
   };
   let next = shape;
   while (next && next?._def) {
@@ -26,9 +26,10 @@ export function getQuestion(shape: z.ZodTypeAny): inquirer.Question {
       defaultValue = dv?.();
     }
     if (description) {
-      message = description[description.length - 1] == ":"
-        ? description
-        : description + ":";
+      message =
+        description[description.length - 1] == ":"
+          ? description
+          : description + ":";
     }
     if (typeName) {
       type = typesToQnType[typeName] ?? typeName;
@@ -59,17 +60,16 @@ function noUndefined<T extends object>(o: T) {
   if (!o) return o;
   const r: T = {} as any;
   for (let i in o) {
-    if (typeof o[i] !== 'undefined') {
+    if (typeof o[i] !== "undefined") {
       r[i] = o[i];
     }
   }
   return r;
 }
 
-export async function fulfillWithQuestions<
+export async function inquire<
   T extends z.ZodObject<z.ZodRawShape> = z.AnyZodObject
 >(obj: T, defaults?: z.infer<T>): Promise<z.infer<T>> {
   const questions = getQuestions(obj._def.shape());
   return noUndefined((await inquirer.prompt(questions, defaults)) ?? {});
 }
-

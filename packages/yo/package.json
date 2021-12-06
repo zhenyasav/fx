@@ -1,5 +1,5 @@
 {
-  "name": "@fx/plugin",
+  "name": "@fx/yo",
   "version": "1.0.0",
   "type": "module",
   "private": true,
@@ -11,12 +11,14 @@
     "clean": "rm -rf build"
   },
   "devDependencies": {
-    "@nice/file": "workspace:^1.0.0",
+    "@fx/templates": "workspace:^1.0.0",
     "esbuild": "^0.14.0",
     "glob": "^7.2.0"
   },
   "dependencies": {
-    "@fx/zod-inquirer": "workspace:^1.0.0",
+    "@fx/plugin": "workspace:^1.0.0",
+    "@types/yeoman-environment": "^2.10.5",
+    "yeoman-environment": "^3.8.1",
     "zod": "^3.11.6"
   }
 }
