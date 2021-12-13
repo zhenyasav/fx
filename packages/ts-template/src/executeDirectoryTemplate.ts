@@ -2,16 +2,16 @@ import _ from "lodash";
 import * as path from "path";
 import { File } from "@nice/file";
 import {
-  template,
+  executeFileTemplate,
   TemplateContext,
   TemplatingResult,
   isTemplate,
-} from "./Template.js";
+} from "./executeFileTemplate";
 import readDir from "recursive-readdir";
 
 export type DirectoryTemplateOptions = Omit<TemplateContext, "relativeTo">;
 
-export async function directory<TInput>(
+export async function executeDirectoryTemplate<TInput>(
   input: TemplateContext<TInput>
 ): Promise<TemplatingResult> {
   const { templatePath, outputDir } = input;
@@ -20,7 +20,7 @@ export async function directory<TInput>(
   const regularFiles = allFiles.filter((file) => !isTemplate(file));
   const templateOutputs = await Promise.all(
     templateFiles?.map((t) =>
-      template({
+      executeFileTemplate({
         outputDir,
         input,
         templatePath: t,

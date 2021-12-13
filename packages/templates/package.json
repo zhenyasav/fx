@@ -5,7 +5,6 @@
   "private": true,
   "main": "build/index.js",
   "scripts": {
-    "build:es": "node scripts/build.js && tsc --emitDeclarationOnly",
     "build:dts": "tsc --emitDeclarationOnly",
     "build": "tsc --build",
     "clean": "rm -rf build"
@@ -15,8 +14,6 @@
     "@fx/util": "workspace:^1.0.0",
     "@fx/zod-inquirer": "workspace:^1.0.0",
     "@nice/ts-template": "workspace:^1.0.0",
-    "esbuild": "^0.14.0",
-    "glob": "^7.2.0",
     "zod": "^3.11.6"
   },
   "dependencies": {

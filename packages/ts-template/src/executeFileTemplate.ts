@@ -54,7 +54,7 @@ export type TemplateFunction<TInput = void> = Functor<
   TemplateFunctionResult
 >;
 
-export async function template<TInput>(
+export async function executeFileTemplate<TInput>(
   context: TemplateContext<TInput>
 ): Promise<TemplatingResult> {
   const { templatePath, relativeTo, outputDir } = context;

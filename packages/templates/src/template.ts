@@ -1,6 +1,5 @@
-// import * as path from "path";
 import { z } from "zod";
-import { DirectoryTemplate } from "@nice/ts-template";
+import { directoryTemplate } from "@nice/ts-template";
 import { method, Resource } from "@fx/plugin";
 
 export type TemplateResourceOptions<
@@ -29,18 +28,16 @@ export function template<
       create: method({
         input: input ?? templateInput,
         async execute({ input }) {
-          const template = new DirectoryTemplate<typeof input>({
-            path: templateDir,
-          });
           const od =
             typeof outputDir == "string"
               ? outputDir
               : typeof outputDir == "function"
               ? outputDir(input)
               : (input.outputDir as string);
-          const files = await template.generate({
+          const files = await directoryTemplate({
+            templatePath: templateDir,
             input: { ...input, outputDir: od },
-            outputDirectory: od,
+            outputDir: od,
           });
           return {
             description: `create '${name}'`,
