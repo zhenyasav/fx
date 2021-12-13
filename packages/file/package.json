@@ -4,14 +4,11 @@
   "type": "module",
   "main": "build/index.js",
   "scripts": {
-    "build:es": "node scripts/build.js && tsc --emitDeclarationOnly",
     "build:dts": "tsc --emitDeclarationOnly",
     "build": "tsc --build",
     "clean": "rm -rf build"
   },
   "devDependencies": {
-    "esbuild": "^0.14.0",
-    "glob": "^7.2.0",
-    "mkdirp": "^1.0.4"
+    "typescript": "^4.5.2"
   }
 }
