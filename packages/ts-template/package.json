@@ -2,12 +2,7 @@
   "name": "@nice/ts-template",
   "version": "1.0.0",
   "main": "build/index.js",
-  "publishConfig": {
-    "main": "build/index.ts",
-    "typings": "build/index.d.ts"
-  },
   "scripts": {
-    "build:es": "node scripts/build.js && tsc --declaration --emitDeclarationOnly",
     "build": "tsc --build",
     "build:dts": "tsc --emitDeclarationOnly",
     "clean": "rm -rf build"
@@ -15,16 +10,15 @@
   "type": "module",
   "devDependencies": {
     "@nice/file": "workspace:^1.0.0",
-    "@types/lodash": "^4.14.177",
-    "@types/mkdirp": "^1.0.2",
+    "@types/lodash.flatten": "^4.4.6",
+    "@types/lodash.zip": "^4.2.6",
     "@types/recursive-readdir": "^2.2.0",
-    "esbuild": "^0.14.0",
-    "glob": "^7.2.0",
-    "lodash": "^4.17.21",
     "lodash.flatten": "^4.4.0",
     "lodash.zip": "^4.2.0",
-    "mkdirp": "^1.0.4",
     "recursive-readdir": "^2.2.2",
     "typescript": "^4.5.2"
+  },
+  "dependencies": {
+    "esbuild": "^0.14.0"
   }
 }

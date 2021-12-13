@@ -141,28 +141,23 @@ importers:
   packages/ts-template:
     specifiers:
       '@nice/file': workspace:^1.0.0
-      '@types/lodash': ^4.14.177
-      '@types/mkdirp': ^1.0.2
+      '@types/lodash.flatten': ^4.4.6
+      '@types/lodash.zip': ^4.2.6
       '@types/recursive-readdir': ^2.2.0
       esbuild: ^0.14.0
-      glob: ^7.2.0
-      lodash: ^4.17.21
       lodash.flatten: ^4.4.0
       lodash.zip: ^4.2.0
-      mkdirp: ^1.0.4
       recursive-readdir: ^2.2.2
       typescript: ^4.5.2
+    dependencies:
+      esbuild: 0.14.0
     devDependencies:
       '@nice/file': link:../file
-      '@types/lodash': 4.14.177
-      '@types/mkdirp': 1.0.2
+      '@types/lodash.flatten': 4.4.6
+      '@types/lodash.zip': 4.2.6
       '@types/recursive-readdir': 2.2.0
-      esbuild: 0.14.0
-      glob: 7.2.0
-      lodash: 4.17.21
       lodash.flatten: 4.4.0
       lodash.zip: 4.2.0
-      mkdirp: 1.0.4
       recursive-readdir: 2.2.2
       typescript: 4.5.2
 
@@ -440,6 +435,18 @@ packages:
     resolution: {integrity: sha512-qcUXuemtEu+E5wZSJHNxUXeCZhAfXKQ41D+duX+VYPde7xyEVZci+/oXKJL13tnRs9lR2pr4fod59GT6/X1/yQ==}
     dev: false
 
+  /@types/lodash.flatten/4.4.6:
+    resolution: {integrity: sha512-omCBl4M8EJSmf2DZqh4/zwjgXQpzC7YO/PXTcG8rI9r7xun8CohrHeNx8HZRkqWc61uJfIaZop9MwJEXPVssHw==}
+    dependencies:
+      '@types/lodash': 4.14.177
+    dev: true
+
+  /@types/lodash.zip/4.2.6:
+    resolution: {integrity: sha512-mKAcnkyFaihVR1oK83ZBQqSSQ1hpAY+uD5QaDkf//xtvr4NlNwqJEDg/oQoqLJg5YdSEwVWlQq0Aq4oLvD3zuw==}
+    dependencies:
+      '@types/lodash': 4.14.177
+    dev: true
+
   /@types/lodash/4.14.177:
     resolution: {integrity: sha512-0fDwydE2clKe9MNfvXHBHF9WEahRuj+msTuQqOmAApNORFvhMYZKNGGJdCzuhheVjMps/ti0Ak/iJPACMaevvw==}
     dev: true
@@ -465,12 +472,6 @@ packages:
   /@types/minimatch/3.0.5:
     resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
     dev: false
-
-  /@types/mkdirp/1.0.2:
-    resolution: {integrity: sha512-o0K1tSO0Dx5X6xlU5F1D6625FawhC3dU3iqr25lluNv/+/QIVH8RLNEiVokgIZo+mz+87w/3Mkg/VvQS+J51fQ==}
-    dependencies:
-      '@types/node': 16.11.10
-    dev: true
 
   /@types/mocha/9.0.0:
     resolution: {integrity: sha512-scN0hAWyLVAvLR9AyW7HoFF5sJZglyBsbPuHO4fv7JRvfmPBMfp1ozWqOf/e4wwPNxezBZXRfWzMb6iFLgEVRA==}
@@ -1142,7 +1143,6 @@ packages:
     cpu: [arm64]
     os: [android]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-darwin-64/0.14.0:
@@ -1150,7 +1150,6 @@ packages:
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-darwin-arm64/0.14.0:
@@ -1158,7 +1157,6 @@ packages:
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-freebsd-64/0.14.0:
@@ -1166,7 +1164,6 @@ packages:
     cpu: [x64]
     os: [freebsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-freebsd-arm64/0.14.0:
@@ -1174,7 +1171,6 @@ packages:
     cpu: [arm64]
     os: [freebsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-32/0.14.0:
@@ -1182,7 +1178,6 @@ packages:
     cpu: [ia32]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-64/0.14.0:
@@ -1190,7 +1185,6 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-arm/0.14.0:
@@ -1198,7 +1192,6 @@ packages:
     cpu: [arm]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-arm64/0.14.0:
@@ -1206,7 +1199,6 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-mips64le/0.14.0:
@@ -1214,7 +1206,6 @@ packages:
     cpu: [mips64el]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-ppc64le/0.14.0:
@@ -1222,7 +1213,6 @@ packages:
     cpu: [ppc64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-netbsd-64/0.14.0:
@@ -1230,7 +1220,6 @@ packages:
     cpu: [x64]
     os: [netbsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-openbsd-64/0.14.0:
@@ -1238,7 +1227,6 @@ packages:
     cpu: [x64]
     os: [openbsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-sunos-64/0.14.0:
@@ -1246,7 +1234,6 @@ packages:
     cpu: [x64]
     os: [sunos]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-windows-32/0.14.0:
@@ -1254,7 +1241,6 @@ packages:
     cpu: [ia32]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-windows-64/0.14.0:
@@ -1262,7 +1248,6 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-windows-arm64/0.14.0:
@@ -1270,7 +1255,6 @@ packages:
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild/0.14.0:
@@ -1295,7 +1279,6 @@ packages:
       esbuild-windows-32: 0.14.0
       esbuild-windows-64: 0.14.0
       esbuild-windows-arm64: 0.14.0
-    dev: true
 
   /escalade/3.1.1:
     resolution: {integrity: sha512-k0er2gUkLf8O0zKJiAhmkTnJlTvINGv7ygDNPbeIsX/TJjGJZHuh9B2UxbsaEkmlEo9MfhrSzmhIlhRlI2GXnw==}

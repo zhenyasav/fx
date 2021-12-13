@@ -1,7 +1,6 @@
-import _ from "lodash";
+import flatten from "lodash.flatten";
+import zip from "lodash.zip";
 import * as os from "os";
-
-const { flatten, zip } = _;
 
 export function text(literals: TemplateStringsArray, ...args: any[]) {
   const force = (a: Function | any) => (typeof a == "function" ? a() : a);
