@@ -32,16 +32,17 @@ export type Method<TInput = any> = {
 export function method<T extends z.ZodObject<z.ZodRawShape>>({
   input,
   ...rest
-}: { input: T } & Omit<Method<z.infer<T>>, "input">): Method<z.infer<T>> {
+}: { input?: T } & Omit<Method<z.infer<T>>, "input">): Method<z.infer<T>> {
   return {
     input(defaults?: Partial<z.infer<T>>) {
-      return inquire(input, defaults);
+      return input ? inquire(input, defaults) : { ...defaults };
     },
     ...rest,
   };
 }
 
-export type MethodResult = void | {
-  description?: string;
-  effects: Effects.Effect[];
-};
+export type MethodResult<TEffect extends { type: string } = Effects.Effect> =
+  void | {
+    description?: string;
+    effects: TEffect[];
+  };

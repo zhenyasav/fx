@@ -109,6 +109,7 @@ importers:
     specifiers:
       '@fx/plugin': workspace:^1.0.0
       '@fx/templates': workspace:^1.0.0
+      '@fx/yo': workspace:^1.0.0
       '@nice/ts-template': workspace:^1.0.0
       esbuild: ^0.14.0
       glob: ^7.2.0
@@ -116,6 +117,7 @@ importers:
     dependencies:
       '@fx/plugin': link:../plugin
       '@fx/templates': link:../templates
+      '@fx/yo': link:../yo
       zod: 3.11.6
     devDependencies:
       '@nice/ts-template': link:../ts-template

@@ -6,6 +6,7 @@ import { teams } from "@fx/teams";
 import { z } from "zod";
 import { removeScope } from "@fx/util";
 
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

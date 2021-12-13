@@ -17,14 +17,17 @@ export namespace Effects {
     name: string;
   };
 
-  export type Effect = WriteFile | Shell | PackageScript;
+  export type Effect =
+    | WriteFile
+    | Shell
+    | PackageScript;
 
-  export type Handler<T extends Effects.Effect> = {
+  export type Handler<T extends { type: string } = Effects.Effect> = {
     describe(e: T): string;
     apply(e: T): Promise<any>;
   };
 
-  export type Handlers<TEffect extends Effect = Effect> = {
+  export type Handlers<TEffect extends { type: string } = Effect> = {
     [T in TEffect["type"]]: Handler<Extract<TEffect, { type: T }>>;
   };
 }
