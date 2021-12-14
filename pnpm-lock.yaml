@@ -82,11 +82,13 @@ importers:
 
   packages/file:
     specifiers:
+      '@types/mkdirp': ^1.0.2
       mkdirp: ^1.0.4
       typescript: ^4.5.2
     dependencies:
       mkdirp: 1.0.4
     devDependencies:
+      '@types/mkdirp': 1.0.2
       typescript: 4.5.2
 
   packages/plugin:
@@ -146,18 +148,22 @@ importers:
       '@nice/file': workspace:^1.0.0
       '@types/lodash.flatten': ^4.4.6
       '@types/lodash.zip': ^4.2.6
+      '@types/prettier': ^2.4.2
       '@types/recursive-readdir': ^2.2.0
       esbuild: ^0.14.0
       lodash.flatten: ^4.4.0
       lodash.zip: ^4.2.0
+      prettier: ^2.5.1
       recursive-readdir: ^2.2.2
       typescript: ^4.5.2
     dependencies:
       esbuild: 0.14.0
+      prettier: 2.5.1
     devDependencies:
       '@nice/file': link:../file
       '@types/lodash.flatten': 4.4.6
       '@types/lodash.zip': 4.2.6
+      '@types/prettier': 2.4.2
       '@types/recursive-readdir': 2.2.0
       lodash.flatten: 4.4.0
       lodash.zip: 4.2.0
@@ -476,6 +482,12 @@ packages:
     resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
     dev: false
 
+  /@types/mkdirp/1.0.2:
+    resolution: {integrity: sha512-o0K1tSO0Dx5X6xlU5F1D6625FawhC3dU3iqr25lluNv/+/QIVH8RLNEiVokgIZo+mz+87w/3Mkg/VvQS+J51fQ==}
+    dependencies:
+      '@types/node': 16.11.11
+    dev: true
+
   /@types/mocha/9.0.0:
     resolution: {integrity: sha512-scN0hAWyLVAvLR9AyW7HoFF5sJZglyBsbPuHO4fv7JRvfmPBMfp1ozWqOf/e4wwPNxezBZXRfWzMb6iFLgEVRA==}
     dev: true
@@ -494,6 +506,10 @@ packages:
 
   /@types/node/16.11.11:
     resolution: {integrity: sha512-KB0sixD67CeecHC33MYn+eYARkqTheIRNuu97y2XMjR7Wu3XibO1vaY6VBV6O/a89SPI81cEUIYT87UqUWlZNw==}
+
+  /@types/prettier/2.4.2:
+    resolution: {integrity: sha512-ekoj4qOQYp7CvjX8ZDBgN86w3MqQhLE1hczEJbEIjgFEumDy+na/4AJAbLXfgEWFNB2pKadM5rPFtuSGMWK7xA==}
+    dev: true
 
   /@types/recursive-readdir/2.2.0:
     resolution: {integrity: sha512-HGk753KRu2N4mWduovY4BLjYq4jTOL29gV2OfGdGxHcPSWGFkC5RRIdk+VTs5XmYd7MVAD+JwKrcb5+5Y7FOCg==}
@@ -2406,6 +2422,12 @@ packages:
       find-yarn-workspace-root2: 1.2.16
       path-exists: 4.0.0
       which-pm: 2.0.0
+    dev: false
+
+  /prettier/2.5.1:
+    resolution: {integrity: sha512-vBZcPRUR5MZJwoyi3ZoyQlc1rXeEck8KgeC9AwwOn+exuxLxq5toTRDTSaVrXHxelDMHy9zlicw8u66yxoSUFg==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
     dev: false
 
   /pretty-bytes/5.6.0:

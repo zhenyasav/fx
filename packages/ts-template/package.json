@@ -1,6 +1,6 @@
 {
   "name": "@nice/ts-template",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "build/index.js",
   "scripts": {
     "build": "tsc --build",
@@ -12,6 +12,7 @@
     "@nice/file": "workspace:^1.0.0",
     "@types/lodash.flatten": "^4.4.6",
     "@types/lodash.zip": "^4.2.6",
+    "@types/prettier": "^2.4.2",
     "@types/recursive-readdir": "^2.2.0",
     "lodash.flatten": "^4.4.0",
     "lodash.zip": "^4.2.0",
@@ -19,6 +20,7 @@
     "typescript": "^4.5.2"
   },
   "dependencies": {
-    "esbuild": "^0.14.0"
+    "esbuild": "^0.14.0",
+    "prettier": "^2.5.1"
   }
 }
