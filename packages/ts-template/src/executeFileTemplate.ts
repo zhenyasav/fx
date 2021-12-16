@@ -34,11 +34,11 @@ async function loadTemplate<I = any>(p: string): Promise<TemplateFunction<I>> {
   return typeof fn == "function" ? fn : null;
 }
 
-export type TemplateContext<TInput = void> = {
+export type TemplateContext<TInput = {}> = {
   templatePath: string;
   relativeTo?: string;
   outputDir: string;
-  input?: TInput;
+  input: TInput;
 };
 
 export type TemplatingResult = File[];
@@ -54,17 +54,24 @@ export type TemplateFunction<TInput = void> = Functor<
   TemplateFunctionResult
 >;
 
+export type ExecuteFileTemplateOptions<TInput = {}> = Omit<
+  TemplateContext<TInput>,
+  "input"
+> & {
+  input?: TInput;
+};
+
 export async function executeFileTemplate<TInput>(
-  context: TemplateContext<TInput>
+  options: ExecuteFileTemplateOptions<TInput>
 ): Promise<TemplatingResult> {
-  const { templatePath, relativeTo, outputDir } = context;
+  const { templatePath, relativeTo, outputDir } = options;
   const templateFullPath = relativeTo
     ? path.resolve(relativeTo, templatePath)
     : templatePath;
   const templateFunction = await loadTemplate(templateFullPath);
   if (!templateFunction) return [];
   try {
-    const result = await templateFunction(context);
+    const result = await templateFunction({ input: {}, ...options });
     return typeof result == "string"
       ? [
           new File({
