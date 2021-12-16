@@ -5,7 +5,7 @@ import { promises as fs } from "fs";
 
 export const TEMPLATE_REGEX = /(.*)\.t\.ts$/;
 
-export function isTemplate(file: string): boolean {
+export function isTemplateFile(file: string): boolean {
   return TEMPLATE_REGEX.test(file);
 }
 
@@ -16,7 +16,7 @@ export function getOutputNameFromTemplateName(s: string): string {
 }
 
 async function loadTemplate<I = any>(p: string): Promise<TemplateFunction<I>> {
-  if (!isTemplate(p)) throw new Error("only t.ts templates are supported");
+  if (!isTemplateFile(p)) throw new Error("only t.ts templates are supported");
   const outpath = p.replace(/\.t\.ts$/, ".t.js");
   await esbuild.build({
     entryPoints: [p],
@@ -34,12 +34,20 @@ async function loadTemplate<I = any>(p: string): Promise<TemplateFunction<I>> {
   return typeof fn == "function" ? fn : null;
 }
 
-export type TemplateContext<TInput = {}> = {
+export type ExecuteFileTemplateOptions<TInput = {}> = {
   templatePath: string;
-  relativeTo?: string;
-  outputDir: string;
-  input: TInput;
+  templateRootDir?: string;
+  outputRootDir: string;
+  input?: TInput;
 };
+
+export type TemplateContext<TInput = {}> =
+  ExecuteFileTemplateOptions<TInput> & {
+    templateDir: string;
+    outputDir: string;
+    outputPath: string;
+    input: TInput;
+  };
 
 export type TemplatingResult = File[];
 
@@ -54,36 +62,40 @@ export type TemplateFunction<TInput = void> = Functor<
   TemplateFunctionResult
 >;
 
-export type ExecuteFileTemplateOptions<TInput = {}> = Omit<
-  TemplateContext<TInput>,
-  "input"
-> & {
-  input?: TInput;
-};
-
 export async function executeFileTemplate<TInput>(
   options: ExecuteFileTemplateOptions<TInput>
 ): Promise<TemplatingResult> {
-  const { templatePath, relativeTo, outputDir } = options;
-  const templateFullPath = relativeTo
-    ? path.resolve(relativeTo, templatePath)
+  const { templatePath, templateRootDir, outputRootDir } = options;
+  const templateFullPath = templateRootDir
+    ? path.resolve(templateRootDir, templatePath)
     : templatePath;
   const templateFunction = await loadTemplate(templateFullPath);
   if (!templateFunction) return [];
+  const nominalOutputPath = path.join(
+    outputRootDir,
+    templateRootDir
+      ? getOutputNameFromTemplateName(templatePath).slice(
+          templateRootDir.length
+        )
+      : getOutputNameFromTemplateName(templatePath)
+  );
   try {
-    const result = await templateFunction({ input: {}, ...options });
+    const outputDir = path.dirname(nominalOutputPath);
+    const result = await templateFunction({
+      input: {},
+      ...options,
+      outputDir,
+      outputPath: nominalOutputPath,
+      templateDir: path.dirname(templateFullPath),
+      ...(templateRootDir
+        ? { templateRootDir }
+        : { templateRootDir: path.dirname(templateFullPath) }),
+    });
     return typeof result == "string"
       ? [
           new File({
             content: result,
-            path: path.join(
-              outputDir,
-              relativeTo
-                ? getOutputNameFromTemplateName(templatePath).slice(
-                    relativeTo.length
-                  )
-                : getOutputNameFromTemplateName(templatePath)
-            ),
+            path: nominalOutputPath,
           }),
         ]
       : result;

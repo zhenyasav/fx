@@ -5,26 +5,26 @@ import {
   executeFileTemplate,
   TemplateContext,
   TemplatingResult,
-  isTemplate,
-} from "./executeFileTemplate";
+  isTemplateFile,
+} from "./executeFileTemplate.js";
 import readDir from "recursive-readdir";
 
 export type DirectoryTemplateOptions = Omit<TemplateContext, "relativeTo">;
 
 export async function executeDirectoryTemplate<TInput>(
-  input: TemplateContext<TInput>
+  context: TemplateContext<TInput>
 ): Promise<TemplatingResult> {
-  const { templatePath, outputDir } = input;
+  const { templatePath, outputDir } = context;
   const allFiles = await readDir(templatePath);
-  const templateFiles = allFiles.filter(isTemplate);
-  const regularFiles = allFiles.filter((file) => !isTemplate(file));
+  const templateFiles = allFiles.filter(isTemplateFile);
+  const regularFiles = allFiles.filter((file) => !isTemplateFile(file));
   const templateOutputs = await Promise.all(
     templateFiles?.map((t) =>
       executeFileTemplate({
-        outputDir,
-        input,
-        templatePath: t,
-        relativeTo: templatePath,
+        templatePath: path.relative(t, templatePath),
+        templateRootDir: templatePath,
+        outputRootDir: outputDir,
+        input: context,
       })
     )
   );
