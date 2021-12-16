@@ -1,11 +1,11 @@
 {
   "name": "@nice/ts-template",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "build/index.js",
   "scripts": {
     "build": "tsc --build",
     "build:dts": "tsc --emitDeclarationOnly",
-    "clean": "rm -rf build"
+    "clean": "rm -rf build && rm tsconfig.tsbuildinfo"
   },
   "type": "module",
   "devDependencies": {
