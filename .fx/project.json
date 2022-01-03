@@ -143,6 +143,14 @@
         "name": "foo",
         "flattenScope": true
       }
+    },
+    {
+      "type": "package",
+      "id": "f0eb",
+      "input": {
+        "name": "foobar",
+        "flattenScope": true
+      }
     }
   ]
 }

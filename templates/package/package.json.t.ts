@@ -8,12 +8,9 @@ const template: TemplateFunction<Input> = ({ input }: TemplateContext<Input>) =>
 {
   "name": "${input?.name}",
   "version": "0.0.1",
-  "main": "src/index.ts",
+  "main": "build/index.ts",
   "typings": "build/index.d.ts",
   "types": "build/index.d.ts",
-  "publishConfig": {
-    "main": "build/index.js"
-  },
   "scripts": {
     "clean": "rm -rf build && tsc --build --clean",
     "build": "tsc"
