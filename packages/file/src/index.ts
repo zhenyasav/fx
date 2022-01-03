@@ -1,3 +1,4 @@
 // package @nice/file
-export * from "./File.js";
-export * from "./utils.js";
+export * from "./File";
+export * from "./utils";
+export * from "./JSONFile";

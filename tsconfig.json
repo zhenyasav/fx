@@ -2,23 +2,32 @@
   "compilerOptions": {
     "strict": true,
     "module": "esnext",
-    "target": "esnext",
-    "lib": ["DOM", "ESNext"],
+    "target": "es5",
+    "lib": ["DOM", "es6"],
     "jsx": "react",
-    "esModuleInterop": true,
-    "incremental": true,
-    "skipLibCheck": true,
     "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "resolveJsonModule": true,
     "noUnusedLocals": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "composite": true,
+    "incremental": true,
     "declaration": true,
-    "sourceMap": true,
-    "isolatedModules": true
+    "sourceMap": true
+  },
+  "ts-node": {
+    // these options are overrides used only by ts-node
+    // same as our --compilerOptions flag and our TS_NODE_COMPILER_OPTIONS environment variable
+    "compilerOptions": {
+      "module": "commonjs"
+    }
   },
   "include": ["./**/*.ts", ".fx.ts"],
-  "references": [{ "path": "packages/cli" }, { "path": "packages/util" }, { "path": "packages/core" }]
+  "references": [
+    { "path": "packages/cli" },
+    { "path": "packages/core" }
+  ]
 }

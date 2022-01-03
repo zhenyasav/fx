@@ -1,18 +1,13 @@
 {
   "name": "@fx/zod-inquirer",
   "version": "1.0.0",
-  "type": "module",
-  "private": true,
-  "main": "build/index.js",
-  "scripts": {
-    "build:es": "node scripts/build.js && tsc --emitDeclarationOnly",
-    "build:dts": "tsc --emitDeclarationOnly",
-    "build": "tsc --build",
-    "clean": "rm -rf build"
+  "main": "src/index.ts",
+  "publishConfig": {
+    "main": "build/index.js"
   },
-  "devDependencies": {
-    "esbuild": "^0.14.0",
-    "glob": "^7.2.0"
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf build && tsc --build --clean"
   },
   "dependencies": {
     "inquirer": "^8.2.0",

@@ -1,30 +1,33 @@
-import _ from "lodash";
+import flatten from "lodash.flatten";
 import * as path from "path";
 import { File } from "@nice/file";
 import {
   executeFileTemplate,
-  TemplateContext,
   TemplatingResult,
   isTemplateFile,
-} from "./executeFileTemplate.js";
+} from "./executeFileTemplate";
 import readDir from "recursive-readdir";
 
-export type DirectoryTemplateOptions = Omit<TemplateContext, "relativeTo">;
+export type ExecuteDirectoryTemplateOptions<TInput> = {
+  templateDirectory: string;
+  outputDirectory: string;
+  input?: Partial<TInput>;
+};
 
 export async function executeDirectoryTemplate<TInput>(
-  context: TemplateContext<TInput>
+  options: ExecuteDirectoryTemplateOptions<TInput>
 ): Promise<TemplatingResult> {
-  const { templatePath, outputDir } = context;
-  const allFiles = await readDir(templatePath);
+  const { templateDirectory, outputDirectory, input } = options;
+  const allFiles = await readDir(templateDirectory);
   const templateFiles = allFiles.filter(isTemplateFile);
   const regularFiles = allFiles.filter((file) => !isTemplateFile(file));
   const templateOutputs = await Promise.all(
     templateFiles?.map((t) =>
       executeFileTemplate({
-        templatePath: path.relative(t, templatePath),
-        templateRootDir: templatePath,
-        outputRootDir: outputDir,
-        input: context,
+        templateFile: path.relative(t, templateDirectory),
+        templateRelativeTo: templateDirectory,
+        outputDirectory,
+        input,
       })
     )
   );
@@ -32,10 +35,10 @@ export async function executeDirectoryTemplate<TInput>(
     ...regularFiles?.map(
       (r) =>
         new File({
-          path: path.join(outputDir, r.slice(templatePath.length)),
-          sourcePath: r,
+          path: path.join(outputDirectory, r.slice(templateDirectory.length)),
+          copyFrom: r,
         })
     ),
-    ..._.flatten(templateOutputs),
+    ...flatten(templateOutputs),
   ];
 }

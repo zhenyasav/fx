@@ -11,7 +11,6 @@
   },
   "devDependencies": {
     "@fx/plugin": "workspace:^1.0.0",
-    "@fx/util": "workspace:^1.0.0",
     "@fx/zod-inquirer": "workspace:^1.0.0",
     "@nice/ts-template": "workspace:^1.0.0",
     "zod": "^3.11.6"

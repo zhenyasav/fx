@@ -1,6 +1,6 @@
 import { File } from "@nice/file";
 
-export namespace Effects {
+export namespace Effect {
   export type WriteFile = {
     type: "write-file";
     file: File;
@@ -15,19 +15,17 @@ export namespace Effects {
   export type PackageScript = {
     type: "package-script";
     name: string;
+    args?: string[];
   };
 
-  export type Effect =
-    | WriteFile
-    | Shell
-    | PackageScript;
-
-  export type Handler<T extends { type: string } = Effects.Effect> = {
-    describe(e: T): string;
-    apply(e: T): Promise<any>;
-  };
-
-  export type Handlers<TEffect extends { type: string } = Effect> = {
-    [T in TEffect["type"]]: Handler<Extract<TEffect, { type: T }>>;
-  };
+  export type Any = WriteFile | Shell | PackageScript;
 }
+
+export type Effector<T extends { type: string } = Effect.Any> = {
+  describe(e: T): string;
+  apply(e: T): Promise<any>;
+};
+
+export type EffectorSet<TEffect extends { type: string } = Effect.Any> = {
+  [T in TEffect["type"]]: Effector<Extract<TEffect, { type: T }>>;
+};

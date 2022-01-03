@@ -1,11 +1,13 @@
-import { Effects } from "./effects.js";
 import { z } from "zod";
 import { inquire } from "@fx/zod-inquirer";
+import { Effect } from "./effects";
 
 export type MaybePromise<T> = T | Promise<T>;
-function isPromise<T>(p: any): p is Promise<T> {
+
+export function isPromise<T>(p: any): p is Promise<T> {
   return typeof p?.then == "function";
 }
+
 export function promise<T>(p: MaybePromise<T>): Promise<T> {
   return isPromise(p) ? p : Promise.resolve(p);
 }
@@ -25,24 +27,37 @@ export type Resource = {
 };
 
 export type Method<TInput = any> = {
-  input(defaults?: Partial<TInput>): MaybePromise<TInput>;
+  getInput(defaults?: Partial<TInput>): MaybePromise<TInput>;
   execute(context: { input: TInput }): MaybePromise<MethodResult>;
 };
 
-export function method<T extends z.ZodObject<z.ZodRawShape>>({
+export function method<T extends z.ZodRawShape>({
   input,
   ...rest
-}: { input?: T } & Omit<Method<z.infer<T>>, "input">): Method<z.infer<T>> {
-  return {
-    input(defaults?: Partial<z.infer<T>>) {
-      return input ? inquire(input, defaults) : { ...defaults };
-    },
-    ...rest,
-  };
+}: { input?: T } & Pick<
+  Method<{ [K in keyof T]: z.infer<T[K]> }>,
+  "execute"
+>): Method<{ [K in keyof T]: z.infer<T[K]> }> {
+  return input
+    ? {
+        getInput(defaults?: Partial<{ [K in keyof T]: z.infer<T[K]> }>) {
+          return inquire(input, defaults);
+        },
+        ...rest,
+      }
+    : {
+        getInput(defaults: { [K in keyof T]: z.infer<T[K]> }) {
+          return defaults;
+        },
+        ...rest,
+      };
 }
 
-export type MethodResult<TEffect extends { type: string } = Effects.Effect> =
-  void | {
-    description?: string;
-    effects: TEffect[];
-  };
+export type MethodResult<
+  TEffect extends { type: string } = Effect.Any,
+  TValue = any
+> = void | {
+  description?: string;
+  value?: TValue;
+  effects: TEffect[];
+};

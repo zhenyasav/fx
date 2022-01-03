@@ -1,11 +1,11 @@
 import { promises as fs } from "fs";
 import * as path from "path";
 import mkdirp from "mkdirp";
-import { relative, fileExists, ellipsis, kib } from "./utils.js"
+import { relative, fileExists, ellipsis, kib } from "./utils"
 
 export type FileOptions<D> = {
   path: string | string[];
-  sourcePath?: string | string[];
+  copyFrom?: string | string[];
   content?: string;
   parsed?: D;
   overwrite?: boolean;
@@ -27,15 +27,15 @@ export class File<D = any> {
       path: p,
       content,
       parsed,
-      sourcePath,
+      copyFrom,
       overwrite,
     } = { overwrite: true, ...options };
     this.path = Array.isArray(p) ? path.join(...p) : p;
     if (!this.path) throw new Error("File must have an output path");
-    if (sourcePath) {
-      this.sourcePath = Array.isArray(sourcePath)
-        ? path.join(...sourcePath)
-        : sourcePath ?? "";
+    if (copyFrom) {
+      this.sourcePath = Array.isArray(copyFrom)
+        ? path.join(...copyFrom)
+        : copyFrom ?? "";
     }
     if (content) this.content = content;
     if (parsed) this.parsed = parsed;
@@ -82,11 +82,11 @@ export class File<D = any> {
     console.info("loaded", this.shortDescription());
     return this;
   }
-  async parse(content: string, loadOptions?: any): Promise<D> {
+  protected async parse(content: string, loadOptions?: any): Promise<D> {
     return content as any;
   }
-  async serialize(): Promise<string> {
-    return this.content;
+  protected async serialize(): Promise<string> {
+    return Object.toString.call(this.parsed) ?? this.content;
   }
   shortDescription() {
     return `${ellipsis(relative(this.dir))}/${this.name}${

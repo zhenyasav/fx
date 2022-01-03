@@ -1,4 +1,4 @@
 export * from "@nice/file";
-export * from "./executeFileTemplate.js";
-export * from "./executeDirectoryTemplate.js";
-export * from "./templateLiterals.js";
+export * from "./executeFileTemplate";
+export * from "./executeDirectoryTemplate";
+export * from "./templateLiterals";

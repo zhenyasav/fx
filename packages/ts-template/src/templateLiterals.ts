@@ -10,13 +10,13 @@ const trim = (a: string) => a.trim();
 const newline = (a: string) =>
   a[a.length - 1] == os.EOL[os.EOL.length - 1] ? a : a + os.EOL;
 
-export function textRaw(literals: TemplateStringsArray, ...args: any[]) {
+export function text_untrimmed(literals: TemplateStringsArray, ...args: any[]) {
   const cleanArgs = args.map((a) => squelch(join(squelch(force(a)))));
   return newline(trim(flatten(zip(literals, cleanArgs)).join("")));
 }
 
 export function text(literals: TemplateStringsArray, ...args: any[]) {
-  return trim(newline(textRaw(literals, ...args)));
+  return trim(newline(text_untrimmed(literals, ...args)));
 }
 
 export function ts(literals: TemplateStringsArray, ...args: any[]) {

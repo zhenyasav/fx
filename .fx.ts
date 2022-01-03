@@ -1,14 +1,8 @@
 import path from "path";
-import { fileURLToPath } from "url";
-import { Config } from "@fx/core";
+import { Config, removeScope } from "@fx/core";
 import { template } from "@fx/templates";
 import { teams } from "@fx/teams";
 import { z } from "zod";
-import { removeScope } from "@fx/util";
-
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const config: Config = {
   plugins: [

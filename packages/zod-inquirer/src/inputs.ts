@@ -67,9 +67,10 @@ function noUndefined<T extends object>(o: T) {
   return r;
 }
 
-export async function inquire<
-  T extends z.ZodObject<z.ZodRawShape> = z.AnyZodObject
->(obj: T, defaults?: z.infer<T>): Promise<z.infer<T>> {
-  const questions = getQuestions(obj._def.shape());
+export async function inquire<T extends z.ZodRawShape = z.ZodRawShape>(
+  shape: T,
+  defaults?: { [K in keyof T]?: z.infer<T[K]> }
+): Promise<{ [K in keyof T]: z.infer<T[K]> }> {
+  const questions = getQuestions(shape);
   return noUndefined((await inquirer.prompt(questions, defaults)) ?? {});
 }

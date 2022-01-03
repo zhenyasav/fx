@@ -1,7 +1,7 @@
 import * as path from "path";
-import { File } from "@nice/file";
-import * as esbuild from "esbuild";
 import { promises as fs } from "fs";
+import * as esbuild from "esbuild";
+import { File } from "@nice/file";
 
 export const TEMPLATE_REGEX = /(.*)\.t\.ts$/;
 
@@ -35,18 +35,16 @@ async function loadTemplate<I = any>(p: string): Promise<TemplateFunction<I>> {
 }
 
 export type ExecuteFileTemplateOptions<TInput = {}> = {
-  templatePath: string;
-  templateRootDir?: string;
-  outputRootDir: string;
+  templateFile: string;
+  templateRelativeTo?: string;
+  outputDirectory: string;
   input?: TInput;
 };
 
 export type TemplateContext<TInput = {}> =
   ExecuteFileTemplateOptions<TInput> & {
-    templateDir: string;
-    outputDir: string;
-    outputPath: string;
     input: TInput;
+    defaultOutputFile: string;
   };
 
 export type TemplatingResult = File[];
@@ -65,7 +63,11 @@ export type TemplateFunction<TInput = void> = Functor<
 export async function executeFileTemplate<TInput>(
   options: ExecuteFileTemplateOptions<TInput>
 ): Promise<TemplatingResult> {
-  const { templatePath, templateRootDir, outputRootDir } = options;
+  const {
+    templateFile: templatePath,
+    templateRelativeTo: templateRootDir,
+    outputDirectory: outputRootDir,
+  } = options;
   const templateFullPath = templateRootDir
     ? path.resolve(templateRootDir, templatePath)
     : templatePath;
@@ -80,16 +82,13 @@ export async function executeFileTemplate<TInput>(
       : getOutputNameFromTemplateName(templatePath)
   );
   try {
-    const outputDir = path.dirname(nominalOutputPath);
     const result = await templateFunction({
       input: {},
       ...options,
-      outputDir,
-      outputPath: nominalOutputPath,
-      templateDir: path.dirname(templateFullPath),
+      defaultOutputFile: nominalOutputPath,
       ...(templateRootDir
-        ? { templateRootDir }
-        : { templateRootDir: path.dirname(templateFullPath) }),
+        ? { templateRelativeTo: templateRootDir }
+        : { templateRelativeTo: path.dirname(templateFullPath) }),
     });
     return typeof result == "string"
       ? [

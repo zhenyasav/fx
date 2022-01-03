@@ -1,4 +1,4 @@
-import { timer } from "./timer.js";
+import { timer } from "./timer";
 
 export async function safelyTimed(fn: () => Promise<any>): Promise<any> {
     const t = timer();

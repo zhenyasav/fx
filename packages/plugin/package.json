@@ -1,21 +1,16 @@
 {
   "name": "@fx/plugin",
   "version": "1.0.0",
-  "type": "module",
-  "private": true,
-  "main": "build/index.js",
-  "scripts": {
-    "build:es": "node scripts/build.js && tsc --emitDeclarationOnly",
-    "build:dts": "tsc --emitDeclarationOnly",
-    "build": "tsc --build",
-    "clean": "rm -rf build"
+  "main": "src/index.ts",
+  "publishConfig": {
+    "main": "build/index.js"
   },
-  "devDependencies": {
-    "@nice/file": "workspace:^1.0.0",
-    "esbuild": "^0.14.0",
-    "glob": "^7.2.0"
+  "scripts": {
+    "build": "tsc --build",
+    "clean": "rm -rf build && tsc --clean"
   },
   "dependencies": {
+    "@nice/file": "workspace:^1.0.0",
     "@fx/zod-inquirer": "workspace:^1.0.0",
     "zod": "^3.11.6"
   }

@@ -1,13 +1,14 @@
 {
   "name": "@nice/ts-template",
-  "version": "1.0.4",
-  "main": "build/index.js",
-  "scripts": {
-    "build": "tsc --build",
-    "build:dts": "tsc --emitDeclarationOnly",
-    "clean": "rm -rf build && rm tsconfig.tsbuildinfo"
+  "version": "1.0.6",
+  "main": "src/index.ts",
+  "publishConfig": {
+    "main": "build/index.js"
   },
-  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf build && tsc --build --clean"
+  },
   "devDependencies": {
     "@nice/file": "workspace:^1.0.0",
     "@types/lodash.flatten": "^4.4.6",
