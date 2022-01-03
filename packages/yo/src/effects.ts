@@ -1,4 +1,4 @@
-import { Effects } from "@fx/plugin";
+import { Effector, EffectorSet } from "@fx/plugin";
 import { exec, ExecOptions } from "child_process";
 
 export type RunYo = {
@@ -17,7 +17,7 @@ function promiseExec(cmd: string, options?: ExecOptions): Promise<string> {
   });
 }
 
-export const yo: Effects.Handler<RunYo> = {
+export const yo: Effector<RunYo> = {
   describe(y) {
     return `run yo ${y.generator}`;
   },
@@ -26,6 +26,6 @@ export const yo: Effects.Handler<RunYo> = {
   },
 };
 
-export const Handlers: Effects.Handlers<RunYo> = {
+export const Handlers: EffectorSet<RunYo> = {
   yo,
 };

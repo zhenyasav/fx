@@ -35,23 +35,23 @@ yargs(process.argv.slice(2))
     "search resources",
     (yargs) => yargs,
     async (args) => {
-      const resources = await fx.getAllResourceDefinitions();
-      if (!resources.size) {
+      const resources = (await fx.config())?.getAllResourceDefinitions();
+      if (!resources.length) {
         console.info(
           chalk.gray(
             "there are no resource definitions installed in this project"
           )
         );
       } else {
-        console.log(`${resources.size} resource types available:`);
-        resources.forEach(({ resource }) => {
+        console.log(`${resources.length} resource types available:`);
+        resources.forEach((resource) => {
           const { cyan, gray } = chalk;
           console.log(
-            `${cyan(resource.name)} ${gray("-")} ${resource.name}`
+            `${cyan(resource.name)} ${gray("-")} ${resource.description}`
           );
         });
       }
-      console.log('')
+      console.log("");
     }
   )
   .command(
@@ -75,5 +75,5 @@ yargs(process.argv.slice(2))
     }
   )
   .showHelpOnFail(false)
-  .demandCommand(1, 'need to specify a command')
-  .parse()
+  .demandCommand(1, "need to specify a command")
+  .parse();

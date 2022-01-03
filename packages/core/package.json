@@ -1,12 +1,9 @@
 {
   "name": "@fx/core",
   "version": "1.0.0",
-  "main": "src/index.ts",
-  "publishConfig": {
-    "main": "build/index.js"
-  },
+  "main": "build/index.js",
   "scripts": {
-    "clean": "rm -rf build && tsc --clean",
+    "clean": "rm -rf build && tsc --build --clean",
     "build": "tsc",
     "check": "tsc --noEmit",
     "test": "jest"

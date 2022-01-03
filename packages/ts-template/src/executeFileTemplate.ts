@@ -55,6 +55,7 @@ export type Functor<TInput = void, TOutput = void> = (
   input: TInput
 ) => Promise<TOutput>;
 
+// a template file .t.ts exports this as default:
 export type TemplateFunction<TInput = void> = Functor<
   TemplateContext<TInput>,
   TemplateFunctionResult

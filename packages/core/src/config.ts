@@ -15,6 +15,7 @@ export type LoadedConfig = Config & {
   project: Project;
   projectFile: ProjectFile;
   getResourceDefinitionByType(type: string): Resource | null;
+  getAllResourceDefinitions(): Resource[];
 };
 
 export type ConfigLoaderOptions =
@@ -57,6 +58,7 @@ export class ConfigLoader {
         : await this.cosmiconfig.search(cwd);
       if (file) {
         const { plugins } = file.config as Config;
+        const allResources: Resource[] = [];
         const resourcesByPlugin = new Map<Plugin, Resource[]>();
         const resourcesByType = new Map<
           string,
@@ -67,6 +69,7 @@ export class ConfigLoader {
           resourcesByPlugin.set(plugin, resources);
           for (let resource of resources) {
             resourcesByType.set(resource.name, { resource, plugin });
+            allResources.push(resource);
           }
         }
         const projectFile = new ProjectFile({
@@ -84,6 +87,9 @@ export class ConfigLoader {
           ...(file.config as Config),
           getResourceDefinitionByType(type: string) {
             return resourcesByType.get(type)?.resource ?? null;
+          },
+          getAllResourceDefinitions() {
+            return [...allResources];
           },
         };
         return loaded;

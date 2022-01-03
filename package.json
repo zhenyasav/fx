@@ -12,7 +12,6 @@
     "node": "=16",
     "pnpm": "=6"
   },
-  "type": "module",
   "devDependencies": {
     "@fx/core": "workspace:^1.0.0",
     "@fx/cli": "workspace:^1.0.0",

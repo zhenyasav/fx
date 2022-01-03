@@ -31,22 +31,22 @@ export type Method<TInput = any> = {
   execute(context: { input: TInput }): MaybePromise<MethodResult>;
 };
 
-export function method<T extends z.ZodRawShape>({
-  input,
+export function method<T extends z.ZodObject<z.ZodRawShape>>({
+  inputShape,
   ...rest
-}: { input?: T } & Pick<
-  Method<{ [K in keyof T]: z.infer<T[K]> }>,
+}: { inputShape?: T } & Pick<
+  Method<z.infer<T>>,
   "execute"
->): Method<{ [K in keyof T]: z.infer<T[K]> }> {
-  return input
+>): Method<z.infer<T>> {
+  return inputShape
     ? {
-        getInput(defaults?: Partial<{ [K in keyof T]: z.infer<T[K]> }>) {
-          return inquire(input, defaults);
+        getInput(defaults?: Partial<z.infer<T>>) {
+          return inquire(inputShape, defaults);
         },
         ...rest,
       }
     : {
-        getInput(defaults: { [K in keyof T]: z.infer<T[K]> }) {
+        getInput(defaults: z.infer<T>) {
           return defaults;
         },
         ...rest,

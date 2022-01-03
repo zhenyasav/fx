@@ -1,21 +1,15 @@
 {
   "name": "@fx/templates",
   "version": "1.0.0",
-  "type": "module",
-  "private": true,
   "main": "build/index.js",
   "scripts": {
-    "build:dts": "tsc --emitDeclarationOnly",
-    "build": "tsc --build",
-    "clean": "rm -rf build"
+    "build": "tsc",
+    "clean": "rm -rf build && tsc --build --clean"
   },
-  "devDependencies": {
+  "dependencies": {
     "@fx/plugin": "workspace:^1.0.0",
     "@fx/zod-inquirer": "workspace:^1.0.0",
     "@nice/ts-template": "workspace:^1.0.0",
     "zod": "^3.11.6"
-  },
-  "dependencies": {
-    
   }
 }

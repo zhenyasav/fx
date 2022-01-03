@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { directoryTemplate } from "@nice/ts-template";
+import { executeDirectoryTemplate } from "@nice/ts-template";
 import { method, Resource } from "@fx/plugin";
 
 export type TemplateResourceOptions<
@@ -7,13 +7,13 @@ export type TemplateResourceOptions<
 > = {
   name: string;
   description?: string;
-  templateDir: string;
-  outputDir?: string | ((inputs: z.infer<I>) => string);
+  templateDirectory: string;
   input?: I;
+  outputDirectory?: string | ((inputs: z.infer<I>) => string);
 };
 
 export const templateInput = z.object({
-  outputDir: z.string().default(""),
+  outputDirectory: z.string().default(""),
 });
 
 export type TemplateInput = z.infer<typeof templateInput>;
@@ -21,23 +21,26 @@ export type TemplateInput = z.infer<typeof templateInput>;
 export function template<
   I extends z.ZodObject<z.ZodRawShape> = typeof templateInput
 >(options: TemplateResourceOptions<I>): Resource {
-  const { name, input, templateDir, outputDir } = { ...options };
+  const { name, input, description, templateDirectory, outputDirectory } = {
+    ...options,
+  };
   return {
     name,
+    description,
     methods: {
       create: method({
-        input: input ?? templateInput,
+        inputShape: input ?? templateInput,
         async execute({ input }) {
           const od =
-            typeof outputDir == "string"
-              ? outputDir
-              : typeof outputDir == "function"
-              ? outputDir(input)
-              : (input.outputDir as string);
-          const files = await directoryTemplate({
-            templatePath: templateDir,
-            input: { ...input, outputDir: od },
-            outputDir: od,
+            typeof outputDirectory == "string"
+              ? outputDirectory
+              : typeof outputDirectory == "function"
+              ? outputDirectory(input)
+              : (input.outputDirectory as string);
+          const files = await executeDirectoryTemplate({
+            templateDirectory,
+            input,
+            outputDirectory: od,
           });
           return {
             description: `create '${name}'`,

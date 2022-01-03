@@ -21,8 +21,8 @@ const config: Config = {
                 .describe("flatten scopes")
                 .default(true),
             }),
-            templateDir: path.resolve(__dirname, "templates/package"),
-            outputDir: (input) =>
+            templateDirectory: path.resolve(__dirname, "templates/package"),
+            outputDirectory: (input) =>
               path.resolve(
                 __dirname,
                 "packages",

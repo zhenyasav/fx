@@ -1,13 +1,10 @@
 {
   "name": "@fx/plugin",
   "version": "1.0.0",
-  "main": "src/index.ts",
-  "publishConfig": {
-    "main": "build/index.js"
-  },
+  "main": "build/index.js",
   "scripts": {
-    "build": "tsc --build",
-    "clean": "rm -rf build && tsc --clean"
+    "build": "tsc",
+    "clean": "rm -rf build && tsc --build --clean"
   },
   "dependencies": {
     "@nice/file": "workspace:^1.0.0",

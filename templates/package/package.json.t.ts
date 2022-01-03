@@ -7,19 +7,16 @@ export type Input = {
 export default ({ input }: TemplateContext<Input>) => /*javascript*/ `
 {
   "name": "${input?.name}",
-  "version": "1.0.0",
-  "type": "module",
-  "private": true,
-  "main": "build/index.js",
-  "scripts": {
-    "build:es": "node scripts/build.js && tsc --emitDeclarationOnly",
-    "build:dts": "tsc --emitDeclarationOnly",
-    "build": "tsc --build",
-    "clean": "rm -rf build"
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "typings": "build/index.d.ts",
+  "types": "build/index.d.ts",
+  "publishConfig": {
+    "main": "build/index.js",
   },
-  "devDependencies": {
-    "esbuild": "^0.14.0",
-    "glob": "^7.2.0"
+  "scripts": {
+    "clean": "rm -rf build && tsc --build --clean"
+    "build": "tsc",
   }
 }
 `;

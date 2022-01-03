@@ -1,1 +1,2 @@
-export * from "./template.js";
+export * from "./template";
+export * from "@nice/ts-template";
