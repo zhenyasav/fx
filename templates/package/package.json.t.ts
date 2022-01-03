@@ -1,10 +1,10 @@
-import { TemplateContext } from "@fx/templates";
+import { TemplateContext, TemplateFunction } from "@fx/templates";
 
 export type Input = {
   name: string;
 };
 
-export default ({ input }: TemplateContext<Input>) => /*javascript*/ `
+const template: TemplateFunction<Input> = ({ input }: TemplateContext<Input>) => /*javascript*/ `
 {
   "name": "${input?.name}",
   "version": "0.0.1",
@@ -12,11 +12,13 @@ export default ({ input }: TemplateContext<Input>) => /*javascript*/ `
   "typings": "build/index.d.ts",
   "types": "build/index.d.ts",
   "publishConfig": {
-    "main": "build/index.js",
+    "main": "build/index.js"
   },
   "scripts": {
-    "clean": "rm -rf build && tsc --build --clean"
-    "build": "tsc",
+    "clean": "rm -rf build && tsc --build --clean",
+    "build": "tsc"
   }
 }
 `;
+
+export default template;

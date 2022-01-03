@@ -24,7 +24,7 @@ export async function executeDirectoryTemplate<TInput>(
   const templateOutputs = await Promise.all(
     templateFiles?.map((t) =>
       executeFileTemplate({
-        templateFile: path.relative(t, templateDirectory),
+        templateFile: path.relative(templateDirectory, t),
         templateRelativeTo: templateDirectory,
         outputDirectory,
         input,

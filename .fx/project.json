@@ -135,6 +135,14 @@
         "name": "@fx/yo"
       },
       "id": "a209"
+    },
+    {
+      "type": "package",
+      "id": "5ac9",
+      "input": {
+        "name": "foo",
+        "flattenScope": true
+      }
     }
   ]
 }

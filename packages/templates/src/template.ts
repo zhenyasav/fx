@@ -13,7 +13,9 @@ export type TemplateResourceOptions<
 };
 
 export const templateInput = z.object({
-  outputDirectory: z.string().default(""),
+  outputDirectory: z
+    .string()
+    .describe("directory where to place output"),
 });
 
 export type TemplateInput = z.infer<typeof templateInput>;
