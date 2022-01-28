@@ -14,11 +14,11 @@ export function promise<T>(p: MaybePromise<T>): Promise<T> {
 
 export type Plugin = {
   readonly name: string;
-  resources(): MaybePromise<Resource[]>;
+  resources(): MaybePromise<ResourceDefinition[]>;
 };
 
-export type Resource = {
-  name: string;
+export type ResourceDefinition = {
+  type: string;
   description?: string;
   methods: {
     create: Method;
@@ -27,8 +27,8 @@ export type Resource = {
 };
 
 export type Method<TInput = any> = {
-  getInput(defaults?: Partial<TInput>): MaybePromise<TInput>;
-  execute(context: { input: TInput }): MaybePromise<MethodResult>;
+  getInput?(defaults?: Partial<TInput>): MaybePromise<TInput>;
+  execute?(context: { input: TInput }): MaybePromise<MethodResult>;
 };
 
 export function method<T extends z.ZodObject<z.ZodRawShape>>({

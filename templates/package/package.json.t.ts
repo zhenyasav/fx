@@ -8,7 +8,7 @@ const template: TemplateFunction<Input> = ({ input }: TemplateContext<Input>) =>
 {
   "name": "${input?.name}",
   "version": "0.0.1",
-  "main": "build/index.ts",
+  "main": "build/index.js",
   "typings": "build/index.d.ts",
   "types": "build/index.d.ts",
   "scripts": {

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { executeDirectoryTemplate } from "@nice/ts-template";
-import { method, Resource } from "@fx/plugin";
+import { method, ResourceDefinition } from "@fx/plugin";
 
 export type TemplateResourceOptions<
   I extends z.ZodObject<z.ZodRawShape> = z.AnyZodObject
@@ -22,12 +22,12 @@ export type TemplateInput = z.infer<typeof templateInput>;
 
 export function template<
   I extends z.ZodObject<z.ZodRawShape> = typeof templateInput
->(options: TemplateResourceOptions<I>): Resource {
+>(options: TemplateResourceOptions<I>): ResourceDefinition {
   const { name, input, description, templateDirectory, outputDirectory } = {
     ...options,
   };
   return {
-    name,
+    type: name,
     description,
     methods: {
       create: method({

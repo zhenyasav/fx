@@ -8,10 +8,11 @@
     "clean": "rm -rf build && tsc --build --clean"
   },
   "dependencies": {
-    "@nice/ts-template": "workspace:^1.0.0",
+    "@fx/aad": "workspace:^0.0.1",
     "@fx/plugin": "workspace:^1.0.0",
     "@fx/templates": "workspace:^1.0.0",
     "@fx/yo": "workspace:^1.0.0",
+    "@nice/ts-template": "workspace:^1.0.0",
     "zod": "^3.11.6"
   }
 }

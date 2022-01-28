@@ -1,11 +1,13 @@
-import { promise } from "@fx/plugin";
+import { promise, ResourceDefinition } from "@fx/plugin";
 import { randomString } from "./util/random";
-import { safelyTimed } from "./util/safe";
+import { safe, timed } from "./util";
 import { ConfigLoader } from "./config";
 import { applyEffects, printEffects } from "./effectors";
 import { ConfigLoaderOptions, LoadedConfig } from "./config";
 
-export type FxOptions = ConfigLoaderOptions;
+export type FxOptions = ConfigLoaderOptions & {
+  aadAppId?: string;
+};
 
 export class Fx {
   private options: FxOptions;
@@ -26,20 +28,22 @@ export class Fx {
     inputs?: { name?: string },
     dryRun = true
   ) {
-    safelyTimed(async () => {
+    safe(async () => {
       const config = await this.config();
       const resource = config.getResourceDefinitionByType(type);
       if (!resource) throw new Error("resource type not found");
       const input = await promise(
-        resource.methods.create.getInput(inputs ?? {})
+        resource.methods.create.getInput?.(inputs ?? {})
       );
-      const createResult = await promise(
-        resource.methods.create.execute({
-          input,
-        })
-      );
-      if (createResult) {
+      await timed(async () => {
+        const createResult = await promise(
+          resource.methods.create.execute?.({
+            input,
+          })
+        );
         const { effects, value, description } = {
+          effects: [],
+          value: null,
           description: `create ${type}${
             !!inputs?.name ? ` named '${inputs.name}'` : ""
           }`,
@@ -57,11 +61,34 @@ export class Fx {
             type,
             id: randomString(),
             input,
-            output: value,
+            ...(value ? { output: value } : {})
           });
           await config.projectFile.save();
         }
-      }
+        
+      });
+    });
+  }
+  async getResourceDefinitionsInProject(
+    predicate?: (res: ResourceDefinition) => boolean
+  ) {
+    const config = await this.config();
+    return config.project.resources.reduce<ResourceDefinition[]>((memo, instance) => {
+      const res = config.getResourceDefinitionByType(instance.type);
+      if (res && (!predicate || predicate?.(res))) memo.push(res);
+      return memo;
+    }, []);
+  }
+  async getResourcesInProjectWithMethod(methodName: string) {
+    return this.getResourceDefinitionsInProject((resource) => {
+      return methodName in resource.methods;
+    });
+  }
+  async invokeMethod(methodName: string, ...args: any[]) {
+    const resources = await this.getResourcesInProjectWithMethod(methodName);
+    if (!resources) return;
+    resources.forEach((res) => {
+      console.log('invoking', res.type, methodName);
     });
   }
 }

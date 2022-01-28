@@ -1,5 +1,5 @@
 {
-  "name": "@fx/repo",
+  "name": "@fx/monorepo",
   "version": "1.0.0",
   "description": "developer automation",
   "scripts": {

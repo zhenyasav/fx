@@ -151,6 +151,95 @@
         "name": "foobar",
         "flattenScope": true
       }
+    },
+    {
+      "type": "package",
+      "id": "3ed7",
+      "input": {
+        "name": "foo",
+        "flattenScope": true
+      }
+    },
+    {
+      "type": "package",
+      "id": "6535",
+      "input": {
+        "name": "aad",
+        "flattenScope": true
+      }
+    },
+    {
+      "type": "package",
+      "id": "3b49",
+      "input": {
+        "name": "aad",
+        "flattenScope": true
+      }
+    },
+    {
+      "type": "package",
+      "id": "ab9f",
+      "input": {
+        "name": "foobar",
+        "flattenScope": true
+      }
+    },
+    {
+      "type": "package",
+      "id": "0780",
+      "input": {
+        "flattenScopes": "y",
+        "name": "foobarzoo",
+        "flattenScope": true
+      }
+    },
+    {
+      "type": "package",
+      "id": "6861",
+      "input": {
+        "flattenScopes": "yes",
+        "name": "foobarzoo",
+        "flattenScope": true
+      }
+    },
+    {
+      "type": "package",
+      "id": "8f4a",
+      "input": {
+        "name": "@fx/aad",
+        "flattenScope": false
+      }
+    },
+    {
+      "type": "package",
+      "id": "efeb",
+      "input": {
+        "name": "@fx/teams",
+        "flattenScope": false
+      }
+    },
+    {
+      "type": "package",
+      "id": "f514",
+      "input": {
+        "name": "@fx/teams",
+        "flattenScope": false
+      }
+    },
+    {
+      "type": "package",
+      "id": "980e",
+      "input": {
+        "name": "@fx/aad",
+        "flattenScope": true
+      }
+    },
+    {
+      "type": "aad-app",
+      "id": "6ddd",
+      "input": {
+        "name": "foobar1"
+      }
     }
   ]
 }

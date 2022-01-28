@@ -1,21 +1,20 @@
 #!/usr/bin/env node
 import yargs from "yargs";
 import { Fx } from "@fx/core";
-import chalk from "chalk";
+import {
+  printLogo,
+  printResourceInstance,
+  printResourceDefinition,
+  info,
+  error,
+} from "./prettyPrint";
+import config from "./config";
 
-const logo = 
-` _______  __
-|  ___\\ \\/ /
-| |_   \\  / 
-|  _|  /  \\ 
-|_|   /_/\\_\\
-`;
+const fx = new Fx({
+  aadAppId: config.teamsfxcliAadAppId
+});
 
-console.info(chalk.cyan(logo));
-
-const fx = new Fx();
-
-yargs(process.argv.slice(2))
+const parser = yargs(process.argv.slice(2))
   .scriptName("fx")
   .usage("$0 [-d] <cmd> [args]")
   .option("dry", {
@@ -30,6 +29,7 @@ yargs(process.argv.slice(2))
     default: false,
     description: "print more stuff",
   })
+  .demandCommand(1, "at least one command is required")
   .command(
     "se",
     "search resources",
@@ -37,19 +37,10 @@ yargs(process.argv.slice(2))
     async (args) => {
       const resources = (await fx.config())?.getAllResourceDefinitions();
       if (!resources.length) {
-        console.info(
-          chalk.gray(
-            "there are no resource definitions installed in this project"
-          )
-        );
+        info("there are no resource definitions installed in this project");
       } else {
         console.log(`${resources.length} resource types available:`);
-        resources.forEach((resource) => {
-          const { cyan, gray } = chalk;
-          console.log(
-            `${cyan(resource.name)} ${gray("-")} ${resource.description}`
-          );
-        });
+        resources.forEach(printResourceDefinition);
       }
       console.log("");
     }
@@ -74,6 +65,63 @@ yargs(process.argv.slice(2))
       await fx.createResource(type, { ...rest, name }, !!dry);
     }
   )
-  .showHelpOnFail(false)
-  .demandCommand(1, "need to specify a command")
-  .parse();
+  .command(
+    "ls [type]",
+    "show resources configured in the current project",
+    (yargs) => {
+      return yargs.positional("type", {
+        type: "string",
+        describe: "the type of resource to filter by",
+      });
+    },
+    async (argv) => {
+      const { type } = argv;
+      const config = await fx.config();
+      const resources = type
+        ? config.project.resources?.filter((res) => res.type == type)
+        : config.project.resources;
+      console.log(`${resources ? resources.length : 0} resources in project:`);
+      resources?.forEach(printResourceInstance);
+    }
+  )
+  .command(
+    "$0",
+    false,
+    () => {},
+    async (argv) => {
+      const [arg] = argv._;
+      if (!arg) throw new Error("at least one command is required");
+      const methodName = arg.toString();
+      const resources = await fx.getResourcesInProjectWithMethod(methodName);
+      if (!resources.length) {
+        error(
+          "there are no configured resources in the project supporting this method"
+        );
+        const config = await fx.config();
+        const defs = config.getAllResourceDefinitions().filter((res) => {
+          return methodName in res.methods;
+        });
+        if (defs?.length) {
+          info(
+            `\nThese (${defs.length}) known resource types support '${methodName}' and can be created with 'fx add <resource-type>':`
+          );
+          defs.forEach(printResourceDefinition);
+        }
+        process.exit(1);
+      }
+      await fx.invokeMethod(methodName);
+    }
+  )
+  .showHelpOnFail(false);
+
+async function main() {
+  try {
+    printLogo();
+    await parser.parse();
+  } catch (err: any) {
+    error(`${err?.message}\n`);
+    console.info(await parser.getHelp());
+  }
+}
+
+main();

@@ -1,8 +1,6 @@
-import path from "path";
-import { Config, removeScope } from "@fx/core";
-import { template } from "@fx/templates";
+import { Config } from "@fx/core";
 import { teams } from "@fx/teams";
-import { z } from "zod";
+import { packageTemplate } from "./templates/package/template.t";
 
 const config: Config = {
   plugins: [
@@ -11,24 +9,7 @@ const config: Config = {
       name: "templates",
       resources() {
         return [
-          template({
-            name: "package",
-            description: "creates a new typescript package in ./packages/",
-            input: z.object({
-              name: z.string().describe("name the package"),
-              flattenScope: z
-                .boolean()
-                .describe("flatten scopes")
-                .default(true),
-            }),
-            templateDirectory: path.resolve(__dirname, "templates/package"),
-            outputDirectory: (input) =>
-              path.resolve(
-                __dirname,
-                "packages",
-                input.flattenScope ? removeScope(input.name) : input.name
-              ),
-          }),
+          packageTemplate(),
         ];
       },
     },

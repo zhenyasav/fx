@@ -1,0 +1,9 @@
+{
+  "generator-teams": {
+    "promptValues": {
+      "developer": "msft"
+    },
+    "libraryName": "yoteamsSso",
+    "generator-version": "3.5.0"
+  }
+}

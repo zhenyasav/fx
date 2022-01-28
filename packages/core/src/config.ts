@@ -1,6 +1,6 @@
 // import { findAncestorPath } from "./util/findAncestorPath";
 import path from "path";
-import { Plugin, Resource } from "@fx/plugin";
+import { Plugin, ResourceDefinition } from "@fx/plugin";
 import { cosmiconfig } from "cosmiconfig";
 import TypeScriptLoader from "@endemolshinegroup/cosmiconfig-typescript-loader";
 import { Project } from "./project";
@@ -14,15 +14,14 @@ export type LoadedConfig = Config & {
   configFilePath: string;
   project: Project;
   projectFile: ProjectFile;
-  getResourceDefinitionByType(type: string): Resource | null;
-  getAllResourceDefinitions(): Resource[];
+  getResourceDefinitionByType(type: string): ResourceDefinition | null;
+  getAllResourceDefinitions(): ResourceDefinition[];
 };
 
-export type ConfigLoaderOptions =
-  | {
-      cwd: string;
-    }
-  | { configFile: string };
+export type ConfigLoaderOptions = {
+  cwd?: string;
+  configFile?: string;
+};
 
 export class ConfigLoader {
   private cosmiconfig = cosmiconfig("fx", {
@@ -58,17 +57,17 @@ export class ConfigLoader {
         : await this.cosmiconfig.search(cwd);
       if (file) {
         const { plugins } = file.config as Config;
-        const allResources: Resource[] = [];
-        const resourcesByPlugin = new Map<Plugin, Resource[]>();
+        const allResources: ResourceDefinition[] = [];
+        const resourcesByPlugin = new Map<Plugin, ResourceDefinition[]>();
         const resourcesByType = new Map<
           string,
-          { plugin: Plugin; resource: Resource }
+          { plugin: Plugin; resource: ResourceDefinition }
         >();
         for (let plugin of plugins ?? []) {
           const resources = await plugin.resources();
           resourcesByPlugin.set(plugin, resources);
           for (let resource of resources) {
-            resourcesByType.set(resource.name, { resource, plugin });
+            resourcesByType.set(resource.type, { resource, plugin });
             allResources.push(resource);
           }
         }
@@ -99,19 +98,3 @@ export class ConfigLoader {
     }
   }
 }
-
-// const file = await findAncestorPath(CONFIG_FILE_NAME);
-// if (!file) return null;
-// const configmodule = await import(file);
-// const config: Config = configmodule?.["default"] ?? configmodule;
-// for (let p of config.plugins ?? []) {
-//   const resources = await (p as Plugin).resources();
-//   resources.forEach((resource) => {
-//     this.resourcesByType.set(resource.name, {
-//       plugin: p,
-//       resource,
-//     });
-//   });
-// }
-// this.config = { ...config, rootPath: path.dirname(file) };
-// return this.config;

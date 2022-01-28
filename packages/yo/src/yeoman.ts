@@ -1,4 +1,4 @@
-import { method, Resource } from "@fx/plugin";
+import { method, ResourceDefinition } from "@fx/plugin";
 import { z } from "zod";
 
 export const yoInput = z.object({
@@ -7,9 +7,9 @@ export const yoInput = z.object({
 
 export type YoInput = z.infer<typeof yoInput>;
 
-export function yogenerator(): Resource {
+export function yogenerator(): ResourceDefinition {
   return {
-    name: "foo",
+    type: "foo",
     methods: {
       create: method({
         inputShape: yoInput,

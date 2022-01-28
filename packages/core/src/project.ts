@@ -7,7 +7,7 @@ export const PROJECT_FILE_NAME = "project.json";
 export type ResourceInstance<TInput = any, TOutput = any> = {
   type: string;
   input: TInput;
-  output: TOutput; 
+  output?: TOutput; 
   id: string;
 };
 
