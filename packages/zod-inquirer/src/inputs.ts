@@ -66,7 +66,7 @@ function noUndefined<T extends object>(o: T) {
   }
   return r;
 }
-
+// @ts-ignore
 export async function inquire<
   T extends z.ZodObject<z.ZodRawShape> = z.ZodObject<z.ZodRawShape>
 >(

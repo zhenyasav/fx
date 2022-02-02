@@ -1,0 +1,28 @@
+{
+  "name": "",
+  "version": "",
+  "scripts": {
+    "build": "tsc",
+    "build:production": "npm run prestart && npm prune --production",
+    "watch": "tsc --w",
+    "prestart": "npm run build && func extensions install",
+    "start:host": "func start",
+    "start": "npm-run-all --parallel start:host watch",
+    "test": "swc-node binance-teams-notifier/testCard.ts",
+    "test-api": "swc-node binance-teams-notifier/binance-api/test.ts"
+  },
+  "description": "",
+  "devDependencies": {
+    "@azure/functions": "^1.0.1-beta1",
+    "autorest": "^3.5.1",
+    "npm-run-all": "^4.1.5",
+    "swc-node": "^1.0.0",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "@microsoft/adaptivecards-tools": "^0.1.2",
+    "axios": "^0.24.0",
+    "date-fns": "^2.28.0"
+  }
+}
