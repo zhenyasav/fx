@@ -12,11 +12,11 @@ function printLogo() {
 }
 exports.printLogo = printLogo;
 function printResourceDefinition(resource) {
-    console.log(cyan(resource.type) + " " + gray("-") + " " + resource.description);
+    console.log("".concat(cyan(resource.type), " ").concat(gray("-"), " ").concat(resource.description));
 }
 exports.printResourceDefinition = printResourceDefinition;
 function printResourceInstance(resource) {
-    console.log(white(resource.type) + " " + gray(resource.id));
+    console.log("".concat(white(resource.type), " ").concat(gray(resource.id)));
     console.log(gray(JSON.stringify(resource.input, null, 2)));
 }
 exports.printResourceInstance = printResourceInstance;

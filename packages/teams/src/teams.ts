@@ -3,7 +3,7 @@ import { Plugin } from "@fx/plugin";
 import { template } from "@fx/templates";
 import { manifestInput } from "./manifest.js";
 import { tabInput } from "./tab.js";
-import { aadAppRegistration } from "@fx/aad";
+// import { aadAppRegistration } from "@fx/aad";
 // import { yogenerator } from "@fx/yo";
 
 export function teams(): Plugin {
@@ -12,7 +12,7 @@ export function teams(): Plugin {
     resources() {
       return [
         // yogenerator({ name: 'teams' }),
-        aadAppRegistration(),
+        // aadAppRegistration(),
         template({
           name: "manifest",
           description: "Create a Teams manifest template and build scripts",

@@ -69,7 +69,7 @@ var config_1 = __importDefault(require("./config"));
 var fx = new core_1.Fx({
     aadAppId: config_1.default.teamsfxcliAadAppId
 });
-var parser = yargs_1.default(process.argv.slice(2))
+var parser = (0, yargs_1.default)(process.argv.slice(2))
     .scriptName("fx")
     .usage("$0 [-d] <cmd> [args]")
     .option("dry", {
@@ -94,10 +94,10 @@ var parser = yargs_1.default(process.argv.slice(2))
             case 1:
                 resources = (_a = (_b.sent())) === null || _a === void 0 ? void 0 : _a.getAllResourceDefinitions();
                 if (!resources.length) {
-                    prettyPrint_1.info("there are no resource definitions installed in this project");
+                    (0, prettyPrint_1.info)("there are no resource definitions installed in this project");
                 }
                 else {
-                    console.log(resources.length + " resource types available:");
+                    console.log("".concat(resources.length, " resource types available:"));
                     resources.forEach(prettyPrint_1.printResourceDefinition);
                 }
                 console.log("");
@@ -146,8 +146,9 @@ var parser = yargs_1.default(process.argv.slice(2))
             case 1:
                 config = _b.sent();
                 resources = type
-                    ? (_a = config.project.resources) === null || _a === void 0 ? void 0 : _a.filter(function (res) { return res.type == type; }) : config.project.resources;
-                console.log((resources ? resources.length : 0) + " resources in project:");
+                    ? (_a = config.project.resources) === null || _a === void 0 ? void 0 : _a.filter(function (res) { return res.type == type; })
+                    : config.project.resources;
+                console.log("".concat(resources ? resources.length : 0, " resources in project:"));
                 resources === null || resources === void 0 ? void 0 : resources.forEach(prettyPrint_1.printResourceInstance);
                 return [2 /*return*/];
         }
@@ -166,7 +167,7 @@ var parser = yargs_1.default(process.argv.slice(2))
             case 1:
                 resources = _a.sent();
                 if (!!resources.length) return [3 /*break*/, 3];
-                prettyPrint_1.error("there are no configured resources in the project supporting this method");
+                (0, prettyPrint_1.error)("there are no configured resources in the project supporting this method");
                 return [4 /*yield*/, fx.config()];
             case 2:
                 config_2 = _a.sent();
@@ -174,7 +175,7 @@ var parser = yargs_1.default(process.argv.slice(2))
                     return methodName in res.methods;
                 });
                 if (defs === null || defs === void 0 ? void 0 : defs.length) {
-                    prettyPrint_1.info("\nThese (" + defs.length + ") known resource types support '" + methodName + "' and can be created with 'fx add <resource-type>':");
+                    (0, prettyPrint_1.info)("\nThese (".concat(defs.length, ") known resource types support '").concat(methodName, "' and can be created with 'fx add <resource-type>':"));
                     defs.forEach(prettyPrint_1.printResourceDefinition);
                 }
                 process.exit(1);
@@ -194,14 +195,14 @@ function main() {
             switch (_c.label) {
                 case 0:
                     _c.trys.push([0, 2, , 4]);
-                    prettyPrint_1.printLogo();
+                    (0, prettyPrint_1.printLogo)();
                     return [4 /*yield*/, parser.parse()];
                 case 1:
                     _c.sent();
                     return [3 /*break*/, 4];
                 case 2:
                     err_1 = _c.sent();
-                    prettyPrint_1.error((err_1 === null || err_1 === void 0 ? void 0 : err_1.message) + "\n");
+                    (0, prettyPrint_1.error)("".concat(err_1 === null || err_1 === void 0 ? void 0 : err_1.message, "\n"));
                     _b = (_a = console).info;
                     return [4 /*yield*/, parser.getHelp()];
                 case 3:
