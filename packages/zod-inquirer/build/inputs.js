@@ -61,8 +61,8 @@ function fulfillMissingInputs(spec) {
 }
 exports.fulfillMissingInputs = fulfillMissingInputs;
 function getQuestion(shape) {
-    var _a, _b;
-    var defaultValue = void 0, message = "", type = "";
+    var _a;
+    var defaultValue = void 0, message = "", type = void 0;
     var typesToQnType = {
         ZodString: "input",
         ZodNumber: "number",
@@ -70,7 +70,15 @@ function getQuestion(shape) {
     };
     var next = shape;
     while (next && (next === null || next === void 0 ? void 0 : next._def)) {
-        var _c = next._def, dv = _c.defaultValue, description = _c.description, typeName = _c.typeName;
+        var _b = next._def, dv = _b.defaultValue, description = _b.description, typeName = _b.typeName;
+        if (typeName) {
+            if (typeName in typesToQnType) {
+                type = typesToQnType[typeName];
+            }
+            else {
+                return null;
+            }
+        }
         if (dv) {
             defaultValue = dv === null || dv === void 0 ? void 0 : dv();
         }
@@ -80,10 +88,7 @@ function getQuestion(shape) {
                     ? description
                     : description + ":";
         }
-        if (typeName) {
-            type = (_a = typesToQnType[typeName]) !== null && _a !== void 0 ? _a : typeName;
-        }
-        next = (_b = next._def) === null || _b === void 0 ? void 0 : _b.innerType;
+        next = (_a = next._def) === null || _a === void 0 ? void 0 : _a.innerType;
     }
     function validate(data) {
         var _a;

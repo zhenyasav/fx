@@ -24,6 +24,12 @@ export type ResourceInstance<TInput = any, TOutput = any> = {
   outputs?: TOutput; 
 };
 
+export function printResourceId(instance: ResourceInstance) {
+  if (!instance) return `[null]`;
+  const { id, type } = instance;
+  return `${type}:${id}`;
+}
+
 export type ResourceDefinition<TCreateArgs = any> = {
   type: string;
   description?: string;

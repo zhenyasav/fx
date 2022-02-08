@@ -13,6 +13,7 @@ export declare type ResourceInstance<TInput = any, TOutput = any> = {
     inputs?: TInput;
     outputs?: TOutput;
 };
+export declare function printResourceId(instance: ResourceInstance): string;
 export declare type ResourceDefinition<TCreateArgs = any> = {
     type: string;
     description?: string;

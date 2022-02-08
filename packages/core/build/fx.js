@@ -57,13 +57,22 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Fx = void 0;
 var plugin_1 = require("@fx/plugin");
 var random_1 = require("./util/random");
 var collections_1 = require("./util/collections");
-var config_1 = require("./config");
 var effectors_1 = require("./effectors");
+var config_1 = require("./config");
 var Fx = /** @class */ (function () {
     function Fx(options) {
         this._config = null;
@@ -211,6 +220,51 @@ var Fx = /** @class */ (function () {
                         _a.sent();
                         return [2 /*return*/, instance];
                     case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Fx.prototype.generateResourceChoiceQuestion = function (shape, key) {
+        return __awaiter(this, void 0, void 0, function () {
+            function extract(shape, memo) {
+                var _a;
+                if (!shape)
+                    return __assign(__assign({}, memo), { name: key.toString() });
+                var innerShape = (_a = shape._def) === null || _a === void 0 ? void 0 : _a.innerType;
+                var _b = shape._def, dv = _b.defaultValue, description = _b.description, typeName = _b.typeName;
+                if (dv) {
+                    return extract(innerShape, __assign(__assign({}, memo), { default: dv === null || dv === void 0 ? void 0 : dv() }));
+                }
+                if (description) {
+                    return extract(innerShape, __assign(__assign({}, memo), { message: description }));
+                }
+                if (typeName) {
+                    if (typeName == "ZodLiteral") {
+                        var resourceType_1 = shape._def.value;
+                        var resources = config.getResources();
+                        var applicableDefinitions = config
+                            .getResourceDefinitions()
+                            .filter(function (def) { return def.type == resourceType_1; });
+                        if (!applicableDefinitions.length)
+                            throw new Error("unknown resource type ".concat(resourceType_1));
+                        var applicableResources = resources.filter(function (res) { return res.instance.type == resourceType_1; });
+                        var resourceChoices = applicableResources.map(function (res) {
+                            return (0, plugin_1.printResourceId)(res.instance);
+                        });
+                        return extract(innerShape, __assign(__assign({}, memo), { type: "list", choices: __spreadArray(["Create a new '".concat(resourceType_1, "'")], resourceChoices, true), default: 0 }));
+                    }
+                    else if (typeName == "ZodUnion") {
+                        return memo;
+                    }
+                }
+            }
+            var config;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.config()];
+                    case 1:
+                        config = _a.sent();
+                        return [2 /*return*/, extract(shape)];
                 }
             });
         });

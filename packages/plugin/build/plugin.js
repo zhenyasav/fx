@@ -22,7 +22,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.method = exports.promise = exports.isPromise = void 0;
+exports.method = exports.printResourceId = exports.promise = exports.isPromise = void 0;
 var zod_inquirer_1 = require("@fx/zod-inquirer");
 function isPromise(p) {
     return typeof (p === null || p === void 0 ? void 0 : p.then) == "function";
@@ -32,6 +32,13 @@ function promise(p) {
     return isPromise(p) ? p : Promise.resolve(p);
 }
 exports.promise = promise;
+function printResourceId(instance) {
+    if (!instance)
+        return "[null]";
+    var id = instance.id, type = instance.type;
+    return "".concat(type, ":").concat(id);
+}
+exports.printResourceId = printResourceId;
 function method(_a) {
     var inputShape = _a.inputShape, rest = __rest(_a, ["inputShape"]);
     return inputShape

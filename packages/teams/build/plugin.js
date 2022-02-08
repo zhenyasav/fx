@@ -17,7 +17,7 @@ function teams() {
         resources: function () {
             return [
                 (0, teamsBot_1.teamsBot)(),
-                (0, bots_1.botRegistration)(),
+                (0, bots_1.botService)(),
                 (0, tunnel_1.tunnel)(),
                 (0, templates_1.template)({
                     name: "manifest",

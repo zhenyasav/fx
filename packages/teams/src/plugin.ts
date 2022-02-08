@@ -3,7 +3,7 @@ import { Plugin } from "@fx/plugin";
 import { template } from "@fx/templates";
 import { manifestInput } from "./inputs/manifest";
 import { tabInput } from "./inputs/tab";
-import { botRegistration } from "@fx/bots";
+import { botService } from "@fx/bots";
 import { tunnel } from "@fx/tunnel";
 import { teamsBot } from "./teamsBot";
 
@@ -13,7 +13,7 @@ export function teams(): Plugin {
     resources() {
       return [
         teamsBot(),
-        botRegistration(),
+        botService(),
         tunnel(),
         template({
           name: "manifest",

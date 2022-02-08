@@ -10,10 +10,10 @@ export async function fulfillMissingInputs<I = any>(spec: InputSpec<I>) {
   return inquirer.prompt(spec.questions, spec.defaults) as Promise<I>;
 }
 
-export function getQuestion(shape: z.ZodTypeAny): inquirer.Question {
+export function getQuestion(shape: z.ZodTypeAny): inquirer.Question | null {
   let defaultValue = void 0,
     message = "",
-    type = "";
+    type: string | undefined = void 0;
   const typesToQnType: { [k: string]: inquirer.Question["type"] } = {
     ZodString: "input",
     ZodNumber: "number",
@@ -22,6 +22,13 @@ export function getQuestion(shape: z.ZodTypeAny): inquirer.Question {
   let next = shape;
   while (next && next?._def) {
     const { defaultValue: dv, description, typeName } = next._def;
+    if (typeName) {
+      if (typeName in typesToQnType) {
+        type = typesToQnType[typeName];
+      } else {
+        return null;
+      }
+    }
     if (dv) {
       defaultValue = dv?.();
     }
@@ -30,9 +37,6 @@ export function getQuestion(shape: z.ZodTypeAny): inquirer.Question {
         description[description.length - 1] == ":"
           ? description
           : description + ":";
-    }
-    if (typeName) {
-      type = typesToQnType[typeName] ?? typeName;
     }
     next = next._def?.innerType;
   }
