@@ -57,15 +57,6 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Fx = void 0;
 var plugin_1 = require("@fx/plugin");
@@ -109,7 +100,7 @@ var Fx = /** @class */ (function () {
                     case 1:
                         config = _a.sent();
                         resources = config === null || config === void 0 ? void 0 : config.getResources();
-                        return [2 /*return*/, resources === null || resources === void 0 ? void 0 : resources.filter(function (r) { var _a; return r.definition && methodName in ((_a = r.definition) === null || _a === void 0 ? void 0 : _a.methods); })];
+                        return [2 /*return*/, resources === null || resources === void 0 ? void 0 : resources.filter(function (r) { var _a; return ((_a = r.definition) === null || _a === void 0 ? void 0 : _a.methods) && (methodName in r.definition.methods); })];
                 }
             });
         });
@@ -135,37 +126,37 @@ var Fx = /** @class */ (function () {
         });
     };
     Fx.prototype.invokeResourceMethod = function (resource, methodName, options) {
-        var _a, _b;
+        var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function () {
-            var _c, dryRun, defaultArgs, definition, instance, method, input, methodResult, _d, effects, value, description, rest, effectResults, _e, config;
-            return __generator(this, function (_f) {
-                switch (_f.label) {
+            var _d, dryRun, defaultArgs, definition, instance, method, input, methodResult, _e, effects, value, description, rest, effectResults, _f, config;
+            return __generator(this, function (_g) {
+                switch (_g.label) {
                     case 0:
-                        _c = __assign({ dryRun: false }, options), dryRun = _c.dryRun, defaultArgs = _c.defaultArgs;
+                        _d = __assign({ dryRun: false }, options), dryRun = _d.dryRun, defaultArgs = _d.defaultArgs;
                         definition = resource.definition, instance = resource.instance;
                         if (!definition)
                             throw new Error("resoure definition not found for ".concat(instance === null || instance === void 0 ? void 0 : instance.type));
-                        method = definition.methods[methodName];
+                        method = (_a = definition.methods) === null || _a === void 0 ? void 0 : _a[methodName];
                         if (!method)
                             throw new Error("the resource ".concat(instance === null || instance === void 0 ? void 0 : instance.type, "(").concat(instance === null || instance === void 0 ? void 0 : instance.id, ") has no method ").concat(method));
-                        return [4 /*yield*/, (0, plugin_1.promise)((_a = method.inputs) === null || _a === void 0 ? void 0 : _a.call(method, defaultArgs))];
+                        return [4 /*yield*/, (0, plugin_1.promise)((_b = method.inputs) === null || _b === void 0 ? void 0 : _b.call(method, defaultArgs))];
                     case 1:
-                        input = _f.sent();
-                        return [4 /*yield*/, (0, plugin_1.promise)((_b = method.body) === null || _b === void 0 ? void 0 : _b.call(method, {
+                        input = _g.sent();
+                        return [4 /*yield*/, (0, plugin_1.promise)((_c = method.body) === null || _c === void 0 ? void 0 : _c.call(method, {
                                 input: input,
                             }))];
                     case 2:
-                        methodResult = _f.sent();
-                        _d = __assign({ effects: [], value: null, description: "".concat(methodName, " ").concat(definition.type).concat(!!(input === null || input === void 0 ? void 0 : input.name) ? " named '".concat(input.name, "'") : "") }, methodResult), effects = _d.effects, value = _d.value, description = _d.description, rest = __rest(_d, ["effects", "value", "description"]);
+                        methodResult = _g.sent();
+                        _e = __assign({ effects: [], value: null, description: "".concat(methodName, " ").concat(definition.type).concat(!!(input === null || input === void 0 ? void 0 : input.name) ? " named '".concat(input.name, "'") : "") }, methodResult), effects = _e.effects, value = _e.value, description = _e.description, rest = __rest(_e, ["effects", "value", "description"]);
                         if (!(effects === null || effects === void 0 ? void 0 : effects.length)) return [3 /*break*/, 7];
                         if (!dryRun) return [3 /*break*/, 3];
                         (0, effectors_1.printEffects)(effects, description);
                         return [3 /*break*/, 7];
                     case 3:
-                        _e = collections_1.compact;
+                        _f = collections_1.compact;
                         return [4 /*yield*/, (0, effectors_1.applyEffects)(effects, description)];
                     case 4:
-                        effectResults = _e.apply(void 0, [_f.sent()]);
+                        effectResults = _f.apply(void 0, [_g.sent()]);
                         if (input) {
                             instance.inputs = instance.inputs || {};
                             instance.inputs[methodName] = input;
@@ -176,11 +167,11 @@ var Fx = /** @class */ (function () {
                         }
                         return [4 /*yield*/, this.config()];
                     case 5:
-                        config = _f.sent();
+                        config = _g.sent();
                         return [4 /*yield*/, config.projectFile.save()];
                     case 6:
-                        _f.sent();
-                        _f.label = 7;
+                        _g.sent();
+                        _g.label = 7;
                     case 7: return [2 /*return*/, __assign({ effects: effects, value: value, description: description }, rest)];
                 }
             });
@@ -220,51 +211,6 @@ var Fx = /** @class */ (function () {
                         _a.sent();
                         return [2 /*return*/, instance];
                     case 4: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    Fx.prototype.generateResourceChoiceQuestion = function (shape, key) {
-        return __awaiter(this, void 0, void 0, function () {
-            function extract(shape, memo) {
-                var _a;
-                if (!shape)
-                    return __assign(__assign({}, memo), { name: key.toString() });
-                var innerShape = (_a = shape._def) === null || _a === void 0 ? void 0 : _a.innerType;
-                var _b = shape._def, dv = _b.defaultValue, description = _b.description, typeName = _b.typeName;
-                if (dv) {
-                    return extract(innerShape, __assign(__assign({}, memo), { default: dv === null || dv === void 0 ? void 0 : dv() }));
-                }
-                if (description) {
-                    return extract(innerShape, __assign(__assign({}, memo), { message: description }));
-                }
-                if (typeName) {
-                    if (typeName == "ZodLiteral") {
-                        var resourceType_1 = shape._def.value;
-                        var resources = config.getResources();
-                        var applicableDefinitions = config
-                            .getResourceDefinitions()
-                            .filter(function (def) { return def.type == resourceType_1; });
-                        if (!applicableDefinitions.length)
-                            throw new Error("unknown resource type ".concat(resourceType_1));
-                        var applicableResources = resources.filter(function (res) { return res.instance.type == resourceType_1; });
-                        var resourceChoices = applicableResources.map(function (res) {
-                            return (0, plugin_1.printResourceId)(res.instance);
-                        });
-                        return extract(innerShape, __assign(__assign({}, memo), { type: "list", choices: __spreadArray(["Create a new '".concat(resourceType_1, "'")], resourceChoices, true), default: 0 }));
-                    }
-                    else if (typeName == "ZodUnion") {
-                        return memo;
-                    }
-                }
-            }
-            var config;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.config()];
-                    case 1:
-                        config = _a.sent();
-                        return [2 /*return*/, extract(shape)];
                 }
             });
         });

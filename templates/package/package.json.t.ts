@@ -23,8 +23,7 @@ const template: TemplateFunction<Input> = ({ input }: TemplateContext<Input>) =>
     "@types/jest": "^27.4.0",
     "@types/node": "^16.11.11",
     "jest": "^27.4.5",
-    "typescript": "^4.5.5",
-    "chai": "^4.3.4"
+    "typescript": "^4.5.5"
   }
 }
 `;

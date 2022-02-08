@@ -104,11 +104,18 @@ function getQuestion(shape) {
 }
 exports.getQuestion = getQuestion;
 function getQuestions(shape, defaultGenerator) {
-    var _a;
     var q = [];
     for (var k in shape) {
         var v = shape[k];
-        q.push(__assign(__assign({}, ((_a = getQuestion(v)) !== null && _a !== void 0 ? _a : defaultGenerator === null || defaultGenerator === void 0 ? void 0 : defaultGenerator(v, k))), { name: k }));
+        var qqn = getQuestion(v);
+        if (qqn) {
+            q.push(__assign(__assign({}, qqn), { name: k }));
+        }
+        else {
+            var qqns = defaultGenerator === null || defaultGenerator === void 0 ? void 0 : defaultGenerator(v, k);
+            if (qqns)
+                q.push.apply(q, qqns);
+        }
     }
     return q;
 }

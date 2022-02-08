@@ -21,7 +21,7 @@ export type ResourceInstance<TInput = any, TOutput = any> = {
   id: string;
   type: string;
   inputs?: TInput;
-  outputs?: TOutput; 
+  outputs?: TOutput;
 };
 
 export function printResourceId(instance: ResourceInstance) {
@@ -33,10 +33,9 @@ export function printResourceId(instance: ResourceInstance) {
 export type ResourceDefinition<TCreateArgs = any> = {
   type: string;
   description?: string;
-  methods: Partial<{
-    create: Method<TCreateArgs>;
-    [methodName: string]: Method;
-  }>;
+  methods?: {
+    create?: Method<TCreateArgs>;
+  } & { [methodName: string]: Method };
 };
 
 export type Typed = { type: string };

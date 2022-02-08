@@ -1,5 +1,3 @@
-import { z } from "zod";
-import inquirer from "inquirer";
 import { ResourceInstance } from "@fx/plugin";
 import { ConfigLoaderOptions, LoadedConfig, LoadedResource } from "./config";
 export declare type FxOptions = ConfigLoaderOptions & {
@@ -24,5 +22,4 @@ export declare class Fx {
     createResource(type: string, inputs?: {
         name?: string;
     }, dryRun?: boolean): Promise<ResourceInstance<any, any> | undefined>;
-    generateResourceChoiceQuestion(shape: z.ZodTypeAny, key: string | number): Promise<Partial<inquirer.DistinctQuestion<inquirer.Answers>> | undefined>;
 }

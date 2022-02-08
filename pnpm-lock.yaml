@@ -102,7 +102,6 @@ importers:
       '@swc/jest': ^0.2.17
       '@types/jest': ^27.4.0
       '@types/node': ^16.11.11
-      chai: ^4.3.4
       cosmiconfig: ^7.0.1
       jest: ^27.4.5
       lodash.compact: ^3.0.1
@@ -125,7 +124,6 @@ importers:
       '@swc/jest': 0.2.17_@swc+core@1.2.137
       '@types/jest': 27.4.0
       '@types/node': 16.11.11
-      chai: 4.3.4
       jest: 27.4.5_ts-node@10.4.0
       ts-jest: 27.1.2_2bbca1cabebf3b65a1d857755c03321e
       ts-node: 10.4.0_2303ef32c023838fca4835269e749249
@@ -4132,7 +4130,7 @@ packages:
       micromatch: 4.0.4
       pretty-format: 27.4.2
       slash: 3.0.0
-      ts-node: 10.4.0_typescript@4.5.5
+      ts-node: 10.4.0_2303ef32c023838fca4835269e749249
     transitivePeerDependencies:
       - bufferutil
       - canvas

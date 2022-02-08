@@ -15,5 +15,6 @@ __exportStar(require("./config"), exports);
 __exportStar(require("./project"), exports);
 __exportStar(require("./fx"), exports);
 __exportStar(require("./effectors"), exports);
+__exportStar(require("./resourceDeps"), exports);
 __exportStar(require("@fx/plugin"), exports);
 //# sourceMappingURL=index.js.map

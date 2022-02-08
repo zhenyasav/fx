@@ -17,10 +17,11 @@ export declare function printResourceId(instance: ResourceInstance): string;
 export declare type ResourceDefinition<TCreateArgs = any> = {
     type: string;
     description?: string;
-    methods: Partial<{
-        create: Method<TCreateArgs>;
+    methods?: {
+        create?: Method<TCreateArgs>;
+    } & {
         [methodName: string]: Method;
-    }>;
+    };
 };
 export declare type Typed = {
     type: string;

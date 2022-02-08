@@ -1,6 +1,4 @@
-import { z } from "zod";
-import inquirer from "inquirer";
-import { promise, ResourceInstance, printResourceId } from "@fx/plugin";
+import { promise, ResourceInstance } from "@fx/plugin";
 import { randomString } from "./util/random";
 import { compact } from "./util/collections";
 import { applyEffects, printEffects } from "./effectors";
@@ -33,7 +31,7 @@ export class Fx {
     const config = await this.config();
     const resources = config?.getResources();
     return resources?.filter(
-      (r) => r.definition && methodName in r.definition?.methods
+      (r) => r.definition?.methods && (methodName in r.definition.methods)
     );
   }
   async invokeMethodOnAllResources(methodName: string) {
@@ -53,7 +51,7 @@ export class Fx {
     const { definition, instance } = resource;
     if (!definition)
       throw new Error(`resoure definition not found for ${instance?.type}`);
-    const method = definition.methods[methodName];
+    const method = definition.methods?.[methodName];
     if (!method)
       throw new Error(
         `the resource ${instance?.type}(${instance?.id}) has no method ${method}`
@@ -121,57 +119,5 @@ export class Fx {
       await config.projectFile.save();
       return instance;
     }
-  }
-  async generateResourceChoiceQuestion(
-    shape: z.ZodTypeAny,
-    key: string | number
-  ) {
-    const config = await this.config();
-    function extract(
-      shape: z.ZodTypeAny,
-      memo?: Partial<inquirer.DistinctQuestion>
-    ): Partial<inquirer.DistinctQuestion> | undefined {
-      if (!shape) return { ...memo, name: key.toString() };
-      const innerShape = shape._def?.innerType;
-      const { defaultValue: dv, description, typeName } = shape._def;
-      if (dv) {
-        return extract(innerShape, {
-          ...memo,
-          default: dv?.(),
-        });
-      }
-      if (description) {
-        return extract(innerShape, {
-          ...memo,
-          message: description,
-        });
-      }
-      if (typeName) {
-        if (typeName == "ZodLiteral") {
-          const resourceType = shape._def.value;
-          const resources = config.getResources();
-          const applicableDefinitions = config
-            .getResourceDefinitions()
-            .filter((def) => def.type == resourceType);
-          if (!applicableDefinitions.length)
-            throw new Error(`unknown resource type ${resourceType}`);
-          const applicableResources = resources.filter(
-            (res) => res.instance.type == resourceType
-          );
-          const resourceChoices = applicableResources.map((res) =>
-            printResourceId(res.instance)
-          );
-          return extract(innerShape, {
-            ...memo,
-            type: "list",
-            choices: [`Create a new '${resourceType}'`, ...resourceChoices],
-            default: 0,
-          });
-        } else if (typeName == "ZodUnion") {
-          return memo;
-        }
-      }
-    }
-    return extract(shape);
   }
 }

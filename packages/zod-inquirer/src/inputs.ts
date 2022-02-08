@@ -54,7 +54,7 @@ export function getQuestion(shape: z.ZodTypeAny): inquirer.Question | null {
 export type QuestionGenerator<T = any> = (
   shape: T[keyof T],
   key: keyof T
-) => inquirer.Question;
+) => inquirer.DistinctQuestion[] | undefined;
 
 export function getQuestions(
   shape: z.ZodRawShape,
@@ -63,7 +63,13 @@ export function getQuestions(
   const q = [];
   for (let k in shape) {
     const v = shape[k];
-    q.push({ ...(getQuestion(v) ?? defaultGenerator?.(v, k)), name: k });
+    const qqn = getQuestion(v);
+    if (qqn) {
+      q.push({ ...qqn, name: k });
+    } else {
+      const qqns = defaultGenerator?.(v, k);
+      if (qqns) q.push(...qqns);
+    }
   }
   return q;
 }

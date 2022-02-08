@@ -22,10 +22,12 @@
         "test",
         "--",
         "--runInBand",
-        "--watchAll=false"
+        "--watchAll=false",
+        "--colors"
       ],
       "skipFiles": [
-        "<node_internals>/**"
+        "<node_internals>/**",
+        "regenerator"
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",

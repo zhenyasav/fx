@@ -2,11 +2,15 @@
   "resources": [
     {
       "type": "foo",
-      "id": "123"
+      "id": "foo-1"
     },
     {
       "type": "foo",
-      "id": "234"
+      "id": "foo-2"
+    },
+    {
+      "type": "bar",
+      "id": "bar-1"
     }
   ]
 }
