@@ -1,5 +1,5 @@
-import { TemplateFunction } from "@nice/fx";
-import { ManifestInput } from "../../src/manifest";
+import { TemplateFunction } from "@nice/ts-template";
+import { ManifestInput } from "../../src/inputs/manifest";
 
 const template: TemplateFunction<ManifestInput> = async (context) => {
   const { input } = context;

@@ -12,7 +12,7 @@ function yogenerator() {
         methods: {
             create: (0, plugin_1.method)({
                 inputShape: exports.yoInput,
-                execute: function (_a) {
+                body: function (_a) {
                     var input = _a.input;
                     return {
                         description: "runs the ".concat(input.generator, " yo generator"),

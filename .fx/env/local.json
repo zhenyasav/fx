@@ -1,0 +1,133 @@
+{
+  "resources": [
+    {
+      "type": "number",
+      "id": "12fa",
+      "name": "bot-port",
+      "inputs": {
+        "create": {
+          "value": 4000
+        }
+      }
+    },
+    {
+      "type": "tunnel",
+      "id": "3cb0",
+      "dependsOn": ["number:12fa"],
+      "inputs": {
+        "create": {
+          "port": { "$resource": "number:12fa" }
+        }
+      },
+      "outputs": {
+        "dev": [
+          {
+            "port": 4000,
+            "url": "https://5530-131-107-147-227.ngrok.io"
+          }
+        ]
+      }
+    },
+    {
+      "type": "azure-bot-service",
+      "id": "abcd",
+      "dependsOn": ["tunnel:3cb0"],
+      "inputs": {
+        "create": {
+          "messagingEndpoint": { "$resource": "tunnel:3cb0" }
+        },
+        "dev": {
+          "messagingEndpoint": "https://5530-131-107-147-227.ngrok.io"
+        }
+      },
+      "outputs": {
+        "dev": {
+          "msaPrincipalId": "____",
+          "msaClientId": "____",
+          "msaTenantId": "____"
+        }
+      }
+    },
+    {
+      "type": "resource-env",
+      "id": "abvd",
+      "dependsOn": ["azure-bot-service:abcd"],
+      "inputs": {
+        "create": {
+          "destination": "apps/teamsapp/packages/bot/.env",
+          "resource": { "$resorce": "azure-bot-service:abcd" },
+          "mappings": {
+            "outputs.dev.msaPrincipalId": "BOT_ID",
+            "outputs.dev.msaClientSecret": "BOT_PASSWORD"
+          }
+        }
+      }
+    },
+    {
+      "type": "resource-env",
+      "id": "abbc",
+      "dependsOn": ["number:12fa"],
+      "inputs": {
+        "create": {
+          "destination": "apps/teamsapp/packages/bot/.env",
+          "resource": { "$resource": "number:12fa" },
+          "mappings": {
+            "inputs.create.value": "PORT"
+          }
+        }
+      }
+    },
+    {
+      "type": "resource-env",
+      "id": "abvd",
+      "dependsOn": ["azure-bot-service:abcd"],
+      "inputs": {
+        "create": {
+          "destination": "apps/teamsapp/build/manifest/.env",
+          "resource": { "$resorce": "azure-bot-service:abcd" },
+          "mappings": {
+            "outputs.dev.msaPrincipalId": "BOT_ID"
+          }
+        }
+      }
+    },
+    {
+      "type": "manifest",
+      "id": "manf",
+      "dependsOn": ["resource-env:abvd"],
+      "inputs": {
+        "create": {
+          "path": "apps/teamsapp/manifest",
+          "output": "apps/teamsapp/build/manifest",
+          "env": "apps/teamsapp/build/manifest/.env"
+        }
+      }
+    },
+    {
+      "type": "teams-bot",
+      "id": "tmsb",
+      "dependsOn": ["azure-bot-service:abcd", "manifest:manf"],
+      "inputs": {
+        "create": {
+          "manifest": { "$resource": "manifest:manf" },
+          "botId": { "$resource": "azure-bot-service:abcd" },
+          "scopes": ["personal"]
+        }
+      }
+    },
+    {
+      "type": "npm-package",
+      "id": "bbac",
+      "dependsOn": [
+        "resource-env:aabc",
+        "resource-env:abvd",
+        "teams-bot:tmsb"
+      ],
+      "inputs": {
+        "create": {
+          "path": "apps/teamsapp/packages/bot"
+        }
+      }
+    }
+  ]
+}

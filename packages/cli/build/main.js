@@ -92,7 +92,7 @@ var parser = (0, yargs_1.default)(process.argv.slice(2))
         switch (_b.label) {
             case 0: return [4 /*yield*/, fx.config()];
             case 1:
-                resources = (_a = (_b.sent())) === null || _a === void 0 ? void 0 : _a.getAllResourceDefinitions();
+                resources = (_a = (_b.sent())) === null || _a === void 0 ? void 0 : _a.getResourceDefinitions();
                 if (!resources.length) {
                     (0, prettyPrint_1.info)("there are no resource definitions installed in this project");
                 }
@@ -116,17 +116,26 @@ var parser = (0, yargs_1.default)(process.argv.slice(2))
         describe: "how to name the new thing",
     });
 }, function (argv) { return __awaiter(void 0, void 0, void 0, function () {
-    var type, name, dry, d, v, verbose, $0, _, rest;
+    var type, name, dry, d, v, verbose, $0, _, rest, instance, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 type = argv.type, name = argv.name, dry = argv.dry, d = argv.d, v = argv.v, verbose = argv.verbose, $0 = argv.$0, _ = argv._, rest = __rest(argv, ["type", "name", "dry", "d", "v", "verbose", "$0", "_"]);
                 if (!type)
                     throw new Error("type is required");
-                return [4 /*yield*/, fx.createResource(type, __assign(__assign({}, rest), { name: name }), !!dry)];
+                _a.label = 1;
             case 1:
-                _a.sent();
-                return [2 /*return*/];
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, fx.createResource(type, __assign(__assign({}, rest), { name: name }), !!dry)];
+            case 2:
+                instance = _a.sent();
+                console.log("added resource:", JSON.stringify(instance, null, 2));
+                return [3 /*break*/, 4];
+            case 3:
+                err_1 = _a.sent();
+                console.error(err_1.message);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
         }
     });
 }); })
@@ -145,6 +154,10 @@ var parser = (0, yargs_1.default)(process.argv.slice(2))
                 return [4 /*yield*/, fx.config()];
             case 1:
                 config = _b.sent();
+                if (!config.project) {
+                    console.log("project is empty");
+                    return [2 /*return*/];
+                }
                 resources = type
                     ? (_a = config.project.resources) === null || _a === void 0 ? void 0 : _a.filter(function (res) { return res.type == type; })
                     : config.project.resources;
@@ -160,10 +173,12 @@ var parser = (0, yargs_1.default)(process.argv.slice(2))
         switch (_a.label) {
             case 0:
                 arg = argv._[0];
-                if (!arg)
-                    throw new Error("at least one command is required");
+                if (!arg) {
+                    console.error('at least one command is required');
+                    return [2 /*return*/];
+                }
                 methodName = arg.toString();
-                return [4 /*yield*/, fx.getResourcesInProjectWithMethod(methodName)];
+                return [4 /*yield*/, fx.getResourcesWithMethod(methodName)];
             case 1:
                 resources = _a.sent();
                 if (!!resources.length) return [3 /*break*/, 3];
@@ -171,7 +186,7 @@ var parser = (0, yargs_1.default)(process.argv.slice(2))
                 return [4 /*yield*/, fx.config()];
             case 2:
                 config_2 = _a.sent();
-                defs = config_2.getAllResourceDefinitions().filter(function (res) {
+                defs = config_2.getResourceDefinitions().filter(function (res) {
                     return methodName in res.methods;
                 });
                 if (defs === null || defs === void 0 ? void 0 : defs.length) {
@@ -180,7 +195,7 @@ var parser = (0, yargs_1.default)(process.argv.slice(2))
                 }
                 process.exit(1);
                 _a.label = 3;
-            case 3: return [4 /*yield*/, fx.invokeMethod(methodName)];
+            case 3: return [4 /*yield*/, fx.invokeMethodOnAllResources(methodName)];
             case 4:
                 _a.sent();
                 return [2 /*return*/];
@@ -190,7 +205,7 @@ var parser = (0, yargs_1.default)(process.argv.slice(2))
     .showHelpOnFail(false);
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var err_1, _a, _b;
+        var err_2, _a, _b;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -201,8 +216,8 @@ function main() {
                     _c.sent();
                     return [3 /*break*/, 4];
                 case 2:
-                    err_1 = _c.sent();
-                    (0, prettyPrint_1.error)("".concat(err_1 === null || err_1 === void 0 ? void 0 : err_1.message, "\n"));
+                    err_2 = _c.sent();
+                    (0, prettyPrint_1.error)("".concat(err_2 === null || err_2 === void 0 ? void 0 : err_2.message, "\n"));
                     _b = (_a = console).info;
                     return [4 /*yield*/, parser.getHelp()];
                 case 3:

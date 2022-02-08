@@ -14,7 +14,12 @@ export declare namespace Effect {
         name: string;
         args?: string[];
     };
-    type Any = WriteFile | Shell | PackageScript;
+    type Function = {
+        type: "function";
+        description?: string;
+        body: () => any;
+    };
+    type Any = WriteFile | Function | Shell;
 }
 export declare type Effector<T extends {
     type: string;

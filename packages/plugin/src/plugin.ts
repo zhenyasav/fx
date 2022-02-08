@@ -17,47 +17,59 @@ export type Plugin = {
   resources(): MaybePromise<ResourceDefinition[]>;
 };
 
-export type ResourceDefinition = {
+export type ResourceInstance<TInput = any, TOutput = any> = {
+  id: string;
   type: string;
-  description?: string;
-  methods: {
-    create: Method;
-    [methodName: string]: Method;
-  };
+  inputs?: TInput;
+  outputs?: TOutput; 
 };
 
-export type Method<TInput = any> = {
-  getInput?(defaults?: Partial<TInput>): MaybePromise<TInput>;
-  execute?(context: { input: TInput }): MaybePromise<MethodResult>;
+export type ResourceDefinition<TCreateArgs = any> = {
+  type: string;
+  description?: string;
+  methods: Partial<{
+    create: Method<TCreateArgs>;
+    [methodName: string]: Method;
+  }>;
+};
+
+export type Typed = { type: string };
+
+export type Method<
+  TInput = any,
+  TOutput = any,
+  TEffect extends Typed = Effect.Any
+> = {
+  inputs?(defaults?: Partial<TInput>): MaybePromise<TInput>;
+  body?(context: {
+    input: TInput;
+  }): MaybePromise<MethodResult<TOutput, TEffect>>;
+};
+
+export type MethodResult<
+  TValue = any,
+  TEffect extends Typed = Effect.Any
+> = void | {
+  description?: string;
+  value?: TValue;
+  effects?: TEffect[];
 };
 
 export function method<T extends z.ZodObject<z.ZodRawShape>>({
   inputShape,
   ...rest
-}: { inputShape?: T } & Pick<
-  Method<z.infer<T>>,
-  "execute"
->): Method<z.infer<T>> {
+}: { inputShape?: T } & Pick<Method<z.infer<T>>, "body">): Method<z.infer<T>> {
   return inputShape
     ? {
-        getInput(defaults?: Partial<z.infer<T>>) {
+        inputs(defaults?: Partial<z.infer<T>>) {
           return inquire(inputShape, defaults);
         },
         ...rest,
       }
     : {
-        getInput(defaults: z.infer<T>) {
+        inputs(defaults: z.infer<T>) {
           return defaults;
         },
         ...rest,
       };
 }
-
-export type MethodResult<
-  TEffect extends { type: string } = Effect.Any,
-  TValue = any
-> = void | {
-  description?: string;
-  value?: TValue;
-  effects: TEffect[];
-};

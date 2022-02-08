@@ -1,0 +1,15 @@
+{
+  "name": "teamsapp",
+  "version": "0.0.1",
+  "description": "",
+  "devDependencies": {
+    "@microsoft/teamsfx-cli": "^0.*"
+  },
+  "scripts": {
+    "teamsfx": "teamsfx"
+  },
+  "license": "MIT",
+  "workspaces": {
+    "packages": "./packages/*"
+  }
+}

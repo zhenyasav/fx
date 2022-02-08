@@ -46,11 +46,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Fx = void 0;
 var plugin_1 = require("@fx/plugin");
 var random_1 = require("./util/random");
-var util_1 = require("./util");
+var collections_1 = require("./util/collections");
 var config_1 = require("./config");
 var effectors_1 = require("./effectors");
 var Fx = /** @class */ (function () {
@@ -80,111 +91,126 @@ var Fx = /** @class */ (function () {
             });
         });
     };
-    Fx.prototype.createResource = function (type, inputs, dryRun) {
-        if (dryRun === void 0) { dryRun = true; }
+    Fx.prototype.getResourcesWithMethod = function (methodName) {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            return __generator(this, function (_a) {
-                (0, util_1.safe)(function () { return __awaiter(_this, void 0, void 0, function () {
-                    var config, resource, input;
-                    var _this = this;
-                    var _a, _b;
-                    return __generator(this, function (_c) {
-                        switch (_c.label) {
-                            case 0: return [4 /*yield*/, this.config()];
-                            case 1:
-                                config = _c.sent();
-                                resource = config.getResourceDefinitionByType(type);
-                                if (!resource)
-                                    throw new Error("resource type not found");
-                                return [4 /*yield*/, (0, plugin_1.promise)((_b = (_a = resource.methods.create).getInput) === null || _b === void 0 ? void 0 : _b.call(_a, inputs !== null && inputs !== void 0 ? inputs : {}))];
-                            case 2:
-                                input = _c.sent();
-                                return [4 /*yield*/, (0, util_1.timed)(function () { return __awaiter(_this, void 0, void 0, function () {
-                                        var createResult, _a, effects, value, description;
-                                        var _b, _c;
-                                        return __generator(this, function (_d) {
-                                            switch (_d.label) {
-                                                case 0: return [4 /*yield*/, (0, plugin_1.promise)((_c = (_b = resource.methods.create).execute) === null || _c === void 0 ? void 0 : _c.call(_b, {
-                                                        input: input,
-                                                    }))];
-                                                case 1:
-                                                    createResult = _d.sent();
-                                                    _a = __assign({ effects: [], value: null, description: "create ".concat(type).concat(!!(inputs === null || inputs === void 0 ? void 0 : inputs.name) ? " named '".concat(inputs.name, "'") : "") }, createResult), effects = _a.effects, value = _a.value, description = _a.description;
-                                                    if (!effects) return [3 /*break*/, 4];
-                                                    if (!dryRun) return [3 /*break*/, 2];
-                                                    (0, effectors_1.printEffects)(effects, description);
-                                                    return [3 /*break*/, 4];
-                                                case 2: return [4 /*yield*/, (0, effectors_1.applyEffects)(effects, description)];
-                                                case 3:
-                                                    _d.sent();
-                                                    _d.label = 4;
-                                                case 4:
-                                                    if (!!dryRun) return [3 /*break*/, 6];
-                                                    config.project.resources.push(__assign({ type: type, id: (0, random_1.randomString)(), input: input }, (value ? { output: value } : {})));
-                                                    return [4 /*yield*/, config.projectFile.save()];
-                                                case 5:
-                                                    _d.sent();
-                                                    _d.label = 6;
-                                                case 6: return [2 /*return*/];
-                                            }
-                                        });
-                                    }); })];
-                            case 3:
-                                _c.sent();
-                                return [2 /*return*/];
-                        }
-                    });
-                }); });
-                return [2 /*return*/];
-            });
-        });
-    };
-    Fx.prototype.getResourceDefinitionsInProject = function (predicate) {
-        return __awaiter(this, void 0, void 0, function () {
-            var config;
+            var config, resources;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.config()];
                     case 1:
                         config = _a.sent();
-                        return [2 /*return*/, config.project.resources.reduce(function (memo, instance) {
-                                var res = config.getResourceDefinitionByType(instance.type);
-                                if (res && (!predicate || (predicate === null || predicate === void 0 ? void 0 : predicate(res))))
-                                    memo.push(res);
-                                return memo;
-                            }, [])];
+                        resources = config === null || config === void 0 ? void 0 : config.getResources();
+                        return [2 /*return*/, resources === null || resources === void 0 ? void 0 : resources.filter(function (r) { var _a; return r.definition && methodName in ((_a = r.definition) === null || _a === void 0 ? void 0 : _a.methods); })];
                 }
             });
         });
     };
-    Fx.prototype.getResourcesInProjectWithMethod = function (methodName) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, this.getResourceDefinitionsInProject(function (resource) {
-                        return methodName in resource.methods;
-                    })];
-            });
-        });
-    };
-    Fx.prototype.invokeMethod = function (methodName) {
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
+    Fx.prototype.invokeMethodOnAllResources = function (methodName) {
         return __awaiter(this, void 0, void 0, function () {
             var resources;
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.getResourcesInProjectWithMethod(methodName)];
+                    case 0: return [4 /*yield*/, this.getResourcesWithMethod(methodName)];
                     case 1:
                         resources = _a.sent();
                         if (!resources)
                             return [2 /*return*/];
                         resources.forEach(function (res) {
-                            console.log('invoking', res.type, methodName);
+                            console.log("invoking ".concat(res.instance.type, ".").concat(methodName));
+                            _this.invokeResourceMethod(res, methodName);
                         });
                         return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Fx.prototype.invokeResourceMethod = function (resource, methodName, options) {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function () {
+            var _c, dryRun, defaultArgs, definition, instance, method, input, methodResult, _d, effects, value, description, rest, effectResults, _e, config;
+            return __generator(this, function (_f) {
+                switch (_f.label) {
+                    case 0:
+                        _c = __assign({ dryRun: false }, options), dryRun = _c.dryRun, defaultArgs = _c.defaultArgs;
+                        definition = resource.definition, instance = resource.instance;
+                        if (!definition)
+                            throw new Error("resoure definition not found for ".concat(instance === null || instance === void 0 ? void 0 : instance.type));
+                        method = definition.methods[methodName];
+                        if (!method)
+                            throw new Error("the resource ".concat(instance === null || instance === void 0 ? void 0 : instance.type, "(").concat(instance === null || instance === void 0 ? void 0 : instance.id, ") has no method ").concat(method));
+                        return [4 /*yield*/, (0, plugin_1.promise)((_a = method.inputs) === null || _a === void 0 ? void 0 : _a.call(method, defaultArgs))];
+                    case 1:
+                        input = _f.sent();
+                        return [4 /*yield*/, (0, plugin_1.promise)((_b = method.body) === null || _b === void 0 ? void 0 : _b.call(method, {
+                                input: input,
+                            }))];
+                    case 2:
+                        methodResult = _f.sent();
+                        _d = __assign({ effects: [], value: null, description: "".concat(methodName, " ").concat(definition.type).concat(!!(input === null || input === void 0 ? void 0 : input.name) ? " named '".concat(input.name, "'") : "") }, methodResult), effects = _d.effects, value = _d.value, description = _d.description, rest = __rest(_d, ["effects", "value", "description"]);
+                        if (!(effects === null || effects === void 0 ? void 0 : effects.length)) return [3 /*break*/, 7];
+                        if (!dryRun) return [3 /*break*/, 3];
+                        (0, effectors_1.printEffects)(effects, description);
+                        return [3 /*break*/, 7];
+                    case 3:
+                        _e = collections_1.compact;
+                        return [4 /*yield*/, (0, effectors_1.applyEffects)(effects, description)];
+                    case 4:
+                        effectResults = _e.apply(void 0, [_f.sent()]);
+                        if (input) {
+                            instance.inputs = instance.inputs || {};
+                            instance.inputs[methodName] = input;
+                        }
+                        if (effectResults === null || effectResults === void 0 ? void 0 : effectResults.length) {
+                            instance.outputs = instance.outputs || {};
+                            instance.outputs[methodName] = effectResults;
+                        }
+                        return [4 /*yield*/, this.config()];
+                    case 5:
+                        config = _f.sent();
+                        return [4 /*yield*/, config.projectFile.save()];
+                    case 6:
+                        _f.sent();
+                        _f.label = 7;
+                    case 7: return [2 /*return*/, __assign({ effects: effects, value: value, description: description }, rest)];
+                }
+            });
+        });
+    };
+    Fx.prototype.createResource = function (type, inputs, dryRun) {
+        if (dryRun === void 0) { dryRun = true; }
+        return __awaiter(this, void 0, void 0, function () {
+            var config, definition, instance;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.config()];
+                    case 1:
+                        config = _a.sent();
+                        definition = config.getResourceDefinition(type);
+                        if (!definition)
+                            throw new Error("resource type not found");
+                        instance = {
+                            id: (0, random_1.randomString)(),
+                            type: type,
+                            inputs: inputs,
+                            outputs: {},
+                        };
+                        return [4 /*yield*/, this.invokeResourceMethod({
+                                instance: instance,
+                                definition: definition,
+                            }, "create", {
+                                dryRun: dryRun,
+                                defaultArgs: inputs,
+                            })];
+                    case 2:
+                        _a.sent();
+                        if (!!dryRun) return [3 /*break*/, 4];
+                        config.project.resources.push(instance);
+                        return [4 /*yield*/, config.projectFile.save()];
+                    case 3:
+                        _a.sent();
+                        return [2 /*return*/, instance];
+                    case 4: return [2 /*return*/];
                 }
             });
         });

@@ -5,6 +5,7 @@
   "scripts": {
     "clean": "rm -rf build && tsc --build --clean",
     "build": "tsc",
+    "build:swc": "swc src -d build",
     "check": "tsc --noEmit",
     "test": "jest"
   },
@@ -12,14 +13,18 @@
     "@endemolshinegroup/cosmiconfig-typescript-loader": "^3.0.2",
     "@fx/plugin": "workspace:^1.0.0",
     "@nice/ts-template": "workspace:^1.0.0",
-    "chai": "^4.3.4",
     "cosmiconfig": "^7.0.1",
     "lodash.compact": "^3.0.1",
     "mkdirp": "^1.0.4",
     "zod": "^3.11.6"
   },
   "devDependencies": {
+    "chai": "^4.3.4",
+    "@swc/cli": "^0.1.55",
+    "@swc/core": "^1.2.137",
+    "@swc/jest": "^0.2.17",
     "@types/jest": "^27.4.0",
+    "@types/node": "^16.11.11",
     "jest": "^27.4.5",
     "ts-jest": "^27.1.2",
     "ts-node": "^10.4.0",

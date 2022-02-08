@@ -64,7 +64,7 @@ function template(options) {
         methods: {
             create: (0, plugin_1.method)({
                 inputShape: input !== null && input !== void 0 ? input : exports.templateInput,
-                execute: function (_a) {
+                body: function (_a) {
                     var input = _a.input;
                     return __awaiter(this, void 0, void 0, function () {
                         var od, files;

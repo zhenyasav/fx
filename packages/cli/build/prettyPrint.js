@@ -17,7 +17,8 @@ function printResourceDefinition(resource) {
 exports.printResourceDefinition = printResourceDefinition;
 function printResourceInstance(resource) {
     console.log("".concat(white(resource.type), " ").concat(gray(resource.id)));
-    console.log(gray(JSON.stringify(resource.input, null, 2)));
+    if (resource === null || resource === void 0 ? void 0 : resource.inputs)
+        console.log(gray(JSON.stringify(resource.inputs, null, 2)));
 }
 exports.printResourceInstance = printResourceInstance;
 function warn() {
@@ -25,7 +26,7 @@ function warn() {
     for (var _i = 0; _i < arguments.length; _i++) {
         args[_i] = arguments[_i];
     }
-    console.warn.apply(console, (args).map(function (c) { return yellow(c); }));
+    console.warn.apply(console, args.map(function (c) { return yellow(c); }));
 }
 exports.warn = warn;
 function error() {

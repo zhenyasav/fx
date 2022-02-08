@@ -63,14 +63,16 @@ var WriteFile = {
         });
     },
 };
-var PackageScript = {
+var Function = {
     describe: function (e) {
-        return "run package script ".concat(e.name);
+        var _a;
+        return (_a = e.description) !== null && _a !== void 0 ? _a : "execute function";
     },
     apply: function (e) {
+        var _a;
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                throw new Error("not implemented");
+            return __generator(this, function (_b) {
+                return [2 /*return*/, (_a = e.body) === null || _a === void 0 ? void 0 : _a.call(e)];
             });
         });
     },
@@ -97,7 +99,7 @@ var Shell = {
 };
 var Effectors = {
     "write-file": WriteFile,
-    "package-script": PackageScript,
+    function: Function,
     shell: Shell,
 };
 function getEffector(e) {
@@ -113,8 +115,7 @@ function applyEffects(effects, caption) {
                     if (caption)
                         console.info("plan: ".concat(caption));
                     if (!(effects === null || effects === void 0 ? void 0 : effects.length)) {
-                        console.info("nothing to do");
-                        return [2 /*return*/];
+                        return [2 /*return*/, []];
                     }
                     console.info("cwd:", process.cwd());
                     console.info("\n".concat(effects.length, " actions:"));
@@ -125,9 +126,7 @@ function applyEffects(effects, caption) {
                     }));
                     console.log("\nexecuting ...");
                     return [4 /*yield*/, tasks];
-                case 1:
-                    _a.sent();
-                    return [2 /*return*/];
+                case 1: return [2 /*return*/, _a.sent()];
             }
         });
     });

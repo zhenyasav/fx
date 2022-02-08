@@ -9,10 +9,10 @@ export function aadAppRegistration(): ResourceDefinition {
     methods: {
       create: method({
         inputShape: z.object({ name: z.string().describe("application name") }),
-        execute({ input }) {},
+        body({ input }) {},
       }),
       provision: method({
-        async execute() {
+        async body() {
           // const token = "";
           // const result = await GraphClient.createAADApp(token, {});
           console.log("woohoo");

@@ -35,7 +35,7 @@ const parser = yargs(process.argv.slice(2))
     "search resources",
     (yargs) => yargs,
     async (args) => {
-      const resources = (await fx.config())?.getAllResourceDefinitions();
+      const resources = (await fx.config())?.getResourceDefinitions();
       if (!resources.length) {
         info("there are no resource definitions installed in this project");
       } else {
@@ -62,7 +62,12 @@ const parser = yargs(process.argv.slice(2))
     async (argv) => {
       const { type, name, dry, d, v, verbose, $0, _, ...rest } = argv;
       if (!type) throw new Error("type is required");
-      await fx.createResource(type, { ...rest, name }, !!dry);
+      try {
+        const instance = await fx.createResource(type, { ...rest, name }, !!dry)
+        console.log("added resource:", JSON.stringify(instance, null, 2));
+      } catch (err: any) {
+        console.error(err.message);
+      }
     }
   )
   .command(
@@ -77,6 +82,10 @@ const parser = yargs(process.argv.slice(2))
     async (argv) => {
       const { type } = argv;
       const config = await fx.config();
+      if (!config.project) {
+        console.log(`project is empty`);
+        return;
+      }
       const resources = type
         ? config.project.resources?.filter((res) => res.type == type)
         : config.project.resources;
@@ -90,15 +99,18 @@ const parser = yargs(process.argv.slice(2))
     () => {},
     async (argv) => {
       const [arg] = argv._;
-      if (!arg) throw new Error("at least one command is required");
+      if (!arg)  {
+        console.error('at least one command is required');
+        return;
+      }
       const methodName = arg.toString();
-      const resources = await fx.getResourcesInProjectWithMethod(methodName);
+      const resources = await fx.getResourcesWithMethod(methodName);
       if (!resources.length) {
         error(
           "there are no configured resources in the project supporting this method"
         );
         const config = await fx.config();
-        const defs = config.getAllResourceDefinitions().filter((res) => {
+        const defs = config.getResourceDefinitions().filter((res) => {
           return methodName in res.methods;
         });
         if (defs?.length) {
@@ -109,7 +121,7 @@ const parser = yargs(process.argv.slice(2))
         }
         process.exit(1);
       }
-      await fx.invokeMethod(methodName);
+      await fx.invokeMethodOnAllResources(methodName);
     }
   )
   .showHelpOnFail(false);

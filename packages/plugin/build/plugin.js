@@ -35,9 +35,9 @@ exports.promise = promise;
 function method(_a) {
     var inputShape = _a.inputShape, rest = __rest(_a, ["inputShape"]);
     return inputShape
-        ? __assign({ getInput: function (defaults) {
+        ? __assign({ inputs: function (defaults) {
                 return (0, zod_inquirer_1.inquire)(inputShape, defaults);
-            } }, rest) : __assign({ getInput: function (defaults) {
+            } }, rest) : __assign({ inputs: function (defaults) {
             return defaults;
         } }, rest);
 }

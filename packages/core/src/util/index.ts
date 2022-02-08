@@ -1,3 +1,4 @@
+export * from "./collections";
 export * from "./ellipsis";
 export * from "./files";
 export * from "./promises";

@@ -17,6 +17,10 @@ const filterStonks = (stonks: Stonk[]) => {
   return [...top, ...bottom];
 };
 
+function callbackUrl() {
+  return ``
+}
+
 export function binanceCard(data: BinanceCardData) {
   return {
     $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
@@ -98,5 +102,12 @@ export function binanceCard(data: BinanceCardData) {
         ],
       },
     ],
+    actions: [
+      {
+        type: "Action.OpenUrl",
+        title: "Predict the future",
+        url: callbackUrl()
+      }
+    ]
   };
 }

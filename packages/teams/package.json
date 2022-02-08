@@ -9,8 +9,10 @@
   },
   "dependencies": {
     "@fx/aad": "workspace:^0.0.1",
+    "@fx/bots": "workspace:^0.0.1",
     "@fx/plugin": "workspace:^1.0.0",
     "@fx/templates": "workspace:^1.0.0",
+    "@fx/tunnel": "workspace:^0.0.1",
     "@fx/yo": "workspace:^1.0.0",
     "@nice/ts-template": "workspace:^1.0.0",
     "zod": "^3.11.6"

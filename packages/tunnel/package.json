@@ -1,0 +1,21 @@
+{
+  "name": "@fx/tunnel",
+  "version": "0.0.1",
+  "main": "build/index.js",
+  "typings": "build/index.d.ts",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "clean": "rm -rf build && tsc --build --clean",
+    "build": "tsc",
+    "test": "node -r @swc-node/register src/test.ts"
+  },
+  "dependencies": {
+    "@fx/plugin": "workspace:^1.0.0",
+    "ngrok": "^4.3.0"
+  },
+  "devDependencies": {
+    "@swc-node/register": "^1.4.2",
+    "regenerator-runtime": "^0.13.9",
+    "swc-node": "^1.0.0"
+  }
+}

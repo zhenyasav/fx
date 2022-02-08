@@ -1,15 +1,9 @@
 import path from "path";
 import { JSONFile } from "@nice/ts-template";
+import { ResourceInstance } from "@fx/plugin";
 
 export const FRAMEWORK_FOLDER = `.fx`;
 export const PROJECT_FILE_NAME = "project.json";
-
-export type ResourceInstance<TInput = any, TOutput = any> = {
-  type: string;
-  input: TInput;
-  output?: TOutput; 
-  id: string;
-};
 
 export type Project = {
   resources: ResourceInstance[];

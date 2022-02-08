@@ -4,7 +4,6 @@
   "description": "developer automation",
   "scripts": {
     "build": "pnpm run build -r --if-present",
-    "build:tsc": "pnpm run build:tsc -r --if-present",
     "clean": "pnpm run clean -r --if-present",
     "fx": "pnpm exec fx"
   },
@@ -24,5 +23,8 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zhenyasav/fx.git"
+  },
+  "dependencies": {
+    "@fx/tunnel": "workspace:^0.0.1"
   }
 }

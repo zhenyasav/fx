@@ -18,7 +18,13 @@ export namespace Effect {
     args?: string[];
   };
 
-  export type Any = WriteFile | Shell | PackageScript;
+  export type Function = {
+    type: "function";
+    description?: string;
+    body: () => any;
+  }
+
+  export type Any = WriteFile | Function | Shell; 
 }
 
 export type Effector<T extends { type: string } = Effect.Any> = {

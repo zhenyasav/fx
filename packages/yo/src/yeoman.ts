@@ -13,7 +13,7 @@ export function yogenerator(): ResourceDefinition {
     methods: {
       create: method({
         inputShape: yoInput,
-        execute({ input }) {
+        body({ input }) {
           return {
             description: `runs the ${input.generator} yo generator`,
             effects: [],

@@ -32,7 +32,7 @@ export function template<
     methods: {
       create: method({
         inputShape: input ?? templateInput,
-        async execute({ input }) {
+        async body({ input }) {
           const od =
             typeof outputDirectory == "string"
               ? outputDirectory

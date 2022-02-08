@@ -64,7 +64,7 @@ exports.ConfigLoader = void 0;
 var path_1 = __importDefault(require("path"));
 var cosmiconfig_1 = require("cosmiconfig");
 var cosmiconfig_typescript_loader_1 = __importDefault(require("@endemolshinegroup/cosmiconfig-typescript-loader"));
-var _1 = require(".");
+var project_1 = require("./project");
 var ConfigLoader = /** @class */ (function () {
     function ConfigLoader() {
         this.cosmiconfig = (0, cosmiconfig_1.cosmiconfig)("fx", {
@@ -91,7 +91,7 @@ var ConfigLoader = /** @class */ (function () {
     }
     ConfigLoader.prototype.load = function (options) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, cwd, configFile, file, _b, plugins, allResources_1, resourcesByPlugin, resourcesByType_1, _i, _c, plugin, resources, _d, resources_1, resource, projectFile, err_1, loaded;
+            var _a, cwd, configFile, file, _b, plugins, allDefs_1, defsByPlugin, defsByType_1, _i, _c, plugin, defs, _d, defs_1, def, projectFile_1, err_1, loaded;
             return __generator(this, function (_e) {
                 switch (_e.label) {
                     case 0:
@@ -110,9 +110,9 @@ var ConfigLoader = /** @class */ (function () {
                         file = _b;
                         if (!file) return [3 /*break*/, 13];
                         plugins = file.config.plugins;
-                        allResources_1 = [];
-                        resourcesByPlugin = new Map();
-                        resourcesByType_1 = new Map();
+                        allDefs_1 = [];
+                        defsByPlugin = new Map();
+                        defsByType_1 = new Map();
                         _i = 0, _c = plugins !== null && plugins !== void 0 ? plugins : [];
                         _e.label = 5;
                     case 5:
@@ -120,25 +120,25 @@ var ConfigLoader = /** @class */ (function () {
                         plugin = _c[_i];
                         return [4 /*yield*/, plugin.resources()];
                     case 6:
-                        resources = _e.sent();
-                        resourcesByPlugin.set(plugin, resources);
-                        for (_d = 0, resources_1 = resources; _d < resources_1.length; _d++) {
-                            resource = resources_1[_d];
-                            resourcesByType_1.set(resource.type, { resource: resource, plugin: plugin });
-                            allResources_1.push(resource);
+                        defs = _e.sent();
+                        defsByPlugin.set(plugin, defs);
+                        for (_d = 0, defs_1 = defs; _d < defs_1.length; _d++) {
+                            def = defs_1[_d];
+                            defsByType_1.set(def.type, { definition: def, plugin: plugin });
+                            allDefs_1.push(def);
                         }
                         _e.label = 7;
                     case 7:
                         _i++;
                         return [3 /*break*/, 5];
                     case 8:
-                        projectFile = new _1.ProjectFile({
+                        projectFile_1 = new project_1.ProjectFile({
                             projectFolder: path_1.default.dirname(file.filepath),
                         });
                         _e.label = 9;
                     case 9:
                         _e.trys.push([9, 11, , 12]);
-                        return [4 /*yield*/, projectFile.load()];
+                        return [4 /*yield*/, projectFile_1.load()];
                     case 10:
                         _e.sent();
                         return [3 /*break*/, 12];
@@ -146,11 +146,22 @@ var ConfigLoader = /** @class */ (function () {
                         err_1 = _e.sent();
                         return [3 /*break*/, 12];
                     case 12:
-                        loaded = __assign(__assign({ configFilePath: file.filepath, project: projectFile.parsed, projectFile: projectFile }, file.config), { getResourceDefinitionByType: function (type) {
+                        projectFile_1.parsed = __assign({ resources: [] }, projectFile_1.parsed);
+                        loaded = __assign(__assign({ configFilePath: file.filepath, project: projectFile_1.parsed, projectFile: projectFile_1 }, file.config), { getResourceDefinition: function (type) {
                                 var _a, _b;
-                                return (_b = (_a = resourcesByType_1.get(type)) === null || _a === void 0 ? void 0 : _a.resource) !== null && _b !== void 0 ? _b : null;
-                            }, getAllResourceDefinitions: function () {
-                                return __spreadArray([], allResources_1, true);
+                                return (_b = (_a = defsByType_1.get(type)) === null || _a === void 0 ? void 0 : _a.definition) !== null && _b !== void 0 ? _b : null;
+                            }, getResourceDefinitions: function () {
+                                return __spreadArray([], allDefs_1, true);
+                            }, getResources: function () {
+                                var _a, _b, _c;
+                                return (_c = (_b = (_a = projectFile_1.parsed) === null || _a === void 0 ? void 0 : _a.resources) === null || _b === void 0 ? void 0 : _b.map(function (r) {
+                                    var _a;
+                                    var definition = (_a = defsByType_1.get(r.type)) === null || _a === void 0 ? void 0 : _a.definition;
+                                    return {
+                                        instance: r,
+                                        definition: definition
+                                    };
+                                })) !== null && _c !== void 0 ? _c : [];
                             } });
                         return [2 /*return*/, loaded];
                     case 13: throw new Error("fx project configuration file not found");

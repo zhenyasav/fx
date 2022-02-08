@@ -7,27 +7,34 @@ export declare type Plugin = {
     readonly name: string;
     resources(): MaybePromise<ResourceDefinition[]>;
 };
-export declare type ResourceDefinition = {
+export declare type ResourceInstance<TInput = any, TOutput = any> = {
+    id: string;
+    type: string;
+    inputs?: TInput;
+    outputs?: TOutput;
+};
+export declare type ResourceDefinition<TCreateArgs = any> = {
     type: string;
     description?: string;
-    methods: {
-        create: Method;
+    methods: Partial<{
+        create: Method<TCreateArgs>;
         [methodName: string]: Method;
-    };
+    }>;
 };
-export declare type Method<TInput = any> = {
-    getInput?(defaults?: Partial<TInput>): MaybePromise<TInput>;
-    execute?(context: {
+export declare type Typed = {
+    type: string;
+};
+export declare type Method<TInput = any, TOutput = any, TEffect extends Typed = Effect.Any> = {
+    inputs?(defaults?: Partial<TInput>): MaybePromise<TInput>;
+    body?(context: {
         input: TInput;
-    }): MaybePromise<MethodResult>;
+    }): MaybePromise<MethodResult<TOutput, TEffect>>;
+};
+export declare type MethodResult<TValue = any, TEffect extends Typed = Effect.Any> = void | {
+    description?: string;
+    value?: TValue;
+    effects?: TEffect[];
 };
 export declare function method<T extends z.ZodObject<z.ZodRawShape>>({ inputShape, ...rest }: {
     inputShape?: T;
-} & Pick<Method<z.infer<T>>, "execute">): Method<z.infer<T>>;
-export declare type MethodResult<TEffect extends {
-    type: string;
-} = Effect.Any, TValue = any> = void | {
-    description?: string;
-    value?: TValue;
-    effects: TEffect[];
-};
+} & Pick<Method<z.infer<T>>, "body">): Method<z.infer<T>>;

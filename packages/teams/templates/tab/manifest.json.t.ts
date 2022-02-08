@@ -1,5 +1,5 @@
-import { TemplateFunction } from "@nice/fx";
-import { TabInput } from "../../src/tab";
+import { TemplateFunction } from "@nice/ts-template";
+import { TabInput } from "../../src/inputs/tab";
 
 const template: TemplateFunction<TabInput> = async (context) => {
   // const { input } = context;

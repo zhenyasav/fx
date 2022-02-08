@@ -1,18 +1,20 @@
 import path from "path";
 import { Plugin } from "@fx/plugin";
 import { template } from "@fx/templates";
-import { manifestInput } from "./manifest.js";
-import { tabInput } from "./tab.js";
-// import { aadAppRegistration } from "@fx/aad";
-// import { yogenerator } from "@fx/yo";
+import { manifestInput } from "./inputs/manifest";
+import { tabInput } from "./inputs/tab";
+import { botRegistration } from "@fx/bots";
+import { tunnel } from "@fx/tunnel";
+import { teamsBot } from "./teamsBot";
 
 export function teams(): Plugin {
   return {
     name: "teams",
     resources() {
       return [
-        // yogenerator({ name: 'teams' }),
-        // aadAppRegistration(),
+        teamsBot(),
+        botRegistration(),
+        tunnel(),
         template({
           name: "manifest",
           description: "Create a Teams manifest template and build scripts",

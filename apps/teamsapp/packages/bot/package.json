@@ -1,0 +1,38 @@
+{
+  "name": "echobot",
+  "version": "1.0.0",
+  "description": "Microsoft Teams Toolkit hello world Bot sample",
+  "author": "Microsoft",
+  "license": "MIT",
+  "main": "./lib/index.js",
+  "scripts": {
+    "clean": "shx rm -rf ./lib",
+    "build": "tsc",
+    "start": "node lib/index.js",
+    "dev": "teamsfx preview --local",
+    "dev:inspect": "NODE_OPTIONS=--inspect teamsfx preview --local",
+    "watch": "nodemon --watch ./src -e ts --exec \"npm run start\"",
+    "provision": "teamsfx provision",
+    "deploy": "teamsfx deploy",
+    "teamsfx": "teamsfx"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com"
+  },
+  "dependencies": {
+    "@microsoft/adaptivecards-tools": "^0.1.2",
+    "botbuilder": "~4.14.0",
+    "botbuilder-dialogs": "~4.14.0",
+    "isomorphic-fetch": "^3.0.0",
+    "restify": "^8.5.1"
+  },
+  "devDependencies": {
+    "@microsoft/teamsfx-cli": "^0.*",
+    "@types/restify": "8.4.2",
+    "nodemon": "^2.0.7",
+    "shx": "^0.3.3",
+    "ts-node": "~9.1.1",
+    "typescript": "~3.9.2"
+  }
+}

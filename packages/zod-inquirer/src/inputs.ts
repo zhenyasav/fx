@@ -1,5 +1,5 @@
-import inquirer from "inquirer";
 import { z } from "zod";
+import inquirer from "inquirer";
 
 export type InputSpec<T = {}> = {
   questions: inquirer.Question[];
@@ -16,7 +16,7 @@ export function getQuestion(shape: z.ZodTypeAny): inquirer.Question {
     type = "";
   const typesToQnType: { [k: string]: inquirer.Question["type"] } = {
     ZodString: "input",
-    ZodNumber: "input",
+    ZodNumber: "number",
     ZodBoolean: "confirm",
   };
   let next = shape;
@@ -47,11 +47,19 @@ export function getQuestion(shape: z.ZodTypeAny): inquirer.Question {
   return { message, type, default: defaultValue, validate };
 }
 
-export function getQuestions(shape: z.ZodRawShape) {
+export type QuestionGenerator<T = any> = (
+  shape: T[keyof T],
+  key: keyof T
+) => inquirer.Question;
+
+export function getQuestions(
+  shape: z.ZodRawShape,
+  defaultGenerator?: QuestionGenerator<z.ZodRawShape>
+) {
   const q = [];
   for (let k in shape) {
     const v = shape[k];
-    q.push({ ...getQuestion(v), name: k });
+    q.push({ ...(getQuestion(v) ?? defaultGenerator?.(v, k)), name: k });
   }
   return q;
 }
@@ -66,13 +74,21 @@ function noUndefined<T extends object>(o: T) {
   }
   return r;
 }
-// @ts-ignore
+
 export async function inquire<
   T extends z.ZodObject<z.ZodRawShape> = z.ZodObject<z.ZodRawShape>
 >(
   shape: T,
-  defaults?: Partial<z.infer<T>>
+  options?: {
+    defaults?: Partial<z.infer<T>>;
+    questionGenerator?: QuestionGenerator<z.infer<T>>;
+  }
 ): Promise<z.infer<T>> {
-  const questions = getQuestions(shape._def.shape());
-  return noUndefined((await inquirer.prompt(questions, defaults)) ?? {});
+  const questions = getQuestions(
+    shape._def.shape(),
+    options?.questionGenerator
+  );
+  return noUndefined(
+    (await inquirer.prompt(questions, options?.defaults)) ?? {}
+  );
 }

@@ -1,19 +1,16 @@
-import { Config } from "@fx/core";
-import { teams } from "@fx/teams";
+import { Config, Plugin } from "@fx/core";
 import { packageTemplate } from "./templates/package/template.t";
+import { teams } from "@fx/teams";
+
+const localTemplates: Plugin = {
+  name: "templates",
+  resources() {
+    return [packageTemplate()];
+  },
+};
 
 const config: Config = {
-  plugins: [
-    teams(),
-    {
-      name: "templates",
-      resources() {
-        return [
-          packageTemplate(),
-        ];
-      },
-    },
-  ],
+  plugins: [localTemplates, teams()],
 };
 
 export default config;

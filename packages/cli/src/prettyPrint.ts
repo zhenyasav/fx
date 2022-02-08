@@ -18,11 +18,12 @@ export function printResourceDefinition(resource: ResourceDefinition) {
 
 export function printResourceInstance(resource: ResourceInstance) {
   console.log(`${white(resource.type)} ${gray(resource.id)}`);
-  console.log(gray(JSON.stringify(resource.input, null, 2)));
+  if (resource?.inputs)
+    console.log(gray(JSON.stringify(resource.inputs, null, 2)));
 }
 
 export function warn(...args: any[]) {
-  console.warn(...(args).map(c => yellow(c)));
+  console.warn(...args.map((c) => yellow(c)));
 }
 
 export function error(...args: any[]) {

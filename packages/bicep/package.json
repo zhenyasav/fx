@@ -1,0 +1,12 @@
+
+{
+  "name": "@fx/bicep",
+  "version": "0.0.1",
+  "main": "build/index.js",
+  "typings": "build/index.d.ts",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "clean": "rm -rf build && tsc --build --clean",
+    "build": "tsc"
+  }
+}

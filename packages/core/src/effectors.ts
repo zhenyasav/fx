@@ -18,12 +18,12 @@ const WriteFile: Effector<Effect.WriteFile> = {
   },
 };
 
-const PackageScript: Effector<Effect.PackageScript> = {
+const Function: Effector<Effect.Function> = {
   describe(e) {
-    return `run package script ${e.name}`;
+    return e.description ?? "execute function";
   },
   async apply(e) {
-    throw new Error("not implemented");
+    return e.body?.();
   },
 };
 
@@ -50,7 +50,7 @@ const Shell: Effector<Effect.Shell> = {
 
 const Effectors: EffectorSet = {
   "write-file": WriteFile,
-  "package-script": PackageScript,
+  function: Function,
   shell: Shell,
 };
 
@@ -60,11 +60,13 @@ export function getEffector<T extends Effect.Any = Effect.Any>(
   return Effectors[e.type] as Effector<T>;
 }
 
-export async function applyEffects(effects: Effect.Any[], caption: string) {
+export async function applyEffects(
+  effects: Effect.Any[],
+  caption: string
+): Promise<any[]> {
   if (caption) console.info(`plan: ${caption}`);
   if (!effects?.length) {
-    console.info("nothing to do");
-    return;
+    return [];
   }
   console.info("cwd:", process.cwd());
   console.info(`\n${effects.length} actions:`);
@@ -76,7 +78,7 @@ export async function applyEffects(effects: Effect.Any[], caption: string) {
     })
   );
   console.log("\nexecuting ...");
-  await tasks;
+  return await tasks;
 }
 
 export async function printEffects(effects: Effect.Any[], caption?: string) {

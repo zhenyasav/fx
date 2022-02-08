@@ -1,0 +1,43 @@
+{
+    "solution": {
+        "provisionSucceeded": true,
+        "needCreateResourceGroup": false,
+        "resourceNameSuffix": "854c93",
+        "resourceGroupName": "zhenyasa-test",
+        "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+        "subscriptionId": "52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f",
+        "subscriptionName": ".NET Team R&D",
+        "location": "westus2",
+        "teamsAppTenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47"
+    },
+    "fx-resource-identity": {
+        "identityName": "teamsfxbotdevba2cc0",
+        "identityResourceId": "/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/zhenyasa-test/providers/Microsoft.ManagedIdentity/userAssignedIdentities/teamsfxbotdevba2cc0",
+        "identityClientId": "27d37d9e-cf3b-4c1a-874a-10ec6ba4346b"
+    },
+    "fx-resource-bot": {
+        "botId": "31214df5-4a99-44eb-bf11-d70f924bce81",
+        "objectId": "76bc427e-8b7a-4464-91ee-b1d50dad0c56",
+        "skuName": "F1",
+        "siteName": "teamsfxbotdevba2cc0bot",
+        "validDomain": "teamsfxbotdevba2cc0bot.azurewebsites.net",
+        "appServicePlanName": "teamsfxbotdevba2cc0bot",
+        "botWebAppResourceId": "/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/zhenyasa-test/providers/Microsoft.Web/sites/teamsfxbotdevba2cc0bot",
+        "siteEndpoint": "https://teamsfxbotdevba2cc0bot.azurewebsites.net",
+        "botPassword": "{{fx-resource-bot.botPassword}}"
+    },
+    "fx-resource-aad-app-for-teams": {
+        "clientId": "e8e002f3-10ad-4f76-b9ab-0b8cb8136188",
+        "objectId": "4f58d008-5149-429c-b3f1-a86c2ed50a69",
+        "oauth2PermissionScopeId": "4c830eff-e781-403c-9dcf-259a23ddb0e3",
+        "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+        "oauthHost": "https://login.microsoftonline.com",
+        "oauthAuthority": "https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47",
+        "applicationIdUris": "api://botid-31214df5-4a99-44eb-bf11-d70f924bce81",
+        "clientSecret": "{{fx-resource-aad-app-for-teams.clientSecret}}"
+    },
+    "fx-resource-appstudio": {
+        "teamsAppId": "dd4ab835-825b-4b37-81ec-1c4a95477ca2",
+        "teamsAppUpdatedAt": 1644221309314
+    }
+}

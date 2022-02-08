@@ -1,3 +1,2 @@
-export * from "./teams";
-export * from "@fx/plugin";
+export * from "./plugin";
 

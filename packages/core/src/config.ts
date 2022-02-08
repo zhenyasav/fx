@@ -4,18 +4,25 @@ import { Plugin, ResourceDefinition } from "@fx/plugin";
 import { cosmiconfig } from "cosmiconfig";
 import TypeScriptLoader from "@endemolshinegroup/cosmiconfig-typescript-loader";
 import { Project } from "./project";
-import { ProjectFile } from ".";
+import { ProjectFile } from "./project";
+import { ResourceInstance } from ".";
 
 export type Config = {
   plugins?: Plugin[];
+};
+
+export type LoadedResource = {
+  instance: ResourceInstance;
+  definition?: ResourceDefinition;
 };
 
 export type LoadedConfig = Config & {
   configFilePath: string;
   project: Project;
   projectFile: ProjectFile;
-  getResourceDefinitionByType(type: string): ResourceDefinition | null;
-  getAllResourceDefinitions(): ResourceDefinition[];
+  getResourceDefinitions(): ResourceDefinition[];
+  getResourceDefinition(type: string): ResourceDefinition | null;
+  getResources(): LoadedResource[];
 };
 
 export type ConfigLoaderOptions = {
@@ -57,18 +64,18 @@ export class ConfigLoader {
         : await this.cosmiconfig.search(cwd);
       if (file) {
         const { plugins } = file.config as Config;
-        const allResources: ResourceDefinition[] = [];
-        const resourcesByPlugin = new Map<Plugin, ResourceDefinition[]>();
-        const resourcesByType = new Map<
+        const allDefs: ResourceDefinition[] = [];
+        const defsByPlugin = new Map<Plugin, ResourceDefinition[]>();
+        const defsByType = new Map<
           string,
-          { plugin: Plugin; resource: ResourceDefinition }
+          { plugin: Plugin; definition: ResourceDefinition }
         >();
         for (let plugin of plugins ?? []) {
-          const resources = await plugin.resources();
-          resourcesByPlugin.set(plugin, resources);
-          for (let resource of resources) {
-            resourcesByType.set(resource.type, { resource, plugin });
-            allResources.push(resource);
+          const defs = await plugin.resources();
+          defsByPlugin.set(plugin, defs);
+          for (let def of defs) {
+            defsByType.set(def.type, { definition: def, plugin });
+            allDefs.push(def);
           }
         }
         const projectFile = new ProjectFile({
@@ -79,17 +86,27 @@ export class ConfigLoader {
         } catch (err) {
           // suppress whatever load failure we get
         }
+        projectFile.parsed = { resources: [], ...projectFile.parsed };
         const loaded: LoadedConfig = {
           configFilePath: file.filepath,
-          project: projectFile.parsed!,
+          project: projectFile.parsed,
           projectFile,
           ...(file.config as Config),
-          getResourceDefinitionByType(type: string) {
-            return resourcesByType.get(type)?.resource ?? null;
+          getResourceDefinition(type: string) {
+            return defsByType.get(type)?.definition ?? null;
           },
-          getAllResourceDefinitions() {
-            return [...allResources];
+          getResourceDefinitions() {
+            return [...allDefs];
           },
+          getResources() {
+            return projectFile.parsed?.resources?.map((r) => {
+              const definition = defsByType.get(r.type)?.definition;
+              return {
+                instance: r,
+                definition
+              }
+            }) ?? [];
+          }
         };
         return loaded;
       } else throw new Error("fx project configuration file not found");

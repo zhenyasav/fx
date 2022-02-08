@@ -65,7 +65,7 @@ function getQuestion(shape) {
     var defaultValue = void 0, message = "", type = "";
     var typesToQnType = {
         ZodString: "input",
-        ZodNumber: "input",
+        ZodNumber: "number",
         ZodBoolean: "confirm",
     };
     var next = shape;
