@@ -98,11 +98,12 @@ function getQuestion(shape) {
     return { message: message, type: type, default: defaultValue, validate: validate };
 }
 exports.getQuestion = getQuestion;
-function getQuestions(shape) {
+function getQuestions(shape, defaultGenerator) {
+    var _a;
     var q = [];
     for (var k in shape) {
         var v = shape[k];
-        q.push(__assign(__assign({}, getQuestion(v)), { name: k }));
+        q.push(__assign(__assign({}, ((_a = getQuestion(v)) !== null && _a !== void 0 ? _a : defaultGenerator === null || defaultGenerator === void 0 ? void 0 : defaultGenerator(v, k))), { name: k }));
     }
     return q;
 }
@@ -118,17 +119,16 @@ function noUndefined(o) {
     }
     return r;
 }
-// @ts-ignore
-function inquire(shape, defaults) {
+function inquire(shape, options) {
     var _a;
     return __awaiter(this, void 0, void 0, function () {
         var questions, _b;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
-                    questions = getQuestions(shape._def.shape());
+                    questions = getQuestions(shape._def.shape(), options === null || options === void 0 ? void 0 : options.questionGenerator);
                     _b = noUndefined;
-                    return [4 /*yield*/, inquirer_1.default.prompt(questions, defaults)];
+                    return [4 /*yield*/, inquirer_1.default.prompt(questions, options === null || options === void 0 ? void 0 : options.defaults)];
                 case 1: return [2 /*return*/, _b.apply(void 0, [(_a = (_c.sent())) !== null && _a !== void 0 ? _a : {}])];
             }
         });
