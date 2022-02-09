@@ -98,7 +98,6 @@ export async function inquire<
     shape._def.shape(),
     options?.questionGenerator
   );
-  return noUndefined(
-    (await inquirer.prompt(questions, options?.defaults)) ?? {}
-  );
+  const responses = (await inquirer.prompt(questions, options?.defaults)) ?? {};
+  return noUndefined(responses);
 }

@@ -1,11 +1,27 @@
 import { z } from "zod";
+import os from "os";
 
 export const manifestInput = z.object({
-  outputDir: z.string().describe("choose a folder").default("./teams"),
-  full: z
-    .boolean()
-    .describe("generate all the possible fields in the manifest")
-    .default(false),
+  directory: z
+    .string()
+    .describe("choose a folder where to store the manifest and icons")
+    .default("./teams-manifest"),
+  buildDirectory: z
+    .string()
+    .describe("choose a folder where to produce the teams app zip bundle")
+    .default("./build/teams-manifest"),
+  name: z.string().describe("enter a short, friendly application name"),
+  description: z
+    .string()
+    .describe("enter a friendly application description")
+    .default("An app built with Teams Toolkit"),
+  packageName: z
+    .string()
+    .describe("enter a package name like com.example.myapp"),
+  developerName: z
+    .string()
+    .describe("enter your publisher name")
+    .default(os.userInfo().username),
 });
 
 export type ManifestInput = z.infer<typeof manifestInput>;

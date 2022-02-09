@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { QuestionGenerator } from "@fx/zod-inquirer";
 import { Effect } from "./effects";
 export declare type MaybePromise<T> = T | Promise<T>;
 export declare function isPromise<T>(p: any): p is Promise<T>;
@@ -13,7 +14,7 @@ export declare type ResourceInstance<TInput = any, TOutput = any> = {
     inputs?: TInput;
     outputs?: TOutput;
 };
-export declare function printResourceId(instance: ResourceInstance): string;
+export declare function resourceId(instance: ResourceInstance): string;
 export declare type ResourceDefinition<TCreateArgs = any> = {
     type: string;
     description?: string;
@@ -27,7 +28,10 @@ export declare type Typed = {
     type: string;
 };
 export declare type Method<TInput = any, TOutput = any, TEffect extends Typed = Effect.Any> = {
-    inputs?(defaults?: Partial<TInput>): MaybePromise<TInput>;
+    inputs?(context?: {
+        defaults?: Partial<TInput>;
+        questionGenerator?: QuestionGenerator;
+    }): MaybePromise<TInput>;
     body?(context: {
         input: TInput;
     }): MaybePromise<MethodResult<TOutput, TEffect>>;

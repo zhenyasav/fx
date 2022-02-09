@@ -22,7 +22,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.method = exports.printResourceId = exports.promise = exports.isPromise = void 0;
+exports.method = exports.resourceId = exports.promise = exports.isPromise = void 0;
 var zod_inquirer_1 = require("@fx/zod-inquirer");
 function isPromise(p) {
     return typeof (p === null || p === void 0 ? void 0 : p.then) == "function";
@@ -32,20 +32,24 @@ function promise(p) {
     return isPromise(p) ? p : Promise.resolve(p);
 }
 exports.promise = promise;
-function printResourceId(instance) {
+function resourceId(instance) {
     if (!instance)
         return "[null]";
     var id = instance.id, type = instance.type;
     return "".concat(type, ":").concat(id);
 }
-exports.printResourceId = printResourceId;
+exports.resourceId = resourceId;
 function method(_a) {
     var inputShape = _a.inputShape, rest = __rest(_a, ["inputShape"]);
     return inputShape
-        ? __assign({ inputs: function (defaults) {
-                return (0, zod_inquirer_1.inquire)(inputShape, defaults);
-            } }, rest) : __assign({ inputs: function (defaults) {
-            return defaults;
+        ? __assign({ inputs: function (context) {
+                var _a = __assign({}, context), defaults = _a.defaults, questionGenerator = _a.questionGenerator;
+                return (0, zod_inquirer_1.inquire)(inputShape, {
+                    defaults: defaults,
+                    questionGenerator: questionGenerator,
+                });
+            } }, rest) : __assign({ inputs: function (context) {
+            return __assign({}, context === null || context === void 0 ? void 0 : context.defaults);
         } }, rest);
 }
 exports.method = method;

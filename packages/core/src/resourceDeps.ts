@@ -1,7 +1,14 @@
 import { z } from "zod";
 import inquirer from "inquirer";
-import { printResourceId } from "@fx/plugin";
+import { resourceId, QuestionGenerator } from "@fx/plugin";
 import { LoadedConfig } from "./config";
+
+export function getResourceQuestionGenerator(
+  config: LoadedConfig
+): QuestionGenerator {
+  return (shape, key) =>
+    generateResourceChoiceQuestions(config, shape, key.toString());
+}
 
 export function generateResourceChoiceQuestions(
   config: LoadedConfig,
@@ -19,7 +26,15 @@ export function generateResourceChoiceQuestions(
     question.message = description;
   }
   if (typeName) {
-    if (typeName == "ZodLiteral") {
+    if (typeName == "ZodNumber") {
+      const q = question as inquirer.NumberQuestion;
+      q.type = "number";
+      q.name = key.toString();
+    } else if (typeName == "ZodString") {
+      const q = question as inquirer.InputQuestion;
+      q.type = "input";
+      q.name = key.toString();
+    } else if (typeName == "ZodLiteral") {
       const q = question as inquirer.ListQuestion;
       const resourceType = shape._def.value;
       const resources = config.getResources();
@@ -29,26 +44,50 @@ export function generateResourceChoiceQuestions(
       const applicableDefinitions = config
         .getResourceDefinitions()
         .filter((def) => def.type == resourceType);
-      const resourceChoices = applicableResources.map((res) =>
-        printResourceId(res.instance)
-      );
-      q.type = "list";
-      q.choices = [
-        ...resourceChoices,
-        ...(applicableDefinitions?.length
-          ? [`Create a new '${resourceType}'`]
-          : []),
-      ];
-      q.default = 0;
-    } else if (typeName == "ZodUnion") {
-      const options = (shape as z.ZodUnion<any>)._def.options;
-      const q = question as inquirer.ListQuestion;
+      const resourceChoices = applicableResources.map((res) => ({
+        type: "choice" as "choice",
+        name: resourceId(res.instance),
+        value: { $resource: resourceId(res.instance) },
+      }));
       q.type = "list";
       q.name = key.toString();
-      q.choices = options?.map((opt: z.ZodTypeAny) => {
-        const { description } = opt._def;
-        return description;
+      const choices = [
+        ...resourceChoices,
+        ...(applicableDefinitions?.length
+          ? [
+              {
+                type: "choice" as "choice",
+                name: `Create a new '${resourceType}'`,
+                value: { $resource: resourceType },
+              },
+            ]
+          : []),
+      ];
+      q.choices = choices;
+      q.default = 0;
+    } else if (typeName == "ZodUnion") {
+      const {options, description} = (shape as z.ZodUnion<any>)._def;
+      const q = question as inquirer.ListQuestion;
+      q.type = "list";
+      q.name = `${key.toString()}-type`;
+      q.message = description;
+      const choices = options?.map((opt: z.ZodTypeAny) => {
+        const { description, typeName } = opt._def;
+        const choice: inquirer.ListChoiceOptions = {
+          type: "choice",
+          name: description,
+          value:
+            typeName == "ZodString"
+              ? "string"
+              : typeName == "ZodNumber"
+              ? "number"
+              : typeName == "ZodLiteral"
+              ? opt._def.value
+              : description,
+        };
+        return choice;
       });
+      q.choices = choices;
       q.default = 0;
 
       options?.map((opt: z.ZodTypeAny, i: number) => {
@@ -57,7 +96,12 @@ export function generateResourceChoiceQuestions(
           opt,
           key
         );
-        followupQuestions?.forEach(q => q.when = (hash) => hash[key] == i);
+        followupQuestions?.forEach(
+          (fq) =>
+            (fq.when = (hash) => {
+              return hash[`${key}-type`] == choices[i].value;
+            })
+        );
         result.push(...followupQuestions);
       });
     }

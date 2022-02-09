@@ -15,6 +15,24 @@ export type ProjectLoadOptions =
     }
   | { projectFolder: string };
 
+export type ResourceReference = {
+  $resource: string;
+};
+
+export function isResourceReference(o: any): o is ResourceReference {
+  return !!o && typeof o == "object" && "$resource" in o;
+}
+
+export function getResourceReferences(object: any) {
+  return Object.values(object)?.filter(isResourceReference);
+}
+
+export function getPendingResourceReferences(object: any) {
+  return getResourceReferences(object)?.filter(
+    (ref) => !/:/.test(ref.$resource)
+  );
+}
+
 export class ProjectFile extends JSONFile<Project> {
   constructor(options: ProjectLoadOptions) {
     const { projectFile, projectFolder } = {

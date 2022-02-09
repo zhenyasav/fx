@@ -9,8 +9,14 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateResourceChoiceQuestions = void 0;
+exports.generateResourceChoiceQuestions = exports.getResourceQuestionGenerator = void 0;
 var plugin_1 = require("@fx/plugin");
+function getResourceQuestionGenerator(config) {
+    return function (shape, key) {
+        return generateResourceChoiceQuestions(config, shape, key.toString());
+    };
+}
+exports.getResourceQuestionGenerator = getResourceQuestionGenerator;
 function generateResourceChoiceQuestions(config, shape, key, merge) {
     var _a = shape._def, dv = _a.defaultValue, description = _a.description, typeName = _a.typeName;
     var question = {};
@@ -22,7 +28,17 @@ function generateResourceChoiceQuestions(config, shape, key, merge) {
         question.message = description;
     }
     if (typeName) {
-        if (typeName == "ZodLiteral") {
+        if (typeName == "ZodNumber") {
+            var q = question;
+            q.type = "number";
+            q.name = key.toString();
+        }
+        else if (typeName == "ZodString") {
+            var q = question;
+            q.type = "input";
+            q.name = key.toString();
+        }
+        else if (typeName == "ZodLiteral") {
             var q = question;
             var resourceType_1 = shape._def.value;
             var resources = config.getResources();
@@ -30,28 +46,55 @@ function generateResourceChoiceQuestions(config, shape, key, merge) {
             var applicableDefinitions = config
                 .getResourceDefinitions()
                 .filter(function (def) { return def.type == resourceType_1; });
-            var resourceChoices = applicableResources.map(function (res) {
-                return (0, plugin_1.printResourceId)(res.instance);
-            });
+            var resourceChoices = applicableResources.map(function (res) { return ({
+                type: "choice",
+                name: (0, plugin_1.resourceId)(res.instance),
+                value: { $resource: (0, plugin_1.resourceId)(res.instance) },
+            }); });
             q.type = "list";
-            q.choices = __spreadArray(__spreadArray([], resourceChoices, true), ((applicableDefinitions === null || applicableDefinitions === void 0 ? void 0 : applicableDefinitions.length)
-                ? ["Create a new '".concat(resourceType_1, "'")]
+            q.name = key.toString();
+            var choices = __spreadArray(__spreadArray([], resourceChoices, true), ((applicableDefinitions === null || applicableDefinitions === void 0 ? void 0 : applicableDefinitions.length)
+                ? [
+                    {
+                        type: "choice",
+                        name: "Create a new '".concat(resourceType_1, "'"),
+                        value: { $resource: resourceType_1 },
+                    },
+                ]
                 : []), true);
+            q.choices = choices;
             q.default = 0;
         }
         else if (typeName == "ZodUnion") {
-            var options = shape._def.options;
+            var _b = shape._def, options = _b.options, description_1 = _b.description;
             var q = question;
             q.type = "list";
-            q.name = key.toString();
-            q.choices = options === null || options === void 0 ? void 0 : options.map(function (opt) {
-                var description = opt._def.description;
-                return description;
+            q.name = "".concat(key.toString(), "-type");
+            q.message = description_1;
+            var choices_1 = options === null || options === void 0 ? void 0 : options.map(function (opt) {
+                var _a = opt._def, description = _a.description, typeName = _a.typeName;
+                var choice = {
+                    type: "choice",
+                    name: description,
+                    value: typeName == "ZodString"
+                        ? "string"
+                        : typeName == "ZodNumber"
+                            ? "number"
+                            : typeName == "ZodLiteral"
+                                ? opt._def.value
+                                : description,
+                };
+                return choice;
             });
+            q.choices = choices_1;
             q.default = 0;
             options === null || options === void 0 ? void 0 : options.map(function (opt, i) {
                 var followupQuestions = generateResourceChoiceQuestions(config, opt, key);
-                followupQuestions === null || followupQuestions === void 0 ? void 0 : followupQuestions.forEach(function (q) { return q.when = function (hash) { return hash[key] == i; }; });
+                followupQuestions === null || followupQuestions === void 0 ? void 0 : followupQuestions.forEach(function (fq) {
+                    return (fq.when = function (hash) {
+                        return hash["".concat(key, "-type")] == choices_1[i].value;
+                    });
+                });
                 result.push.apply(result, followupQuestions);
             });
         }

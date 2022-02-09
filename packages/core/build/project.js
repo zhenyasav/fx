@@ -29,11 +29,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProjectFile = exports.PROJECT_FILE_NAME = exports.FRAMEWORK_FOLDER = void 0;
+exports.ProjectFile = exports.getPendingResourceReferences = exports.getResourceReferences = exports.isResourceReference = exports.PROJECT_FILE_NAME = exports.FRAMEWORK_FOLDER = void 0;
 var path_1 = __importDefault(require("path"));
 var ts_template_1 = require("@nice/ts-template");
 exports.FRAMEWORK_FOLDER = ".fx";
 exports.PROJECT_FILE_NAME = "project.json";
+function isResourceReference(o) {
+    return !!o && typeof o == "object" && "$resource" in o;
+}
+exports.isResourceReference = isResourceReference;
+function getResourceReferences(object) {
+    var _a;
+    return (_a = Object.values(object)) === null || _a === void 0 ? void 0 : _a.filter(isResourceReference);
+}
+exports.getResourceReferences = getResourceReferences;
+function getPendingResourceReferences(object) {
+    var _a;
+    return (_a = getResourceReferences(object)) === null || _a === void 0 ? void 0 : _a.filter(function (ref) { return !/:/.test(ref.$resource); });
+}
+exports.getPendingResourceReferences = getPendingResourceReferences;
 var ProjectFile = /** @class */ (function (_super) {
     __extends(ProjectFile, _super);
     function ProjectFile(options) {

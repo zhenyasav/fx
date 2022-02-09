@@ -1,7 +1,8 @@
 import path from "path";
 import { Plugin } from "@fx/plugin";
 import { template } from "@fx/templates";
-import { manifestInput } from "./inputs/manifest";
+
+import { manifest } from "./manifest";
 import { tabInput } from "./inputs/tab";
 import { botService } from "@fx/bots";
 import { tunnel } from "@fx/tunnel";
@@ -15,12 +16,7 @@ export function teams(): Plugin {
         teamsBot(),
         botService(),
         tunnel(),
-        template({
-          name: "manifest",
-          description: "Create a Teams manifest template and build scripts",
-          templateDirectory: path.resolve(__dirname, "../templates/manifest"),
-          input: manifestInput,
-        }),
+        manifest(),
         template({
           name: "tab",
           description: "Add a staticTabs declaration to your Teams manifest",

@@ -1,5 +1,4 @@
 {
-  "environments": ["local", "prod"],
   "resources": [
     {
       "id": "b0a7",

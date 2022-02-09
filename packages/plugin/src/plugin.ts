@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { inquire } from "@fx/zod-inquirer";
+import { inquire, QuestionGenerator } from "@fx/zod-inquirer";
 import { Effect } from "./effects";
 
 export type MaybePromise<T> = T | Promise<T>;
@@ -24,7 +24,7 @@ export type ResourceInstance<TInput = any, TOutput = any> = {
   outputs?: TOutput;
 };
 
-export function printResourceId(instance: ResourceInstance) {
+export function resourceId(instance: ResourceInstance) {
   if (!instance) return `[null]`;
   const { id, type } = instance;
   return `${type}:${id}`;
@@ -45,7 +45,10 @@ export type Method<
   TOutput = any,
   TEffect extends Typed = Effect.Any
 > = {
-  inputs?(defaults?: Partial<TInput>): MaybePromise<TInput>;
+  inputs?(context?: {
+    defaults?: Partial<TInput>;
+    questionGenerator?: QuestionGenerator;
+  }): MaybePromise<TInput>;
   body?(context: {
     input: TInput;
   }): MaybePromise<MethodResult<TOutput, TEffect>>;
@@ -66,14 +69,18 @@ export function method<T extends z.ZodObject<z.ZodRawShape>>({
 }: { inputShape?: T } & Pick<Method<z.infer<T>>, "body">): Method<z.infer<T>> {
   return inputShape
     ? {
-        inputs(defaults?: Partial<z.infer<T>>) {
-          return inquire(inputShape, defaults);
+        inputs(context) {
+          const { defaults, questionGenerator } = { ...context };
+          return inquire(inputShape, {
+            defaults,
+            questionGenerator,
+          });
         },
         ...rest,
       }
     : {
-        inputs(defaults: z.infer<T>) {
-          return defaults;
+        inputs(context) {
+          return { ...context?.defaults };
         },
         ...rest,
       };

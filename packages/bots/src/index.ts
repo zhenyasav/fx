@@ -9,11 +9,11 @@ export function botService(): ResourceDefinition {
       create: method({
         inputShape: z.object({
           messagingEndpoint: z.union([
-            z.string().describe("Bot messaging endpoint"),
+            z.string().describe("Enter a URL"),
             z
               .literal("tunnel")
-              .describe("Tunneling resource"),
-          ]),
+              .describe("Dynamic URL from a tunneling service"),
+          ]).describe("Enter your bot's messaging endpoint URL"),
         }),
       }),
     },

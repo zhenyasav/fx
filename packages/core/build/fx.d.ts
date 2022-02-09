@@ -21,5 +21,5 @@ export declare class Fx {
     }>;
     createResource(type: string, inputs?: {
         name?: string;
-    }, dryRun?: boolean): Promise<ResourceInstance<any, any> | undefined>;
+    }, dryRun?: boolean): Promise<ResourceInstance<any, any>>;
 }

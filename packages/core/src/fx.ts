@@ -1,4 +1,4 @@
-import { promise, ResourceInstance } from "@fx/plugin";
+import { resourceId, promise, ResourceInstance } from "@fx/plugin";
 import { randomString } from "./util/random";
 import { compact } from "./util/collections";
 import { applyEffects, printEffects } from "./effectors";
@@ -8,6 +8,8 @@ import {
   LoadedResource,
   ConfigLoader,
 } from "./config";
+import { getResourceQuestionGenerator } from "./resourceDeps";
+import { getPendingResourceReferences } from "./project";
 
 export type FxOptions = ConfigLoaderOptions & {
   aadAppId?: string;
@@ -31,7 +33,7 @@ export class Fx {
     const config = await this.config();
     const resources = config?.getResources();
     return resources?.filter(
-      (r) => r.definition?.methods && (methodName in r.definition.methods)
+      (r) => r.definition?.methods && methodName in r.definition.methods
     );
   }
   async invokeMethodOnAllResources(methodName: string) {
@@ -54,9 +56,27 @@ export class Fx {
     const method = definition.methods?.[methodName];
     if (!method)
       throw new Error(
-        `the resource ${instance?.type}(${instance?.id}) has no method ${method}`
+        `the resource ${instance?.type}(${instance?.id}) has no method ${methodName}`
       );
-    const input = await promise(method.inputs?.(defaultArgs));
+    const config = await this.config();
+    const input = await promise(
+      method.inputs?.({
+        defaults: defaultArgs,
+        questionGenerator: getResourceQuestionGenerator(config),
+      })
+    );
+    if (input) {
+      const pendingResourceRefs = getPendingResourceReferences(input) ?? [];
+      for (let ref of pendingResourceRefs) {
+        console.log(`Creating a ${ref.$resource}:`);
+        const resourceInstance = await this.createResource(ref.$resource);
+        if (resourceInstance) {
+          ref.$resource = resourceId(resourceInstance);
+        }
+      }
+      instance.inputs = instance.inputs || {};
+      instance.inputs[methodName] = input;
+    }
     const methodResult = await promise(
       method.body?.({
         input,
@@ -70,15 +90,12 @@ export class Fx {
       }`,
       ...methodResult,
     };
+
     if (effects?.length) {
       if (dryRun) {
         printEffects(effects, description);
       } else {
         const effectResults = compact(await applyEffects(effects, description));
-        if (input) {
-          instance.inputs = instance.inputs || {};
-          instance.inputs[methodName] = input;
-        }
         if (effectResults?.length) {
           instance.outputs = instance.outputs || {};
           instance.outputs[methodName] = effectResults;
@@ -92,7 +109,7 @@ export class Fx {
   async createResource(
     type: string,
     inputs?: { name?: string },
-    dryRun = true
+    dryRun = false
   ) {
     const config = await this.config();
     const definition = config.getResourceDefinition(type);
@@ -103,21 +120,23 @@ export class Fx {
       inputs: inputs,
       outputs: {},
     };
-    await this.invokeResourceMethod(
-      {
-        instance,
-        definition,
-      },
-      "create",
-      {
-        dryRun,
-        defaultArgs: inputs,
-      }
-    );
+    if ('create' in (definition?.methods ?? {})) {
+      await this.invokeResourceMethod(
+        {
+          instance,
+          definition,
+        },
+        "create",
+        {
+          dryRun,
+          defaultArgs: inputs,
+        }
+      );
+    }
     if (!dryRun) {
       config.project.resources.push(instance);
       await config.projectFile.save();
-      return instance;
     }
+    return instance;
   }
 }

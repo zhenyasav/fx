@@ -8,13 +8,13 @@ export function teamsBot(): ResourceDefinition {
     methods: {
       create: method({
         inputShape: z.object({
-          name: z.string().describe('the name of the teams bot app'),
-          bot: z.literal('bot').describe('an Azure Bot Service')
-        }),
-        body() {
-          
-        }
-      })
-    }
-  }
+          name: z.string().describe("the name of the teams bot app"),
+          manifest: z.literal("manifest").describe("a Teams manifest file"),
+          botService: z
+            .literal("azure-bot-service")
+            .describe("an Azure Bot Service"),
+        })
+      }),
+    },
+  };
 }

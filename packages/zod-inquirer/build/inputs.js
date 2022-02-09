@@ -134,14 +134,15 @@ function noUndefined(o) {
 function inquire(shape, options) {
     var _a;
     return __awaiter(this, void 0, void 0, function () {
-        var questions, _b;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
+        var questions, responses;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
                     questions = getQuestions(shape._def.shape(), options === null || options === void 0 ? void 0 : options.questionGenerator);
-                    _b = noUndefined;
                     return [4 /*yield*/, inquirer_1.default.prompt(questions, options === null || options === void 0 ? void 0 : options.defaults)];
-                case 1: return [2 /*return*/, _b.apply(void 0, [(_a = (_c.sent())) !== null && _a !== void 0 ? _a : {}])];
+                case 1:
+                    responses = (_a = (_b.sent())) !== null && _a !== void 0 ? _a : {};
+                    return [2 /*return*/, noUndefined(responses)];
             }
         });
     });

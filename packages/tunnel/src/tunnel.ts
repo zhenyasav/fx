@@ -7,10 +7,12 @@ export function tunnel(): ResourceDefinition {
     type: "tunnel",
     description: "create an ngrok tunnel",
     methods: {
-      dev: method({
+      create: method({
         inputShape: z.object({
-          port: z.number().describe("the local port number to forward to"),
-        }),
+          port: z.number().describe("the local port the tunnel will reach")
+        })
+      }),
+      dev: method({
         async body({ input }) {
           return {
             effects: [

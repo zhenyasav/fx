@@ -161,6 +161,8 @@ importers:
       '@fx/tunnel': workspace:^0.0.1
       '@fx/yo': workspace:^1.0.0
       '@nice/ts-template': workspace:^1.0.0
+      '@types/node': ^16.11.11
+      uuid: ^8.3.2
       zod: ^3.11.6
     dependencies:
       '@fx/aad': link:../aad
@@ -170,7 +172,10 @@ importers:
       '@fx/tunnel': link:../tunnel
       '@fx/yo': link:../yo
       '@nice/ts-template': link:../ts-template
+      uuid: 8.3.2
       zod: 3.11.6
+    devDependencies:
+      '@types/node': 16.11.11
 
   packages/templates:
     specifiers:

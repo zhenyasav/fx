@@ -31,7 +31,7 @@ describe("core", () => {
     });
   });
 
-  it("resource choice question for a union", async () => {
+  it.only("resource choice question for a union", async () => {
     const shape = z
       .union([
         z.literal("foo").describe("Use a foo resource"),
@@ -46,14 +46,39 @@ describe("core", () => {
     expect(questions).toBeDefined;
     expect(questions).toHaveLength(3);
 
-    const [question] = questions;
+    const [question, typeQuestion, literalQuestion] = questions;
     const shouldBe: inquirer.ListQuestion = {
       type: "list",
-      choices: ["Use a foo resource", "Enter a url string"],
+      choices: [
+        {
+          type: "choice",
+          name: "Use a foo resource",
+          value: "foo",
+        },
+        { type: "choice", name: "Enter a url string", value: "string" },
+      ],
       message: "provide a foo or a url",
       default: 0,
+      name: "dux-type",
     };
     expect(question).toMatchObject(shouldBe);
+
+    const shouldType: inquirer.ListQuestion = {
+      type: "list",
+      name: "dux",
+      message: "Use a foo resource",
+      choices: ["foo:foo-1", "foo:foo-2", `Create a new 'foo'`],
+    };
+    expect(typeQuestion).toMatchObject(shouldType);
+    expect(typeQuestion.when).toBeDefined();
+
+    const shouldLiteral: inquirer.InputQuestion = {
+      type: "input",
+      name: "dux",
+      message: "Enter a url string",
+    };
+    expect(literalQuestion).toMatchObject(shouldLiteral);
+    expect(literalQuestion.when).toBeDefined();
   });
 
   it("generates questions when looking for dependencies", async () => {
