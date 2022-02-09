@@ -1,15 +1,16 @@
-import { resourceId, promise, ResourceInstance } from "@fx/plugin";
+import {
+  resourceId,
+  promise,
+  ResourceInstance,
+  LoadedResource,
+  LoadedConfig,
+  getPendingResourceReferences,
+} from "@fx/plugin";
 import { randomString } from "./util/random";
 import { compact } from "./util/collections";
 import { applyEffects, printEffects } from "./effectors";
-import {
-  ConfigLoaderOptions,
-  LoadedConfig,
-  LoadedResource,
-  ConfigLoader,
-} from "./config";
+import { ConfigLoaderOptions, ConfigLoader } from "./config";
 import { getResourceQuestionGenerator } from "./resourceDeps";
-import { getPendingResourceReferences } from "./project";
 
 export type FxOptions = ConfigLoaderOptions & {
   aadAppId?: string;
@@ -63,6 +64,8 @@ export class Fx {
       method.inputs?.({
         defaults: defaultArgs,
         questionGenerator: getResourceQuestionGenerator(config),
+        resource,
+        config,
       })
     );
     if (input) {
@@ -80,6 +83,8 @@ export class Fx {
     const methodResult = await promise(
       method.body?.({
         input,
+        resource,
+        config,
       })
     );
     const { effects, value, description, ...rest } = {
@@ -93,9 +98,12 @@ export class Fx {
 
     if (effects?.length) {
       if (dryRun) {
-        printEffects(effects, description);
+        console.log(`dry run: ${description}`);
+        console.log(printEffects(effects) + '\n');
       } else {
-        const effectResults = compact(await applyEffects(effects, description));
+        console.log(`applying ${effects?.length} actions:`);
+        console.log(printEffects(effects) + '\n');
+        const effectResults = compact(await applyEffects(effects));
         if (effectResults?.length) {
           instance.outputs = instance.outputs || {};
           instance.outputs[methodName] = effectResults;
@@ -120,7 +128,7 @@ export class Fx {
       inputs: inputs,
       outputs: {},
     };
-    if ('create' in (definition?.methods ?? {})) {
+    if ("create" in (definition?.methods ?? {})) {
       await this.invokeResourceMethod(
         {
           instance,

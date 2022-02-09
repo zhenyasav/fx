@@ -1,5 +1,5 @@
-import { ResourceInstance } from "@fx/plugin";
-import { ConfigLoaderOptions, LoadedConfig, LoadedResource } from "./config";
+import { ResourceInstance, LoadedResource, LoadedConfig } from "@fx/plugin";
+import { ConfigLoaderOptions } from "./config";
 export declare type FxOptions = ConfigLoaderOptions & {
     aadAppId?: string;
 };
@@ -15,11 +15,11 @@ export declare class Fx {
         dryRun: boolean;
         defaultArgs?: any;
     }): Promise<{
-        effects: never[] | import("@fx/plugin").Effect.Any[];
+        effects: import("@fx/plugin").Effect.Any[] | never[];
         value: any;
         description: string;
     }>;
     createResource(type: string, inputs?: {
         name?: string;
-    }, dryRun?: boolean): Promise<ResourceInstance<any, any>>;
+    }, dryRun?: boolean): Promise<ResourceInstance<any>>;
 }

@@ -60,32 +60,21 @@ export function getEffector<T extends Effect.Any = Effect.Any>(
   return Effectors[e.type] as Effector<T>;
 }
 
-export async function applyEffects(
-  effects: Effect.Any[],
-  caption: string
-): Promise<any[]> {
-  if (caption) console.info(`plan: ${caption}`);
+export async function applyEffects(effects: Effect.Any[]): Promise<any[]> {
   if (!effects?.length) {
     return [];
   }
-  console.info("cwd:", process.cwd());
-  console.info(`\n${effects.length} actions:`);
   const tasks = Promise.all(
     effects?.map((effect) => {
       const effector = getEffector(effect);
-      console.log(effector.describe(effect));
       return effector.apply(effect);
     })
   );
-  console.log("\nexecuting ...");
   return await tasks;
 }
 
-export async function printEffects(effects: Effect.Any[], caption?: string) {
-  if (caption) console.info(`dry run: ${caption}`);
-  console.info("cwd:", process.cwd());
-  console.info(`\n${effects.length} actions:`);
-  effects?.forEach((effect) =>
-    console.log(getEffector(effect).describe(effect))
-  );
+export function printEffects(effects: Effect.Any[]) {
+  return effects
+    ?.map((effect) => getEffector(effect).describe(effect))
+    ?.join("\n");
 }

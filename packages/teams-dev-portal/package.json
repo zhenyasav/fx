@@ -1,0 +1,33 @@
+{
+  "name": "@fx/teams-dev-portal",
+  "version": "0.0.1",
+  "main": "build/index.js",
+  "typings": "build/index.d.ts",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "clean": "rm -rf build && tsc --build --clean",
+    "build": "tsc",
+    "check": "tsc --noEmit",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@swc/core": "^1.2.137",
+    "@swc/jest": "^0.2.17",
+    "@types/express": "^4.17.13",
+    "@types/fs-extra": "^9.0.13",
+    "@types/jest": "^27.4.0",
+    "@types/node": "^16.11.11",
+    "jest": "^27.4.5",
+    "ts-jest": "^27.1.2",
+    "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "@azure/msal-node": "^1.5.0",
+    "async-mutex": "^0.3.2",
+    "axios": "^0.24.0",
+    "express": "^4.17.2",
+    "fs-extra": "^10.0.0",
+    "keytar": "^7.8.0",
+    "open": "^8.4.0"
+  }
+}

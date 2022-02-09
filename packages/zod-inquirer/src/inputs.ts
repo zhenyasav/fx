@@ -1,5 +1,6 @@
 import { z } from "zod";
 import inquirer from "inquirer";
+import { debug } from "./debug";
 
 export type InputSpec<T = {}> = {
   questions: inquirer.Question[];
@@ -25,8 +26,6 @@ export function getQuestion(shape: z.ZodTypeAny): inquirer.Question | null {
     if (typeName) {
       if (typeName in typesToQnType) {
         type = typesToQnType[typeName];
-      } else {
-        return null;
       }
     }
     if (dv) {
@@ -48,7 +47,7 @@ export function getQuestion(shape: z.ZodTypeAny): inquirer.Question | null {
       return parsed.error.format()._errors?.join("\n");
     }
   }
-  return { message, type, default: defaultValue, validate };
+  return type ? { message, type, default: defaultValue, validate } : null;
 }
 
 export type QuestionGenerator<T = any> = (
@@ -98,6 +97,8 @@ export async function inquire<
     shape._def.shape(),
     options?.questionGenerator
   );
+  debug(questions);
   const responses = (await inquirer.prompt(questions, options?.defaults)) ?? {};
+  debug(responses);
   return noUndefined(responses);
 }

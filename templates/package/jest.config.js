@@ -26,7 +26,8 @@ module.exports = {
 
   // A map from regular expressions to paths to transformers
   transform: {
-    "^.+\\.(t|j)sx?$": "@swc/jest",
+    // "^.+\\.(t|j)sx?$": "@swc/jest",
+    "^.+\\.tsx?$": "ts-jest",
   },
 
   errorOnDeprecated: true,

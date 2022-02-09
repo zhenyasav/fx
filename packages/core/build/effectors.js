@@ -106,25 +106,19 @@ function getEffector(e) {
     return Effectors[e.type];
 }
 exports.getEffector = getEffector;
-function applyEffects(effects, caption) {
+function applyEffects(effects) {
     return __awaiter(this, void 0, void 0, function () {
         var tasks;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (caption)
-                        console.info("plan: ".concat(caption));
                     if (!(effects === null || effects === void 0 ? void 0 : effects.length)) {
                         return [2 /*return*/, []];
                     }
-                    console.info("cwd:", process.cwd());
-                    console.info("\n".concat(effects.length, " actions:"));
                     tasks = Promise.all(effects === null || effects === void 0 ? void 0 : effects.map(function (effect) {
                         var effector = getEffector(effect);
-                        console.log(effector.describe(effect));
                         return effector.apply(effect);
                     }));
-                    console.log("\nexecuting ...");
                     return [4 /*yield*/, tasks];
                 case 1: return [2 /*return*/, _a.sent()];
             }
@@ -132,19 +126,9 @@ function applyEffects(effects, caption) {
     });
 }
 exports.applyEffects = applyEffects;
-function printEffects(effects, caption) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            if (caption)
-                console.info("dry run: ".concat(caption));
-            console.info("cwd:", process.cwd());
-            console.info("\n".concat(effects.length, " actions:"));
-            effects === null || effects === void 0 ? void 0 : effects.forEach(function (effect) {
-                return console.log(getEffector(effect).describe(effect));
-            });
-            return [2 /*return*/];
-        });
-    });
+function printEffects(effects) {
+    var _a;
+    return (_a = effects === null || effects === void 0 ? void 0 : effects.map(function (effect) { return getEffector(effect).describe(effect); })) === null || _a === void 0 ? void 0 : _a.join("\n");
 }
 exports.printEffects = printEffects;
 //# sourceMappingURL=effectors.js.map

@@ -60,11 +60,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConfigLoader = void 0;
-// import { findAncestorPath } from "./util/findAncestorPath";
 var path_1 = __importDefault(require("path"));
+var plugin_1 = require("@fx/plugin");
 var cosmiconfig_1 = require("cosmiconfig");
 var cosmiconfig_typescript_loader_1 = __importDefault(require("@endemolshinegroup/cosmiconfig-typescript-loader"));
-var project_1 = require("./project");
 var ConfigLoader = /** @class */ (function () {
     function ConfigLoader() {
         this.cosmiconfig = (0, cosmiconfig_1.cosmiconfig)("fx", {
@@ -132,7 +131,7 @@ var ConfigLoader = /** @class */ (function () {
                         _i++;
                         return [3 /*break*/, 5];
                     case 8:
-                        projectFile_1 = new project_1.ProjectFile({
+                        projectFile_1 = new plugin_1.ProjectFile({
                             projectFolder: path_1.default.dirname(file.filepath),
                         });
                         _e.label = 9;
@@ -154,14 +153,14 @@ var ConfigLoader = /** @class */ (function () {
                                 return __spreadArray([], allDefs_1, true);
                             }, getResources: function () {
                                 var _a, _b, _c;
-                                return (_c = (_b = (_a = projectFile_1.parsed) === null || _a === void 0 ? void 0 : _a.resources) === null || _b === void 0 ? void 0 : _b.map(function (r) {
+                                return ((_c = (_b = (_a = projectFile_1.parsed) === null || _a === void 0 ? void 0 : _a.resources) === null || _b === void 0 ? void 0 : _b.map(function (r) {
                                     var _a;
                                     var definition = (_a = defsByType_1.get(r.type)) === null || _a === void 0 ? void 0 : _a.definition;
                                     return {
                                         instance: r,
-                                        definition: definition
+                                        definition: definition,
                                     };
-                                })) !== null && _c !== void 0 ? _c : [];
+                                })) !== null && _c !== void 0 ? _c : []);
                             } });
                         return [2 /*return*/, loaded];
                     case 13: throw new Error("fx project configuration file not found");

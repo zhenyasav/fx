@@ -1,11 +1,13 @@
 import { z } from "zod";
-import { ResourceDefinition } from "@fx/plugin";
+import { ResourceDefinition, Methods, Transform } from "@fx/plugin";
 export declare type TemplateResourceOptions<I extends z.ZodObject<z.ZodRawShape> = z.AnyZodObject> = {
     name: string;
     description?: string;
     templateDirectory: string;
     input?: I;
+    inputTransform?: Transform<z.infer<I>>;
     outputDirectory?: string | ((inputs: z.infer<I>) => string);
+    methods?: Omit<Methods, "create">;
 };
 export declare const templateInput: z.ZodObject<{
     outputDirectory: z.ZodString;

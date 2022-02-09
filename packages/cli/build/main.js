@@ -66,8 +66,9 @@ var yargs_1 = __importDefault(require("yargs"));
 var core_1 = require("@fx/core");
 var prettyPrint_1 = require("./prettyPrint");
 var config_1 = __importDefault(require("./config"));
+var chalk_1 = require("chalk");
 var fx = new core_1.Fx({
-    aadAppId: config_1.default.teamsfxcliAadAppId
+    aadAppId: config_1.default.teamsfxcliAadAppId,
 });
 var parser = (0, yargs_1.default)(process.argv.slice(2))
     .scriptName("fx")
@@ -126,6 +127,7 @@ var parser = (0, yargs_1.default)(process.argv.slice(2))
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
+                console.log((0, chalk_1.gray)("cwd: " + process.cwd()));
                 return [4 /*yield*/, fx.createResource(type, __assign(__assign({}, rest), { name: name }), !!dry)];
             case 2:
                 instance = _a.sent();
@@ -174,7 +176,7 @@ var parser = (0, yargs_1.default)(process.argv.slice(2))
             case 0:
                 arg = argv._[0];
                 if (!arg) {
-                    console.error('at least one command is required');
+                    console.error("at least one command is required");
                     return [2 /*return*/];
                 }
                 methodName = arg.toString();

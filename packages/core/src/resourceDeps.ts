@@ -1,7 +1,6 @@
 import { z } from "zod";
 import inquirer from "inquirer";
-import { resourceId, QuestionGenerator } from "@fx/plugin";
-import { LoadedConfig } from "./config";
+import { resourceId, QuestionGenerator, LoadedConfig } from "@fx/plugin";
 
 export function getResourceQuestionGenerator(
   config: LoadedConfig

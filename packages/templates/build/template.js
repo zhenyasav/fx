@@ -52,29 +52,30 @@ var zod_1 = require("zod");
 var ts_template_1 = require("@nice/ts-template");
 var plugin_1 = require("@fx/plugin");
 exports.templateInput = zod_1.z.object({
-    outputDirectory: zod_1.z
-        .string()
-        .describe("directory where to place output"),
+    outputDirectory: zod_1.z.string().describe("directory where to place output"),
 });
 function template(options) {
-    var _a = __assign({}, options), name = _a.name, input = _a.input, description = _a.description, templateDirectory = _a.templateDirectory, outputDirectory = _a.outputDirectory;
+    var _a = __assign({}, options), name = _a.name, input = _a.input, inputTransform = _a.inputTransform, description = _a.description, templateDirectory = _a.templateDirectory, outputDirectory = _a.outputDirectory, methods = _a.methods;
     return {
         type: name,
         description: description,
-        methods: {
-            create: (0, plugin_1.method)({
+        methods: __assign({ create: (0, plugin_1.method)({
                 inputShape: input !== null && input !== void 0 ? input : exports.templateInput,
+                inputTransform: inputTransform,
                 body: function (_a) {
-                    var input = _a.input;
+                    var input = _a.input, config = _a.config, resource = _a.resource;
                     return __awaiter(this, void 0, void 0, function () {
-                        var od, files;
+                        var inputXform, od, files;
                         return __generator(this, function (_b) {
                             switch (_b.label) {
                                 case 0:
+                                    inputXform = function (v) {
+                                        return inputTransform ? inputTransform === null || inputTransform === void 0 ? void 0 : inputTransform(v, { config: config, resource: resource }) : v;
+                                    };
                                     od = typeof outputDirectory == "string"
                                         ? outputDirectory
                                         : typeof outputDirectory == "function"
-                                            ? outputDirectory(input)
+                                            ? outputDirectory(inputXform(input))
                                             : input.outputDirectory;
                                     return [4 /*yield*/, (0, ts_template_1.executeDirectoryTemplate)({
                                             templateDirectory: templateDirectory,
@@ -94,8 +95,7 @@ function template(options) {
                         });
                     });
                 },
-            }),
-        },
+            }) }, methods),
     };
 }
 exports.template = template;

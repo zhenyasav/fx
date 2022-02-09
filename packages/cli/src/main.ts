@@ -9,9 +9,10 @@ import {
   error,
 } from "./prettyPrint";
 import config from "./config";
+import { gray } from "chalk";
 
 const fx = new Fx({
-  aadAppId: config.teamsfxcliAadAppId
+  aadAppId: config.teamsfxcliAadAppId,
 });
 
 const parser = yargs(process.argv.slice(2))
@@ -63,7 +64,12 @@ const parser = yargs(process.argv.slice(2))
       const { type, name, dry, d, v, verbose, $0, _, ...rest } = argv;
       if (!type) throw new Error("type is required");
       try {
-        const instance = await fx.createResource(type, { ...rest, name }, !!dry)
+        console.log(gray("cwd: " + process.cwd()));
+        const instance = await fx.createResource(
+          type,
+          { ...rest, name },
+          !!dry
+        );
         console.log("added resource:", JSON.stringify(instance, null, 2));
       } catch (err: any) {
         console.error(err.message);
@@ -99,8 +105,8 @@ const parser = yargs(process.argv.slice(2))
     () => {},
     async (argv) => {
       const [arg] = argv._;
-      if (!arg)  {
-        console.error('at least one command is required');
+      if (!arg) {
+        console.error("at least one command is required");
         return;
       }
       const methodName = arg.toString();

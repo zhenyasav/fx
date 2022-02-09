@@ -1,9 +1,2 @@
-import { z } from "zod";
-export declare const tabInput: z.ZodObject<{
-    outputDir: z.ZodDefault<z.ZodString>;
-}, "strip", z.ZodTypeAny, {
-    outputDir: string;
-}, {
-    outputDir?: string | undefined;
-}>;
-export declare type TabInput = z.infer<typeof tabInput>;
+import { ResourceDefinition } from "@fx/plugin";
+export declare function tab(): ResourceDefinition;

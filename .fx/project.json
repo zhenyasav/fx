@@ -9,6 +9,81 @@
           "flattenScope": true
         }
       }
+    },
+    {
+      "id": "4f1c",
+      "type": "teams-manifest",
+      "inputs": {
+        "create": {
+          "directory": "scratch",
+          "buildDirectory": "scratch/build",
+          "name": "foo",
+          "description": "An app built with Teams Toolkit",
+          "packageName": "com.zhenya.app",
+          "developerName": "zhenya"
+        },
+        "build": {},
+        "dev": {},
+        "test": {}
+      },
+      "outputs": {
+        "build": [
+          {
+            "outFile": "/Users/zhenya/dev/fx/scratch/build/teams-app.zip"
+          }
+        ],
+        "test": [
+          {
+            "errors": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "72fe",
+      "type": "tunnel",
+      "inputs": {
+        "create": {
+          "port": 3000
+        },
+        "dev": {}
+      },
+      "outputs": {
+        "dev": [
+          {
+            "url": "https://446a-174-127-243-36.ngrok.io"
+          }
+        ]
+      }
+    },
+    {
+      "id": "c6cb",
+      "type": "teams-tab",
+      "inputs": {
+        "create": {
+          "name": "footab",
+          "manifest": {
+            "$resource": "teams-manifest:4f1c"
+          },
+          "url-type": "tunnel",
+          "url": {
+            "$resource": "tunnel:72fe"
+          }
+        }
+      },
+      "outputs": {}
+    },
+    {
+      "id": "dd8a",
+      "type": "package",
+      "inputs": {
+        "name": "@fx/teams-dev-portal",
+        "create": {
+          "name": "@fx/teams-dev-portal",
+          "flattenScope": true
+        }
+      },
+      "outputs": {}
     }
   ]
 }

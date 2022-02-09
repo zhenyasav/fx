@@ -1,6 +1,8 @@
 import { z } from "zod";
 import os from "os";
 
+const username = os.userInfo().username;
+
 export const manifestInput = z.object({
   directory: z
     .string()
@@ -17,11 +19,12 @@ export const manifestInput = z.object({
     .default("An app built with Teams Toolkit"),
   packageName: z
     .string()
-    .describe("enter a package name like com.example.myapp"),
+    .describe("enter a package name like com.example.myapp")
+    .default(`com.${username}.app`),
   developerName: z
     .string()
     .describe("enter your publisher name")
-    .default(os.userInfo().username),
+    .default(username),
 });
 
 export type ManifestInput = z.infer<typeof manifestInput>;

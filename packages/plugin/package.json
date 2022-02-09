@@ -7,8 +7,8 @@
     "clean": "rm -rf build && tsc --build --clean"
   },
   "dependencies": {
-    "@nice/file": "workspace:^1.0.0",
     "@fx/zod-inquirer": "workspace:^1.0.0",
+    "@nice/file": "workspace:^1.0.0",
     "zod": "^3.11.6"
   }
 }

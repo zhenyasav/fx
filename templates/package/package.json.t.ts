@@ -14,7 +14,7 @@ const template: TemplateFunction<Input> = ({ input }: TemplateContext<Input>) =>
   "scripts": {
     "clean": "rm -rf build && tsc --build --clean",
     "build": "tsc",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
     "test": "jest"
   },
   "devDependencies": {
@@ -23,6 +23,7 @@ const template: TemplateFunction<Input> = ({ input }: TemplateContext<Input>) =>
     "@types/jest": "^27.4.0",
     "@types/node": "^16.11.11",
     "jest": "^27.4.5",
+    "ts-jest": "^27.1.2",
     "typescript": "^4.5.5"
   }
 }

@@ -65,7 +65,6 @@ var collections_1 = require("./util/collections");
 var effectors_1 = require("./effectors");
 var config_1 = require("./config");
 var resourceDeps_1 = require("./resourceDeps");
-var project_1 = require("./project");
 var Fx = /** @class */ (function () {
     function Fx(options) {
         this._config = null;
@@ -147,11 +146,13 @@ var Fx = /** @class */ (function () {
                         return [4 /*yield*/, (0, plugin_1.promise)((_b = method.inputs) === null || _b === void 0 ? void 0 : _b.call(method, {
                                 defaults: defaultArgs,
                                 questionGenerator: (0, resourceDeps_1.getResourceQuestionGenerator)(config),
+                                resource: resource,
+                                config: config,
                             }))];
                     case 2:
                         input = _h.sent();
                         if (!input) return [3 /*break*/, 7];
-                        pendingResourceRefs = (_c = (0, project_1.getPendingResourceReferences)(input)) !== null && _c !== void 0 ? _c : [];
+                        pendingResourceRefs = (_c = (0, plugin_1.getPendingResourceReferences)(input)) !== null && _c !== void 0 ? _c : [];
                         _i = 0, pendingResourceRefs_1 = pendingResourceRefs;
                         _h.label = 3;
                     case 3:
@@ -174,17 +175,22 @@ var Fx = /** @class */ (function () {
                         _h.label = 7;
                     case 7: return [4 /*yield*/, (0, plugin_1.promise)((_d = method.body) === null || _d === void 0 ? void 0 : _d.call(method, {
                             input: input,
+                            resource: resource,
+                            config: config,
                         }))];
                     case 8:
                         methodResult = _h.sent();
                         _f = __assign({ effects: [], value: null, description: "".concat(methodName, " ").concat(definition.type).concat(!!(input === null || input === void 0 ? void 0 : input.name) ? " named '".concat(input.name, "'") : "") }, methodResult), effects = _f.effects, value = _f.value, description = _f.description, rest = __rest(_f, ["effects", "value", "description"]);
                         if (!(effects === null || effects === void 0 ? void 0 : effects.length)) return [3 /*break*/, 13];
                         if (!dryRun) return [3 /*break*/, 9];
-                        (0, effectors_1.printEffects)(effects, description);
+                        console.log("dry run: ".concat(description));
+                        console.log((0, effectors_1.printEffects)(effects) + '\n');
                         return [3 /*break*/, 13];
                     case 9:
+                        console.log("applying ".concat(effects === null || effects === void 0 ? void 0 : effects.length, " actions:"));
+                        console.log((0, effectors_1.printEffects)(effects) + '\n');
                         _g = collections_1.compact;
-                        return [4 /*yield*/, (0, effectors_1.applyEffects)(effects, description)];
+                        return [4 /*yield*/, (0, effectors_1.applyEffects)(effects)];
                     case 10:
                         effectResults = _g.apply(void 0, [_h.sent()]);
                         if (effectResults === null || effectResults === void 0 ? void 0 : effectResults.length) {
@@ -222,7 +228,7 @@ var Fx = /** @class */ (function () {
                             inputs: inputs,
                             outputs: {},
                         };
-                        if (!('create' in ((_a = definition === null || definition === void 0 ? void 0 : definition.methods) !== null && _a !== void 0 ? _a : {}))) return [3 /*break*/, 3];
+                        if (!("create" in ((_a = definition === null || definition === void 0 ? void 0 : definition.methods) !== null && _a !== void 0 ? _a : {}))) return [3 /*break*/, 3];
                         return [4 /*yield*/, this.invokeResourceMethod({
                                 instance: instance,
                                 definition: definition,

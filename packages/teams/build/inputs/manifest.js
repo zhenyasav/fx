@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.manifestInput = void 0;
 var zod_1 = require("zod");
 var os_1 = __importDefault(require("os"));
+var username = os_1.default.userInfo().username;
 exports.manifestInput = zod_1.z.object({
     directory: zod_1.z
         .string()
@@ -22,10 +23,11 @@ exports.manifestInput = zod_1.z.object({
         .default("An app built with Teams Toolkit"),
     packageName: zod_1.z
         .string()
-        .describe("enter a package name like com.example.myapp"),
+        .describe("enter a package name like com.example.myapp")
+        .default("com.".concat(username, ".app")),
     developerName: zod_1.z
         .string()
         .describe("enter your publisher name")
-        .default(os_1.default.userInfo().username),
+        .default(username),
 });
 //# sourceMappingURL=manifest.js.map

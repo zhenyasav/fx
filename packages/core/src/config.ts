@@ -1,29 +1,13 @@
-// import { findAncestorPath } from "./util/findAncestorPath";
 import path from "path";
-import { Plugin, ResourceDefinition } from "@fx/plugin";
+import {
+  Plugin,
+  ResourceDefinition,
+  LoadedConfig,
+  Config,
+  ProjectFile,
+} from "@fx/plugin";
 import { cosmiconfig } from "cosmiconfig";
 import TypeScriptLoader from "@endemolshinegroup/cosmiconfig-typescript-loader";
-import { Project } from "./project";
-import { ProjectFile } from "./project";
-import { ResourceInstance } from ".";
-
-export type Config = {
-  plugins?: Plugin[];
-};
-
-export type LoadedResource = {
-  instance: ResourceInstance;
-  definition?: ResourceDefinition;
-};
-
-export type LoadedConfig = Config & {
-  configFilePath: string;
-  project: Project;
-  projectFile: ProjectFile;
-  getResourceDefinitions(): ResourceDefinition[];
-  getResourceDefinition(type: string): ResourceDefinition | null;
-  getResources(): LoadedResource[];
-};
 
 export type ConfigLoaderOptions = {
   cwd?: string;
@@ -99,14 +83,16 @@ export class ConfigLoader {
             return [...allDefs];
           },
           getResources() {
-            return projectFile.parsed?.resources?.map((r) => {
-              const definition = defsByType.get(r.type)?.definition;
-              return {
-                instance: r,
-                definition
-              }
-            }) ?? [];
-          }
+            return (
+              projectFile.parsed?.resources?.map((r) => {
+                const definition = defsByType.get(r.type)?.definition;
+                return {
+                  instance: r,
+                  definition,
+                };
+              }) ?? []
+            );
+          },
         };
         return loaded;
       } else throw new Error("fx project configuration file not found");

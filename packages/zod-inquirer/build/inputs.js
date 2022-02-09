@@ -52,6 +52,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.inquire = exports.getQuestions = exports.getQuestion = exports.fulfillMissingInputs = void 0;
 var inquirer_1 = __importDefault(require("inquirer"));
+var debug_1 = require("./debug");
 function fulfillMissingInputs(spec) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
@@ -75,9 +76,6 @@ function getQuestion(shape) {
             if (typeName in typesToQnType) {
                 type = typesToQnType[typeName];
             }
-            else {
-                return null;
-            }
         }
         if (dv) {
             defaultValue = dv === null || dv === void 0 ? void 0 : dv();
@@ -100,7 +98,7 @@ function getQuestion(shape) {
             return (_a = parsed.error.format()._errors) === null || _a === void 0 ? void 0 : _a.join("\n");
         }
     }
-    return { message: message, type: type, default: defaultValue, validate: validate };
+    return type ? { message: message, type: type, default: defaultValue, validate: validate } : null;
 }
 exports.getQuestion = getQuestion;
 function getQuestions(shape, defaultGenerator) {
@@ -139,9 +137,11 @@ function inquire(shape, options) {
             switch (_b.label) {
                 case 0:
                     questions = getQuestions(shape._def.shape(), options === null || options === void 0 ? void 0 : options.questionGenerator);
+                    (0, debug_1.debug)(questions);
                     return [4 /*yield*/, inquirer_1.default.prompt(questions, options === null || options === void 0 ? void 0 : options.defaults)];
                 case 1:
                     responses = (_a = (_b.sent())) !== null && _a !== void 0 ? _a : {};
+                    (0, debug_1.debug)(responses);
                     return [2 /*return*/, noUndefined(responses)];
             }
         });
