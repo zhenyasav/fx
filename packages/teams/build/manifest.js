@@ -63,6 +63,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.manifest = void 0;
 var path_1 = __importDefault(require("path"));
+var open_1 = __importDefault(require("open"));
+var chalk_1 = require("chalk");
 var fs_1 = require("fs");
 var fs_2 = __importDefault(require("fs"));
 var templates_1 = require("@fx/templates");
@@ -126,6 +128,86 @@ function manifest() {
                                                         ? "errors:\n" + JSON.stringify(result, null, 2)
                                                         : "manifest ok");
                                                     return [2 /*return*/, { errors: result }];
+                                            }
+                                        });
+                                    });
+                                },
+                            },
+                        ],
+                    };
+                },
+            }),
+            dev: (0, plugin_1.method)({
+                body: function (_a) {
+                    var resource = _a.resource, config = _a.config;
+                    return {
+                        effects: [
+                            {
+                                type: "function",
+                                description: "send Teams app to Teams Dev Portal",
+                                body: function () {
+                                    var _a, _b, _c, _d;
+                                    return __awaiter(this, void 0, void 0, function () {
+                                        var res, root, fileName, zip, rawmanifest, manifest, tokenProvider, token, existing, result;
+                                        return __generator(this, function (_e) {
+                                            switch (_e.label) {
+                                                case 0:
+                                                    res = resource;
+                                                    root = path_1.default.dirname(config.configFilePath);
+                                                    fileName = path_1.default.join(root, (_b = (_a = res.instance.inputs) === null || _a === void 0 ? void 0 : _a.create) === null || _b === void 0 ? void 0 : _b.buildDirectory, "teams-app.zip");
+                                                    return [4 /*yield*/, fs_1.promises.readFile(fileName)];
+                                                case 1:
+                                                    zip = _e.sent();
+                                                    return [4 /*yield*/, fs_1.promises.readFile(path_1.default.join(root, (_d = (_c = res.instance.inputs) === null || _c === void 0 ? void 0 : _c.create) === null || _d === void 0 ? void 0 : _d.directory, "manifest.json"))];
+                                                case 2:
+                                                    rawmanifest = _e.sent();
+                                                    manifest = JSON.parse(rawmanifest.toString());
+                                                    tokenProvider = teams_dev_portal_1.AppStudioLogin.getInstance();
+                                                    return [4 /*yield*/, tokenProvider.getAccessToken()];
+                                                case 3:
+                                                    token = _e.sent();
+                                                    if (!token)
+                                                        throw new Error("unable to get AppStudio token");
+                                                    console.log("ensuring app");
+                                                    return [4 /*yield*/, teams_dev_portal_1.AppStudioClient.getApp(manifest === null || manifest === void 0 ? void 0 : manifest.id, token)];
+                                                case 4:
+                                                    existing = _e.sent();
+                                                    if (!!existing) return [3 /*break*/, 6];
+                                                    return [4 /*yield*/, teams_dev_portal_1.AppStudioClient.createApp(zip, token)];
+                                                case 5:
+                                                    result = _e.sent();
+                                                    console.log("created app:", result);
+                                                    return [2 /*return*/, { app: result }];
+                                                case 6: return [2 /*return*/, { app: existing }];
+                                            }
+                                        });
+                                    });
+                                },
+                            },
+                            {
+                                type: "function",
+                                description: "open a browser window to your app",
+                                body: function () {
+                                    var _a, _b;
+                                    return __awaiter(this, void 0, void 0, function () {
+                                        var res, output, launchUrl;
+                                        return __generator(this, function (_c) {
+                                            switch (_c.label) {
+                                                case 0:
+                                                    res = resource;
+                                                    output = (_b = (_a = res.instance.outputs) === null || _a === void 0 ? void 0 : _a.dev) === null || _b === void 0 ? void 0 : _b.find(function (o) { return !!o.app; });
+                                                    if (!output)
+                                                        throw new Error("cannot find app registration");
+                                                    launchUrl = (0, teams_dev_portal_1.teamsAppLaunchUrl)(output.app);
+                                                    console.log("open:", (0, chalk_1.cyan)(launchUrl));
+                                                    return [4 /*yield*/, (0, open_1.default)(launchUrl, {
+                                                            app: {
+                                                                name: open_1.default.apps.chrome,
+                                                            },
+                                                        })];
+                                                case 1:
+                                                    _c.sent();
+                                                    return [2 /*return*/];
                                             }
                                         });
                                     });

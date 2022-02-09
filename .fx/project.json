@@ -36,6 +36,97 @@
           {
             "errors": []
           }
+        ],
+        "dev": [
+          {
+            "app": {
+              "teamsAppId": "f9f3517e-0ae3-422a-b65c-c5caea4d8aa9",
+              "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+              "ownerAadId": "36ff5f38-6aef-4a01-940e-be3807b1466c",
+              "userList": [
+                {
+                  "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+                  "aadId": "36ff5f38-6aef-4a01-940e-be3807b1466c",
+                  "displayName": "Zhenya Savchenko",
+                  "userPrincipalName": "zhenyasa@microsoft.com",
+                  "isAdministrator": true
+                }
+              ],
+              "userAppSettings": null,
+              "environments": null,
+              "globalEnvironmentProperties": null,
+              "createdAt": "2022-02-09T14:45:10.2059288+00:00",
+              "updatedAt": "2022-02-09T14:45:10.4365549+00:00",
+              "appId": "f9f3517e-0ae3-422a-b65c-c5caea4d8aa9",
+              "appName": "foo",
+              "appStudioVersion": "",
+              "version": "1.0.0",
+              "manifestVersion": "1.11",
+              "packageName": "com.zhenya.app",
+              "shortName": "foo",
+              "longName": "foo",
+              "developerName": "zhenya",
+              "websiteUrl": "https://",
+              "privacyUrl": "https://",
+              "termsOfUseUrl": "https://",
+              "mpnId": null,
+              "shortDescription": "An app built with Teams Toolkit",
+              "longDescription": "An app built with Teams Toolkit",
+              "colorIcon": "https://devappglobal.blob.core.windows.net/images/f9f3517e-0ae3-422a-b65c-c5caea4d8aa9/color/0c8abb82-864c-4838-9e50-5cb7d8441601",
+              "outlineIcon": "https://devappglobal.blob.core.windows.net/images/f9f3517e-0ae3-422a-b65c-c5caea4d8aa9/outline/15493aa6-f7d6-4023-9f6d-3dce90a797b5",
+              "accentColor": "#ff0000",
+              "configurableTabs": [],
+              "staticTabs": [],
+              "bots": [],
+              "connectors": [],
+              "subscriptionOffer": null,
+              "graphConnector": null,
+              "messagingExtensions": [],
+              "validDomains": [],
+              "appStudioChecklistChecked": [],
+              "webApplicationInfoId": null,
+              "webApplicationInfoResource": null,
+              "devicePermissions": [],
+              "applicationPermissions": [],
+              "showLoadingIndicator": false,
+              "isFullScreen": false,
+              "isPublic": false,
+              "defaultInstallScope": null,
+              "defaultGroupCapability": null,
+              "configurableProperties": [],
+              "meetingExtensionDefinition": null,
+              "isTeamsOwned": null,
+              "isBlockable": null,
+              "isCoreApp": null,
+              "isPinnable": null,
+              "isFullTrust": null,
+              "isTenantConfigurable": null,
+              "supportedTenantRegions": null,
+              "applicableLicenseCategories": null,
+              "restrictedTenantTypes": null,
+              "screenshotUrls": null,
+              "keywords": null,
+              "videoUrl": null,
+              "categories": null,
+              "disabledScopes": null,
+              "thirdPartyNoticesUrl": null,
+              "mobileModules": null,
+              "isPreinstallable": null,
+              "activities": null,
+              "hostedCapabilities": null,
+              "validTrouterPaths": null,
+              "industries": null,
+              "appCatalogExtension": null,
+              "authorization": null,
+              "defaultBlockUntilAdminAction": null,
+              "publisherDocsUrl": null,
+              "hasPreviewFeature": false,
+              "localizationInfo": {
+                "defaultLanguageTag": "en-us",
+                "languages": null
+              }
+            }
+          }
         ]
       }
     },
@@ -51,7 +142,7 @@
       "outputs": {
         "dev": [
           {
-            "url": "https://446a-174-127-243-36.ngrok.io"
+            "url": "https://ffd6-174-127-243-36.ngrok.io"
           }
         ]
       }

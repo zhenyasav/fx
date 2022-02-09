@@ -1,11 +1,17 @@
 import path from "path";
+import open from "open";
+import { cyan } from "chalk";
 import { promises as fs } from "fs";
 import ogfs from "fs";
 import sample from "./fixtures/manifest.json";
 import { template } from "@fx/templates";
 import { ManifestInput, manifestInput } from "./inputs/manifest";
 import { LoadedResource, method } from "@fx/plugin";
-import { AppStudioLogin, AppStudioClient } from "@fx/teams-dev-portal";
+import {
+  AppStudioLogin,
+  AppStudioClient,
+  teamsAppLaunchUrl,
+} from "@fx/teams-dev-portal";
 import jszip from "jszip";
 import mkdirp from "mkdirp";
 
@@ -64,6 +70,69 @@ export function manifest() {
                       : "manifest ok"
                   );
                   return { errors: result };
+                },
+              },
+            ],
+          };
+        },
+      }),
+      dev: method({
+        body({ resource, config }) {
+          return {
+            effects: [
+              {
+                type: "function",
+                description: "send Teams app to Teams Dev Portal",
+                async body() {
+                  const res = resource as LoadedResource<ManifestInput>;
+                  const root = path.dirname(config.configFilePath);
+                  const fileName = path.join(
+                    root,
+                    res.instance.inputs?.create?.buildDirectory!,
+                    "teams-app.zip"
+                  );
+                  const zip = await fs.readFile(fileName);
+                  const rawmanifest = await fs.readFile(
+                    path.join(
+                      root,
+                      res.instance.inputs?.create?.directory!,
+                      "manifest.json"
+                    )
+                  );
+                  const manifest: Manifest = JSON.parse(rawmanifest.toString());
+                  const tokenProvider = AppStudioLogin.getInstance();
+                  const token = await tokenProvider.getAccessToken();
+                  if (!token) throw new Error("unable to get AppStudio token");
+                  console.log("ensuring app");
+                  const existing = await AppStudioClient.getApp(
+                    manifest?.id,
+                    token
+                  );
+                  if (!existing) {
+                    const result = await AppStudioClient.createApp(zip, token);
+                    console.log("created app:", result);
+                    return { app: result };
+                  } else {
+                    return { app: existing };
+                  }
+                },
+              },
+              {
+                type: "function",
+                description: "open a browser window to your app",
+                async body() {
+                  const res = resource as LoadedResource<ManifestInput>;
+                  const output = res.instance.outputs?.dev?.find(
+                    (o: any) => !!o.app
+                  );
+                  if (!output) throw new Error("cannot find app registration");
+                  const launchUrl = teamsAppLaunchUrl(output.app);
+                  console.log("open:", cyan(launchUrl));
+                  await open(launchUrl, {
+                    app: {
+                      name: open.apps.chrome,
+                    },
+                  });
                 },
               },
             ],
