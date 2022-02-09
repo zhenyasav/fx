@@ -17,6 +17,7 @@ export declare type LoadedConfig = Config & {
     getResourceDefinitions(): ResourceDefinition[];
     getResourceDefinition(type: string): ResourceDefinition | null;
     getResources(): LoadedResource[];
+    getResource(ref: ResourceReference): LoadedResource | null;
 };
 export declare const FRAMEWORK_FOLDER = ".fx";
 export declare const PROJECT_FILE_NAME = "project.json";

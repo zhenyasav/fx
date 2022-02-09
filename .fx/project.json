@@ -175,6 +175,24 @@
         }
       },
       "outputs": {}
+    },
+    {
+      "id": "9a0a",
+      "type": "teams-tab",
+      "inputs": {
+        "create": {
+          "name": "TABZ",
+          "id": "mytab",
+          "manifest": {
+            "$resource": "teams-manifest:4f1c"
+          },
+          "url-type": "tunnel",
+          "url": {
+            "$resource": "tunnel:72fe"
+          }
+        }
+      },
+      "outputs": {}
     }
   ]
 }

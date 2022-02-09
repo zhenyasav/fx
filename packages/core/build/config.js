@@ -161,6 +161,10 @@ var ConfigLoader = /** @class */ (function () {
                                         definition: definition,
                                     };
                                 })) !== null && _c !== void 0 ? _c : []);
+                            }, getResource: function (_a) {
+                                var _b, _c;
+                                var $resource = _a.$resource;
+                                return ((_c = (_b = this.getResources()) === null || _b === void 0 ? void 0 : _b.find(function (lr) { return (0, plugin_1.resourceId)(lr.instance) == $resource; })) !== null && _c !== void 0 ? _c : null);
                             } });
                         return [2 /*return*/, loaded];
                     case 13: throw new Error("fx project configuration file not found");

@@ -15,7 +15,7 @@ export declare class Fx {
         dryRun: boolean;
         defaultArgs?: any;
     }): Promise<{
-        effects: import("@fx/plugin").Effect.Any[] | never[];
+        effects: never[] | import("@fx/plugin").Effect.Any[];
         value: any;
         description: string;
     }>;

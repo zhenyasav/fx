@@ -5,6 +5,7 @@ import {
   LoadedConfig,
   Config,
   ProjectFile,
+  resourceId,
 } from "@fx/plugin";
 import { cosmiconfig } from "cosmiconfig";
 import TypeScriptLoader from "@endemolshinegroup/cosmiconfig-typescript-loader";
@@ -91,6 +92,13 @@ export class ConfigLoader {
                   definition,
                 };
               }) ?? []
+            );
+          },
+          getResource({ $resource }) {
+            return (
+              this.getResources()?.find(
+                (lr) => resourceId(lr.instance) == $resource
+              ) ?? null
             );
           },
         };

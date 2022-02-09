@@ -21,6 +21,7 @@ export type LoadedConfig = Config & {
   getResourceDefinitions(): ResourceDefinition[];
   getResourceDefinition(type: string): ResourceDefinition | null;
   getResources(): LoadedResource[];
+  getResource(ref: ResourceReference): LoadedResource;
 };
 
 export const FRAMEWORK_FOLDER = `.fx`;

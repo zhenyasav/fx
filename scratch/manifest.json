@@ -22,5 +22,17 @@
     "outline": "resources/color.png",
     "color": "resources/color.png"
   },
-  "accentColor": "#ff0000"
+  "accentColor": "#ff0000",
+  "staticTabs": [
+    {
+      "name": "TABZ",
+      "contentUrl": {
+        "$resource": "tunnel:72fe"
+      },
+      "scopes": [
+        "personal"
+      ],
+      "entityId": "mytab"
+    }
+  ]
 }
