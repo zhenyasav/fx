@@ -187,7 +187,7 @@ var parser = (0, yargs_1.default)(process.argv.slice(2))
             case 2:
                 config_2 = _a.sent();
                 defs = config_2.getResourceDefinitions().filter(function (res) {
-                    return methodName in res.methods;
+                    return res.methods && methodName in res.methods;
                 });
                 if (defs === null || defs === void 0 ? void 0 : defs.length) {
                     (0, prettyPrint_1.info)("\nThese (".concat(defs.length, ") known resource types support '").concat(methodName, "' and can be created with 'fx add <resource-type>':"));

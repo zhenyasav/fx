@@ -111,7 +111,7 @@ const parser = yargs(process.argv.slice(2))
         );
         const config = await fx.config();
         const defs = config.getResourceDefinitions().filter((res) => {
-          return methodName in res.methods;
+          return res.methods && methodName in res.methods;
         });
         if (defs?.length) {
           info(

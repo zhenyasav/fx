@@ -50,9 +50,9 @@ function generateResourceChoiceQuestions(config, shape, key, merge) {
             });
             q.default = 0;
             options === null || options === void 0 ? void 0 : options.map(function (opt, i) {
-                var followupQuestion = generateResourceChoiceQuestions(config, opt, key)[0];
-                followupQuestion.when = function (hash) { return hash[key] == i; };
-                result.push(followupQuestion);
+                var followupQuestions = generateResourceChoiceQuestions(config, opt, key);
+                followupQuestions === null || followupQuestions === void 0 ? void 0 : followupQuestions.forEach(function (q) { return q.when = function (hash) { return hash[key] == i; }; });
+                result.push.apply(result, followupQuestions);
             });
         }
     }
