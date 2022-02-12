@@ -5,6 +5,7 @@ import {
   printLogo,
   printResourceInstance,
   printResourceDefinition,
+  printResources,
   info,
   error,
 } from "./prettyPrint";
@@ -41,7 +42,8 @@ const parser = yargs(process.argv.slice(2))
         info("there are no resource definitions installed in this project");
       } else {
         console.log(`${resources.length} resource types available:`);
-        resources.forEach(printResourceDefinition);
+        // resources.forEach(printResourceDefinition);
+        printResources(resources);
       }
       console.log("");
     }

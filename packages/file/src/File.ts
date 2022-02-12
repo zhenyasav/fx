@@ -53,7 +53,6 @@ export class File<D = any> {
     if (this.isCopy()) {
       await mkdirp(path.dirname(this.path));
       await fs.copyFile(this.sourcePath, this.path);
-      console.info(`copied ${ellipsis(relative(this.path))}`);
     } else {
       const text = this.parsed !== null ? await this.serialize() : this.content;
       this.content = text;
@@ -67,7 +66,6 @@ export class File<D = any> {
         try {
           handle = await fs.open(this.path, "w");
           await handle.writeFile(text, "utf-8");
-          console.info("wrote", this.shortDescription());
         } finally {
           handle?.close();
         }
@@ -79,7 +77,6 @@ export class File<D = any> {
     this.content = await handle.readFile("utf-8");
     handle.close();
     this.parsed = await this.parse(this.content, loadOptions);
-    console.info("loaded", this.shortDescription());
     return this;
   }
   protected async parse(content: string, loadOptions?: any): Promise<D> {

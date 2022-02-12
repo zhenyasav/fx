@@ -1,5 +1,6 @@
 import { ResourceDefinition, ResourceInstance } from "@fx/core";
 import chalk from "chalk";
+import Table from "cli-table";
 const { cyan, gray, white, yellow, red } = chalk;
 
 export const logo = ` _______  __
@@ -10,6 +11,30 @@ export const logo = ` _______  __
 `;
 export function printLogo() {
   console.log(cyan(logo));
+}
+
+export function printResources(resources: ResourceDefinition[]) {
+  const table = new Table({
+    chars: {
+      top: "",
+      "top-mid": "",
+      "top-left": "",
+      "top-right": "",
+      bottom: "",
+      "bottom-mid": "",
+      "bottom-left": "",
+      "bottom-right": "",
+      left: "",
+      "left-mid": "",
+      mid: "",
+      "mid-mid": "",
+      right: "",
+      "right-mid": "",
+      middle: "",
+    },
+  });
+  table.push(...resources?.map((r) => [cyan(r.type), r.description]));
+  console.log(table.toString());
 }
 
 export function printResourceDefinition(resource: ResourceDefinition) {

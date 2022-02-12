@@ -8,12 +8,16 @@ import {
   resourceId,
 } from "@fx/plugin";
 import { cosmiconfig } from "cosmiconfig";
-import TypeScriptLoader from "@endemolshinegroup/cosmiconfig-typescript-loader";
+import tsloader from "@endemolshinegroup/cosmiconfig-typescript-loader";
+// import { swcLoader } from "./swcLoader";
+import { timer } from "../util/timer";
 
 export type ConfigLoaderOptions = {
   cwd?: string;
   configFile?: string;
 };
+
+// const swcloader = swcLoader();
 
 export class ConfigLoader {
   private cosmiconfig = cosmiconfig("fx", {
@@ -34,10 +38,11 @@ export class ConfigLoader {
       "package.json",
     ].map((s) => s.replace("#", "fx")),
     loaders: {
-      ".ts": TypeScriptLoader,
+      ".ts": tsloader,
     },
   });
   async load(options?: ConfigLoaderOptions): Promise<LoadedConfig> {
+    const t = timer();
     const { cwd, configFile } = {
       cwd: process.cwd(),
       configFile: null,
@@ -102,6 +107,7 @@ export class ConfigLoader {
             );
           },
         };
+        console.log('loaded config', t());
         return loaded;
       } else throw new Error("fx project configuration file not found");
     } else {

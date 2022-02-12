@@ -3,7 +3,14 @@ import { performance } from "perf_hooks";
 export function timer() {
   const start = performance.now();
   return function() {
-    return `${(performance.now() - start).toFixed(2)}ms`;
+    const d = performance.now() - start;
+    const t = []
+    if (d > 1000) {
+      t.push(`${(Math.round(d / 1000).toFixed(1))}s`);
+    } else {
+      t.push(`${d.toFixed(0)}ms`);
+    }
+    return t.join(' ');
   };
 }
 
