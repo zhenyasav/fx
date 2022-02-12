@@ -1,3 +1,6 @@
+.DS_Store
+*.tsbuildinfo
+
 # Logs
 logs
 *.log
