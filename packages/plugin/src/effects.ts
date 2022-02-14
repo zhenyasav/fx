@@ -62,35 +62,20 @@ export namespace Effect {
     instance: ResourceInstance<TArgs>;
   };
 
-  export type Any = File | Function<any> | Shell | Resource<any>;
+  export type ResourceMethod<TArgs extends object = any> = {
+    $effect: "resource-method";
+    resourceId: string;
+    method: string;
+    args: TArgs;
+  };
+
+  export type Any =
+    | File
+    | Function<any>
+    | Shell
+    | Resource<any>
+    | ResourceMethod;
 }
-
-// export namespace Effect {
-//   export type WriteFile = {
-//     type: "write-file";
-//     file: File;
-//   };
-
-//   export type Shell = {
-//     type: "shell";
-//     command: string;
-//     cwd?: string;
-//   };
-
-//   export type PackageScript = {
-//     type: "package-script";
-//     name: string;
-//     args?: string[];
-//   };
-
-//   export type Function = {
-//     type: "function";
-//     description?: string;
-//     body: () => any;
-//   };
-
-//   export type Any = WriteFile | Function | Shell;
-// }
 
 export type Effector<T extends Effect.Base = Effect.Any, C = any> = {
   describe(effect: T, context: C): string;

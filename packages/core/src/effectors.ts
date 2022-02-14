@@ -3,10 +3,11 @@ import { ellipsis } from "./util/ellipsis";
 import { relative } from "./util/files";
 import { Effect, Effector, EffectorSet, resourceId } from "@fx/plugin";
 
-export type ResourceEffect<T extends Effect.Any = Effect.Any> = T & {
+export type ResourceEffect<T extends Effect.Any = Effect.Any> = {
   resourceId: string;
   method: string;
   path: (string | number)[];
+  effect: T;
 };
 
 const File: Effector<Effect.File> = {

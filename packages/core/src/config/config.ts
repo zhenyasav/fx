@@ -83,7 +83,7 @@ export class ConfigLoader {
           projectFile,
           ...(file.config as Config),
           getResourceDefinition(type: string) {
-            return defsByType.get(type)?.definition ?? null;
+            return defsByType.get(type)?.definition;
           },
           getResourceDefinitions() {
             return [...allDefs];
@@ -103,7 +103,7 @@ export class ConfigLoader {
             return (
               this.getResources()?.find(
                 (lr) => resourceId(lr.instance) == $resource
-              ) ?? null
+              )
             );
           },
         };

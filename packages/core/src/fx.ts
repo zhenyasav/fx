@@ -11,7 +11,7 @@ import {
 } from "@fx/plugin";
 import { randomString } from "./util/random";
 // import { compact } from "./util/collections";
-import { applyEffects, printEffects } from "./effectors";
+import { applyEffects, printEffects, ResourceEffect } from "./effectors";
 import { ConfigLoaderOptions, ConfigLoader } from "./config";
 import { getResourceQuestionGenerator } from "./resourceDeps";
 import { ResourceInstance } from "@fx/plugin/build/resource";
@@ -47,16 +47,24 @@ export class Fx {
     methodName: string,
     resource?: LoadedResource,
     args?: { [k: string]: any }
-  ): Promise<Effect.Any[]> {
+  ): Promise<ResourceEffect<Effect.Any>[]> {
     const resources = resource
       ? [resource]
       : await this.getResourcesWithMethod(methodName);
     if (!resources?.length) return [];
-    const results: Effect.Any[] = [];
+    const results: ResourceEffect<Effect.Any>[] = [];
     const config = await this.config();
+
+    const plannedResourceMethods = new Map<
+      LoadedResource,
+      { [methodName: string]: boolean }
+    >();
 
     for (let resource of resources) {
       const { definition, instance } = resource;
+      const alreadyPlanned = plannedResourceMethods.get(resource)?.[methodName];
+      if (alreadyPlanned) continue;
+
       const method = definition?.methods?.[methodName];
       if (!method) continue;
 
@@ -134,7 +142,7 @@ export class Fx {
   async planCreateResource<TArgs extends Object>(
     type: string,
     args?: TArgs
-  ): Promise<[Effect.Resource<TArgs>, ...Effect.Any[]]> {
+  ): Promise<[ResourceEffect<Effect.Resource<TArgs>>, ...ResourceEffect<Effect.Any>[]]> {
     const config = await this.config();
     const definition = config.getResourceDefinition(type);
     if (!definition) throw new Error(`resource of type '${type}' not found`);
