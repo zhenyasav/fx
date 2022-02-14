@@ -1,6 +1,6 @@
 import { Config, Plugin } from "@fx/core";
 import { packageTemplate } from "./templates/package/template.t";
-// import { teams } from "@fx/teams";
+import { teams } from "@fx/teams";
 
 const localTemplates: Plugin = {
   name: "templates",
@@ -10,7 +10,7 @@ const localTemplates: Plugin = {
 };
 
 const config: Config = {
-  plugins: [localTemplates],
+  plugins: [localTemplates, teams()],
 };
 
 export default config;

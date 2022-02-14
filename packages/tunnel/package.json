@@ -7,7 +7,8 @@
   "scripts": {
     "clean": "rm -rf build && tsc --build --clean",
     "build": "tsc",
-    "test": "node -r @swc-node/register src/test.ts"
+    "test": "node -r @swc-node/register src/test.ts",
+    "check": "tsc --noEmit"
   },
   "dependencies": {
     "@fx/plugin": "workspace:^1.0.0",

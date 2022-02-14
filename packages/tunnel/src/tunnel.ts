@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { LoadedResource, method, Plugin, ResourceDefinition } from "@fx/plugin";
+import {
+  LoadedResource,
+  method,
+  effect,
+  Plugin,
+  ResourceDefinition,
+} from "@fx/plugin";
 import ngrok from "ngrok";
 
 const createTunnelInput = z.object({
@@ -8,7 +14,7 @@ const createTunnelInput = z.object({
 
 type CreateTunnelInput = z.infer<typeof createTunnelInput>;
 
-export function tunnel(): ResourceDefinition {
+export function tunnel(): ResourceDefinition<CreateTunnelInput> {
   return {
     type: "tunnel",
     description: "create an ngrok tunnel",
@@ -19,25 +25,18 @@ export function tunnel(): ResourceDefinition {
       dev: method({
         async body({ resource }) {
           const res = resource as LoadedResource<CreateTunnelInput>;
+          const port = res.instance.inputs?.create?.port ?? 3000;
           return {
-            effects: [
-              {
-                type: "function",
-                description: "start ngrok",
-                async body() {
-                  const port = res.instance.inputs?.create?.port ?? 3000;
-                  const url = await ngrok.connect(port);
-                  console.log(
-                    `started ngrok:`,
-                    url,
-                    `http://localhost:${port}`
-                  );
-                  return {
-                    url,
-                  };
-                },
+            port,
+            url: effect({
+              $effect: "function",
+              description: "start ngrok",
+              async body() {
+                const url = await ngrok.connect(port);
+                console.log(`started ngrok:`, url, `http://localhost:${port}`);
+                return url;
               },
-            ],
+            }),
           };
         },
       }),
