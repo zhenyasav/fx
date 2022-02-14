@@ -4,6 +4,7 @@ import { inquire, QuestionGenerator } from "@fx/zod-inquirer";
 import { Effect } from "./effects";
 import { MaybePromise } from "./promise";
 import { JSONFile } from "@nice/file";
+import { ResourceInstance } from "./resource";
 
 export type Plugin = {
   readonly name: string;
@@ -19,13 +20,36 @@ export type LoadedConfig = Config & {
   project: Project;
   projectFile: ProjectFile;
   getResourceDefinitions(): ResourceDefinition[];
-  getResourceDefinition(type: string): ResourceDefinition | null;
+  getResourceDefinition(type: string): ResourceDefinition | undefined;
   getResources(): LoadedResource[];
-  getResource(ref: ResourceReference): LoadedResource | null;
+  getResource(ref: ResourceReference): LoadedResource | undefined;
 };
 
 export const FRAMEWORK_FOLDER = `.fx`;
 export const PROJECT_FILE_NAME = "project.json";
+
+export function resourceId(instance: ResourceInstance) {
+  if (!instance) return `[null]`;
+  const { id, type } = instance;
+  return `${type}:${id}`;
+}
+
+export function getResourceDependencies(
+  instance: ResourceInstance
+): ResourceReference[] {
+  if (!instance) return [];
+  const result = [];
+  for (let m in instance.inputs) {
+    const methodResult = instance.inputs[m];
+    result.push(...getResourceReferences(methodResult));
+  }
+  return result;
+}
+
+export type LoadedResource<TCreateInput = any> = {
+  instance: ResourceInstance<TCreateInput>;
+  definition?: ResourceDefinition<TCreateInput>;
+};
 
 export type Project = {
   resources: ResourceInstance[];
@@ -71,13 +95,8 @@ export function getPendingResourceReferences(object: any) {
   );
 }
 
-export type MethodResult<
-  TValue = any,
-  TEffect extends Typed = Effect.Any
-> = void | {
-  description?: string;
-  value?: TValue;
-  effects?: TEffect[];
+export type MethodResult<TEffect extends Effect.Base = Effect.Any> = void | {
+  [k: string]: any | TEffect;
 };
 
 export type MethodContext = {
@@ -85,11 +104,7 @@ export type MethodContext = {
   resource: LoadedResource;
 };
 
-export type Method<
-  TInput = any,
-  TOutput = any,
-  TEffect extends Typed = Effect.Any
-> = {
+export type Method<TInput = any, TEffect extends Effect.Base = Effect.Any> = {
   inputs?(
     context: {
       defaults?: Partial<TInput>;
@@ -100,7 +115,9 @@ export type Method<
     context: {
       input: TInput;
     } & MethodContext
-  ): MaybePromise<MethodResult<TOutput, TEffect>>;
+  ): MaybePromise<MethodResult<TEffect>>;
+  requires?: string[];
+  implies?: string[];
 };
 
 export type Methods<TCreateInput = any> = {
@@ -119,6 +136,8 @@ export function method<T extends z.ZodObject<z.ZodRawShape>>({
 }: {
   inputShape?: T;
   inputTransform?: Transform<z.infer<T>>;
+  requires?: string[];
+  implies?: string[];
 } & Pick<Method<z.infer<T>>, "body">): Method<z.infer<T>> {
   return inputShape
     ? {
@@ -148,22 +167,4 @@ export type ResourceDefinition<TCreateInput = any> = {
   type: string;
   description?: string;
   methods?: Methods<TCreateInput>;
-};
-
-export function resourceId(instance: ResourceInstance) {
-  if (!instance) return `[null]`;
-  const { id, type } = instance;
-  return `${type}:${id}`;
-}
-
-export type ResourceInstance<TCreateArgs = any> = {
-  id: string;
-  type: string;
-  inputs?: { create?: TCreateArgs } & { [methodName: string]: any };
-  outputs?: any;
-};
-
-export type LoadedResource<TCreateInput = any> = {
-  instance: ResourceInstance<TCreateInput>;
-  definition?: ResourceDefinition<TCreateInput>;
 };

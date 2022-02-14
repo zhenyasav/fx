@@ -1,9 +1,15 @@
 import { exec } from "child_process";
 import { ellipsis } from "./util/ellipsis";
 import { relative } from "./util/files";
-import { Effect, Effector, EffectorSet } from "@fx/plugin";
+import { Effect, Effector, EffectorSet, resourceId } from "@fx/plugin";
 
-const WriteFile: Effector<Effect.WriteFile> = {
+export type ResourceEffect<T extends Effect.Any = Effect.Any> = T & {
+  resourceId: string;
+  method: string;
+  path: (string | number)[];
+};
+
+const File: Effector<Effect.File> = {
   describe(e) {
     const { file } = e;
     return file.isCopy()
@@ -15,6 +21,7 @@ const WriteFile: Effector<Effect.WriteFile> = {
   async apply(e) {
     const { file } = e;
     await file.save();
+    return e.file.path;
   },
 };
 
@@ -48,33 +55,44 @@ const Shell: Effector<Effect.Shell> = {
   },
 };
 
+const Resource: Effector<Effect.Resource<any>> = {
+  describe(e) {
+    return `add resource ${resourceId(e.instance)}`;
+  },
+  async apply(e) {},
+};
+
 const Effectors: EffectorSet = {
-  "write-file": WriteFile,
+  file: File,
   function: Function,
   shell: Shell,
+  resource: Resource,
 };
 
 export function getEffector<T extends Effect.Any = Effect.Any>(
   e: T
 ): Effector<T> {
-  return Effectors[e.type] as Effector<T>;
+  return Effectors[e.$effect] as Effector<T>;
 }
 
-export async function applyEffects(effects: Effect.Any[]): Promise<any[]> {
+export async function applyEffects<C>(
+  effects: ResourceEffect[],
+  context: C
+): Promise<any[]> {
   if (!effects?.length) {
     return [];
   }
   const tasks = Promise.all(
     effects?.map((effect) => {
       const effector = getEffector(effect);
-      return effector.apply(effect);
+      return effector.apply(effect, context);
     })
   );
   return await tasks;
 }
 
-export function printEffects(effects: Effect.Any[]) {
+export function printEffects<C>(effects: Effect.Any[], context: C) {
   return effects
-    ?.map((effect) => getEffector(effect).describe(effect))
+    ?.map((effect) => getEffector(effect).describe(effect, context))
     ?.join("\n");
 }
