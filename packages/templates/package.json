@@ -4,7 +4,8 @@
   "main": "build/index.js",
   "scripts": {
     "build": "tsc",
-    "clean": "rm -rf build && tsc --build --clean"
+    "clean": "rm -rf build && tsc --build --clean",
+    "check": "tsc --noEmit"
   },
   "dependencies": {
     "@fx/plugin": "workspace:^1.0.0",

@@ -9,6 +9,7 @@ export const logo = ` _______  __
 |  _|  /  \\ 
 |_|   /_/\\_\\
 `;
+
 export function printLogo() {
   console.log(cyan(logo));
 }

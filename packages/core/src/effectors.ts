@@ -1,3 +1,4 @@
+import os from "os";
 import { exec } from "child_process";
 import { ellipsis } from "./util/ellipsis";
 import { relative } from "./util/files";
@@ -11,7 +12,12 @@ import {
   Project,
 } from "@fx/plugin";
 
-const File: Effector<Effect.File> = {
+export type EffectorContext = {
+  config: LoadedConfig;
+  project: Project;
+};
+
+const File: Effector<Effect.File, EffectorContext> = {
   describe(e) {
     const { file } = e.effect;
     return file.isCopy()
@@ -27,7 +33,7 @@ const File: Effector<Effect.File> = {
   },
 };
 
-const Function: Effector<Effect.Function> = {
+const Function: Effector<Effect.Function, EffectorContext> = {
   describe(e) {
     const {
       effect: { description },
@@ -49,7 +55,7 @@ const Function: Effector<Effect.Function> = {
   },
 };
 
-const Shell: Effector<Effect.Shell> = {
+const Shell: Effector<Effect.Shell, EffectorContext> = {
   describe(e) {
     const { command, cwd } = e.effect;
     return `invoke: '${command}'${cwd ? ` in directory ${ellipsis(cwd)}` : ``}`;
@@ -70,23 +76,21 @@ const Shell: Effector<Effect.Shell> = {
   },
 };
 
-const Resource: Effector<Effect.Resource<any>> = {
-  describe(e) {
+const Resource: Effector<Effect.Resource<any>, EffectorContext> = {
+  describe(e, c) {
     const {
       effect: { instance },
-      origin,
+      origin: { method },
     } = e;
-
-    return `${!!origin ? "update" : "create"} resource ${resourceId(
+    const { project } = c;
+    const existing = project?.resources?.find(
+      (r) => resourceId(r) == resourceId(instance)
+    );
+    return `${!!existing ? "update" : "create"} resource ${resourceId(
       instance
-    )}\n${prettyjson.render(instance)}`;
+    )}${os.EOL}${prettyjson.render(instance.inputs?.[method])}`;
   },
   async apply(e) {},
-};
-
-export type EffectorContext = {
-  config: LoadedConfig;
-  project: Project;
 };
 
 const ResourceMethod: Effector<Effect.ResourceMethod<any>, EffectorContext> = {

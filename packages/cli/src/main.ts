@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import os from "os";
 import yargs from "yargs";
 import { Fx } from "@fx/core";
 import {
@@ -67,12 +68,14 @@ const parser = yargs(process.argv.slice(2))
       if (!type) throw new Error("type is required");
       try {
         console.log(gray("cwd: " + process.cwd()));
-        const instance = await fx.createResource(
-          type,
-          { ...rest, name },
-          !!dry
-        );
-        console.log("added resource:", JSON.stringify(instance, null, 2));
+        console.log(`Creating '${type}':`);
+        const plan = await fx.planCreateResource(type, { ...rest, name });
+        console.log('');
+        console.log(`Plan with ${plan?.length} steps:`);
+        console.group();
+        console.log(fx.printEffects(plan).join(os.EOL));
+        console.groupEnd();
+        console.log('');
       } catch (err: any) {
         console.error(err.message);
       }
@@ -129,7 +132,7 @@ const parser = yargs(process.argv.slice(2))
         }
         process.exit(1);
       }
-      await fx.invokeMethodOnAllResources(methodName);
+      // await fx.invokeMethodOnAllResources(methodName);
     }
   )
   .showHelpOnFail(false);

@@ -8,7 +8,9 @@ import {
   getEffectLocations,
   Effect,
   getResourceDependencies,
+  ResourcePlan,
   ResourceEffect,
+  Plan,
 } from "@fx/plugin";
 import { randomString } from "./util/random";
 // import { compact } from "./util/collections";
@@ -44,13 +46,11 @@ export class Fx {
       (r) => r.definition?.methods && methodName in r.definition.methods
     );
   }
-  printEffects(effects: ResourceEffect<Effect.Any>[]): string {
-    const desc = effects
-      .map((e) => {
-        const effector = getEffector(e.effect);
-        return effector.describe(e, {});
-      })
-      .join("\n");
+  printEffects(effects: ResourceEffect<Effect.Any>[]): string[] {
+    const desc = effects.map((e) => {
+      const effector = getEffector(e.effect);
+      return effector.describe(e, {});
+    });
     return desc;
   }
   async executeEffects(effects: ResourceEffect<Effect.Any>[]) {}
@@ -58,7 +58,7 @@ export class Fx {
     methodName: string,
     resource?: LoadedResource,
     args?: { [k: string]: any }
-  ): Promise<ResourceEffect<Effect.Any>[]> {
+  ): Promise<Plan> {
     const resources = resource
       ? [resource]
       : await this.getResourcesWithMethod(methodName);
@@ -97,24 +97,26 @@ export class Fx {
           const [newInstance, ...restOfNewPlan] = newResourcePlan;
           if (newInstance) {
             ref.$resource = resourceId(newInstance.effect.instance);
+            results.push(newInstance);
           }
-          results.push(newInstance, ...restOfNewPlan);
+          results.push(...restOfNewPlan);
         }
         instance.inputs = instance.inputs || {};
         instance.inputs[methodName] = input;
-        results.push({
-          effect: {
-            $effect: "resource",
-            instance,
-          },
-          origin: {
-            method: methodName,
-            resource: resource.instance,
-          },
-        });
       }
 
-      if (methodName != 'create') {
+      results.push({
+        effect: {
+          $effect: "resource",
+          instance,
+        },
+        origin: {
+          method: methodName,
+          resource: resource.instance,
+        },
+      });
+
+      if (methodName != "create") {
         const dependencies = getResourceDependencies(instance);
         for (let dep of dependencies) {
           const dependentResource = config.getResource(dep);
@@ -161,9 +163,7 @@ export class Fx {
   async planCreateResource<TInput extends object>(
     type: string,
     input?: TInput
-  ): Promise<
-    [ResourceEffect<Effect.Resource<TInput>>, ...ResourceEffect<Effect.Any>[]]
-  > {
+  ): Promise<ResourcePlan<TInput>> {
     const config = await this.config();
     const definition = config.getResourceDefinition(type);
     if (!definition) throw new Error(`resource of type '${type}' not found`);
@@ -171,15 +171,11 @@ export class Fx {
       id: randomString(),
       type,
     };
-    return [
-      {
-        effect: {
-          $effect: "resource",
-          instance,
-        },
-      },
-      ...(await this.planMethod("create", { instance, definition }, input)),
-    ];
+    return this.planMethod(
+      "create",
+      { instance, definition },
+      input
+    ) as Promise<ResourcePlan<TInput>>;
   }
   // async createResource(
   //   type: string,

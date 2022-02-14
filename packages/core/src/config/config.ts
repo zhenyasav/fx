@@ -10,7 +10,6 @@ import {
 import { cosmiconfig } from "cosmiconfig";
 import tsloader from "@endemolshinegroup/cosmiconfig-typescript-loader";
 // import { swcLoader } from "./swcLoader";
-import { timer } from "../util/timer";
 
 export type ConfigLoaderOptions = {
   cwd?: string;
@@ -42,7 +41,6 @@ export class ConfigLoader {
     },
   });
   async load(options?: ConfigLoaderOptions): Promise<LoadedConfig> {
-    const t = timer();
     const { cwd, configFile } = {
       cwd: process.cwd(),
       configFile: null,
@@ -107,7 +105,6 @@ export class ConfigLoader {
             );
           },
         };
-        console.log('loaded config', t());
         return loaded;
       } else throw new Error("fx project configuration file not found");
     } else {

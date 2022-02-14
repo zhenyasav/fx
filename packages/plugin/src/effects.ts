@@ -10,11 +10,10 @@ export function effects<T extends Effect.Base = Effect.Any>() {
   return function (o: T): T {
     if (isEffect(o)) return o as T;
     else throw new Error(`invalid effect ${o}`);
-  }
+  };
 }
 
 export const effect = effects<Effect.Any>();
-
 
 export type ObjectWithEffects = {
   [k: string]: any | Effect.Base;
@@ -89,12 +88,19 @@ export namespace Effect {
 
 export type ResourceEffect<T extends Effect.Base = Effect.Any> = {
   effect: T;
-  origin?: {
+  origin: {
     resource: ResourceInstance;
     method: string;
     path?: (string | number)[];
   };
 };
+
+export type Plan<E extends Effect.Base = Effect.Any> = ResourceEffect<E>[] | [];
+
+export type ResourcePlan<TInput extends object = any> = [
+  ResourceEffect<Effect.Resource<TInput>>,
+  ...ResourceEffect<Effect.Any>[]
+];
 
 export type Effector<T extends Effect.Base = Effect.Any, C = any> = {
   describe(effect: ResourceEffect<T>, context: C): string;

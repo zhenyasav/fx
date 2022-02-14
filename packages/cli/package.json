@@ -4,7 +4,8 @@
   "scripts": {
     "start": "node build/index.js",
     "build": "tsc",
-    "clean": "rm -rf build && tsc --build --clean"
+    "clean": "rm -rf build && tsc --build --clean",
+    "check": "tsc --noEmit"
   },
   "bin": {
     "fx": "build/main.js"

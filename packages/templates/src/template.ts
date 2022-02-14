@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { executeDirectoryTemplate } from "@nice/ts-template";
-import { method, ResourceDefinition, Methods, Transform } from "@fx/plugin";
+import { method, ResourceDefinition, Methods, Transform, effect } from "@fx/plugin";
 
 export type TemplateResourceOptions<
   I extends z.ZodObject<z.ZodRawShape> = z.AnyZodObject
@@ -57,11 +57,12 @@ export function template<
             outputDirectory: od,
           });
           return {
-            description: `create '${name}'`,
-            effects: files?.map((file) => ({
-              type: "write-file",
-              file,
-            })),
+            files: files?.map((f) => {
+              return effect({
+                $effect: 'file',
+                file: f
+              })
+            }),
           };
         },
       }),
