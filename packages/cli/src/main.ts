@@ -79,7 +79,9 @@ const parser = yargs(process.argv.slice(2))
 
         if (!dry) {
           await fx.executeEffects(plan);
-          console.log('done');
+          console.log('done.');
+        } else {
+          console.log('dry run, no changes made.');
         }
       } catch (err: any) {
         console.error(err.message);
