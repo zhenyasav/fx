@@ -187,6 +187,7 @@ export function manifest() {
                     .on("error", (err) => reject(err))
                     .on("finish", () => resolve(void 0));
                 });
+                
                 return outFile;
               },
             }),

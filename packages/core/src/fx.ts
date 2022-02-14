@@ -46,14 +46,22 @@ export class Fx {
       (r) => r.definition?.methods && methodName in r.definition.methods
     );
   }
-  printEffects(effects: ResourceEffect<Effect.Any>[]): string[] {
+  async printEffects(effects: ResourceEffect<Effect.Any>[]): Promise<string[]> {
+    const config = await this.config();
     const desc = effects.map((e) => {
       const effector = getEffector(e.effect);
-      return effector.describe(e, {});
+      return effector.describe(e, { config });
     });
     return desc;
   }
-  async executeEffects(effects: ResourceEffect<Effect.Any>[]) {}
+  async executeEffects(effects: ResourceEffect<Effect.Any>[]) {
+    const config = await this.config();
+    for (let i in effects) {
+      const effect = effects[i];
+      const effector = getEffector(effect.effect);
+      await effector.apply(effect, { config });
+    }
+  }
   async planMethod(
     methodName: string,
     resource?: LoadedResource,

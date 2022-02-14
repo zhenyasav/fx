@@ -14,7 +14,6 @@ import {
 
 export type EffectorContext = {
   config: LoadedConfig;
-  project: Project;
 };
 
 const File: Effector<Effect.File, EffectorContext> = {
@@ -82,7 +81,9 @@ const Resource: Effector<Effect.Resource<any>, EffectorContext> = {
       effect: { instance },
       origin: { method },
     } = e;
-    const { project } = c;
+    const {
+      config: { project },
+    } = c;
     const existing = project?.resources?.find(
       (r) => resourceId(r) == resourceId(instance)
     );
@@ -113,6 +114,6 @@ const Effectors: EffectorSet<Effect.Any, EffectorContext> = {
 
 export function getEffector<T extends Effect.Any = Effect.Any>(
   e: T
-): Effector<T> {
-  return Effectors[e.$effect] as Effector<T>;
+): Effector<T, EffectorContext> {
+  return Effectors[e.$effect] as Effector<T, EffectorContext>;
 }
