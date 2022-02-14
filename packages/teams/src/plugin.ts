@@ -17,13 +17,7 @@ export function teams(): Plugin {
         // tab(),
         // teamsBot(),
         botService(),
-        tunnel(),
-        // template({
-        //   name: "tab",
-        //   description: "Add a staticTabs declaration to your Teams manifest",
-        //   templateDirectory: path.resolve(__dirname, "../templates/tab"),
-        //   input: tabInput,
-        // }),
+        tunnel()
       ];
     },
   };
