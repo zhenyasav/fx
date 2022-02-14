@@ -75,6 +75,7 @@ importers:
       cli-table: ^0.3.11
       inquirer: ^8.2.0
       lodash: ^4.17.21
+      prettyjson: ^1.2.5
       ts-node: ^10.4.0
       yargs: ^17.2.1
       zod: ^3.11.6
@@ -85,6 +86,7 @@ importers:
       cli-table: 0.3.11
       inquirer: 8.2.0
       lodash: 4.17.21
+      prettyjson: 1.2.5
       yargs: 17.2.1
       zod: 3.11.6
     devDependencies:
@@ -2852,7 +2854,6 @@ packages:
   /colors/1.4.0:
     resolution: {integrity: sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==}
     engines: {node: '>=0.1.90'}
-    dev: true
 
   /combined-stream/1.0.8:
     resolution: {integrity: sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==}
@@ -6096,7 +6097,6 @@ packages:
     dependencies:
       colors: 1.4.0
       minimist: 1.2.5
-    dev: true
 
   /prismjs/1.25.0:
     resolution: {integrity: sha512-WCjJHl1KEWbnkQom1+SzftbtXMKQoezOCYs5rECqMN+jP+apI7ftoflyqigqzopSO3hMhTEb0mFClA8lkolgEg==}

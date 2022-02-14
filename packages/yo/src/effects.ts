@@ -2,7 +2,7 @@ import { Effector, EffectorSet } from "@fx/plugin";
 import { exec, ExecOptions } from "child_process";
 
 export type RunYo = {
-  type: "yo";
+  $effect: "yo";
   generator: string;
 };
 
@@ -19,10 +19,16 @@ function promiseExec(cmd: string, options?: ExecOptions): Promise<string> {
 
 export const yo: Effector<RunYo> = {
   describe(y) {
-    return `run yo ${y.generator}`;
+    const {
+      effect: { generator },
+    } = y;
+    return `run yo ${generator}`;
   },
   async apply(y) {
-    return promiseExec(`yo ${y.generator}`);
+    const {
+      effect: { generator },
+    } = y;
+    return promiseExec(`yo ${generator}`);
   },
 };
 

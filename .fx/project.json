@@ -193,6 +193,37 @@
         }
       },
       "outputs": {}
+    },
+    {
+      "id": "2e3a",
+      "type": "azure-bot-service",
+      "inputs": {
+        "create": {
+          "messagingEndpoint-type": "string",
+          "messagingEndpoint": "https://foobar.com"
+        }
+      }
+    },
+    {
+      "id": "7b2e",
+      "type": "tunnel",
+      "inputs": {
+        "create": {
+          "port": 4000
+        }
+      }
+    },
+    {
+      "id": "bf71",
+      "type": "azure-bot-service",
+      "inputs": {
+        "create": {
+          "messagingEndpoint-type": "tunnel",
+          "messagingEndpoint": {
+            "$resource": "tunnel:7b2e"
+          }
+        }
+      }
     }
   ]
 }

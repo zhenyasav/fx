@@ -9,7 +9,6 @@ import {
   EffectorSet,
   resourceId,
   LoadedConfig,
-  Project,
 } from "@fx/plugin";
 
 export type EffectorContext = {
@@ -89,9 +88,25 @@ const Resource: Effector<Effect.Resource<any>, EffectorContext> = {
     );
     return `${!!existing ? "update" : "create"} resource ${resourceId(
       instance
-    )}${os.EOL}${prettyjson.render(instance.inputs?.[method])}`;
+    )}${os.EOL}${prettyjson.render(instance.inputs?.[method], {}, 2)}`;
   },
-  async apply(e) {},
+  async apply(e, c) {
+    const {
+      effect: { instance },
+    } = e;
+    const {
+      config: { project, projectFile },
+    } = c;
+    const existingIndex = project?.resources?.findIndex(
+      (r) => resourceId(r) == resourceId(instance)
+    );
+    if (existingIndex >= 0) {
+      project.resources.splice(existingIndex, 1, instance);
+    } else {
+      project.resources.push(instance);
+    }
+    await projectFile.save();
+  },
 };
 
 const ResourceMethod: Effector<Effect.ResourceMethod<any>, EffectorContext> = {

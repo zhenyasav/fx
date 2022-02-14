@@ -73,9 +73,14 @@ const parser = yargs(process.argv.slice(2))
         console.log('');
         console.log(`Plan with ${plan?.length} steps:`);
         console.group();
-        console.log(fx.printEffects(plan).join(os.EOL));
+        console.log((await fx.printEffects(plan)).join(os.EOL));
         console.groupEnd();
         console.log('');
+
+        if (!dry) {
+          await fx.executeEffects(plan);
+          console.log('done');
+        }
       } catch (err: any) {
         console.error(err.message);
       }

@@ -38,6 +38,7 @@ export class ConfigLoader {
     ].map((s) => s.replace("#", "fx")),
     loaders: {
       ".ts": tsloader,
+      // ".ts": swcloader,
     },
   });
   async load(options?: ConfigLoaderOptions): Promise<LoadedConfig> {

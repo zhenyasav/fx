@@ -1,6 +1,7 @@
 import { ResourceDefinition, ResourceInstance } from "@fx/core";
 import chalk from "chalk";
 import Table from "cli-table";
+import prettyjson from "prettyjson";
 const { cyan, gray, white, yellow, red } = chalk;
 
 export const logo = ` _______  __
@@ -45,7 +46,7 @@ export function printResourceDefinition(resource: ResourceDefinition) {
 export function printResourceInstance(resource: ResourceInstance) {
   console.log(`${white(resource.type)} ${gray(resource.id)}`);
   if (resource?.inputs)
-    console.log(gray(JSON.stringify(resource.inputs, null, 2)));
+    console.log(gray(prettyjson.render(resource.inputs, {}, 2)));
 }
 
 export function warn(...args: any[]) {
