@@ -1,52 +1,66 @@
 import { exec } from "child_process";
 import { ellipsis } from "./util/ellipsis";
 import { relative } from "./util/files";
-import { Effect, Effector, EffectorSet, resourceId } from "@fx/plugin";
-
-export type ResourceEffect<T extends Effect.Any = Effect.Any> = {
-  resourceId: string;
-  method: string;
-  path: (string | number)[];
-  effect: T;
-};
+import prettyjson from "prettyjson";
+import {
+  Effect,
+  Effector,
+  EffectorSet,
+  resourceId,
+  LoadedConfig,
+  Project,
+} from "@fx/plugin";
 
 const File: Effector<Effect.File> = {
   describe(e) {
-    const { file } = e;
+    const { file } = e.effect;
     return file.isCopy()
-      ? `copy file: ${ellipsis(relative(e.file.sourcePath))} to ${ellipsis(
-          relative(e.file.path)
+      ? `copy file: ${ellipsis(relative(file.sourcePath))} to ${ellipsis(
+          relative(file.path)
         )}`
-      : `create file: ${e.file.shortDescription()}`;
+      : `create file: ${file.shortDescription()}`;
   },
   async apply(e) {
-    const { file } = e;
+    const { file } = e.effect;
     await file.save();
-    return e.file.path;
+    return file.path;
   },
 };
 
 const Function: Effector<Effect.Function> = {
   describe(e) {
-    return e.description ?? "execute function";
+    const {
+      effect: { description },
+      origin,
+    } = e;
+    const { resource, method, path } = origin ?? {};
+    return `${
+      resource
+        ? resourceId(resource) +
+          "/" +
+          method +
+          (path?.length ? "." + path.join(".") : "") +
+          ": "
+        : ""
+    }${description ?? "execute a function"}`;
   },
   async apply(e) {
-    return e.body?.();
+    return e.effect.body?.();
   },
 };
 
 const Shell: Effector<Effect.Shell> = {
   describe(e) {
-    return `invoke: '${e.command}'${
-      e.cwd ? ` in directory ${ellipsis(e.cwd)}` : ``
-    }`;
+    const { command, cwd } = e.effect;
+    return `invoke: '${command}'${cwd ? ` in directory ${ellipsis(cwd)}` : ``}`;
   },
   async apply(e) {
-    if (!e?.command) return;
+    const { command, cwd } = e.effect;
+    if (!command) return;
     return new Promise((resolve, reject) => {
       exec(
-        e.command,
-        { cwd: e?.cwd ? e.cwd : process.cwd() },
+        command,
+        { cwd: cwd ? cwd : process.cwd() },
         (err, stdout, stderr) => {
           if (err || stderr) return reject({ error: err || stderr });
           resolve(stdout);
@@ -58,42 +72,43 @@ const Shell: Effector<Effect.Shell> = {
 
 const Resource: Effector<Effect.Resource<any>> = {
   describe(e) {
-    return `add resource ${resourceId(e.instance)}`;
+    const {
+      effect: { instance },
+      origin,
+    } = e;
+
+    return `${!!origin ? "update" : "create"} resource ${resourceId(
+      instance
+    )}\n${prettyjson.render(instance)}`;
   },
   async apply(e) {},
 };
 
-const Effectors: EffectorSet = {
+export type EffectorContext = {
+  config: LoadedConfig;
+  project: Project;
+};
+
+const ResourceMethod: Effector<Effect.ResourceMethod<any>, EffectorContext> = {
+  describe(e) {
+    const {
+      effect: { method, resourceId },
+    } = e;
+    return `run method ${method} on ${resourceId}`;
+  },
+  async apply(e, c) {},
+};
+
+const Effectors: EffectorSet<Effect.Any, EffectorContext> = {
   file: File,
   function: Function,
   shell: Shell,
   resource: Resource,
+  "resource-method": ResourceMethod,
 };
 
 export function getEffector<T extends Effect.Any = Effect.Any>(
   e: T
 ): Effector<T> {
   return Effectors[e.$effect] as Effector<T>;
-}
-
-export async function applyEffects<C>(
-  effects: ResourceEffect[],
-  context: C
-): Promise<any[]> {
-  if (!effects?.length) {
-    return [];
-  }
-  const tasks = Promise.all(
-    effects?.map((effect) => {
-      const effector = getEffector(effect);
-      return effector.apply(effect, context);
-    })
-  );
-  return await tasks;
-}
-
-export function printEffects<C>(effects: Effect.Any[], context: C) {
-  return effects
-    ?.map((effect) => getEffector(effect).describe(effect, context))
-    ?.join("\n");
 }

@@ -105,10 +105,12 @@ importers:
       '@swc/jest': ^0.2.17
       '@types/jest': ^27.4.0
       '@types/node': ^16.11.11
+      '@types/prettyjson': ^0.0.30
       cosmiconfig: ^7.0.1
       jest: ^27.4.5
       lodash.compact: ^3.0.1
       mkdirp: ^1.0.4
+      prettyjson: ^1.2.5
       ts-jest: ^27.1.2
       ts-node: ^10.4.0
       typescript: ^4.5.5
@@ -126,7 +128,9 @@ importers:
       '@swc/jest': 0.2.17
       '@types/jest': 27.4.0
       '@types/node': 16.11.11
+      '@types/prettyjson': 0.0.30
       jest: 27.4.5_ts-node@10.4.0
+      prettyjson: 1.2.5
       ts-jest: 27.1.2_2bbca1cabebf3b65a1d857755c03321e
       ts-node: 10.4.0_da99649b9595d74a434baad5a687e462
       typescript: 4.5.5
@@ -1914,6 +1918,10 @@ packages:
     resolution: {integrity: sha512-ekoj4qOQYp7CvjX8ZDBgN86w3MqQhLE1hczEJbEIjgFEumDy+na/4AJAbLXfgEWFNB2pKadM5rPFtuSGMWK7xA==}
     dev: true
 
+  /@types/prettyjson/0.0.30:
+    resolution: {integrity: sha512-BQ15wnnSvzlvDAVvd4t+zXjd9o6QAcfBeEUlZcinDYeb0A1xTfRBc0s8nxHlctojnsxDrbiG7amTqLWbXsiK7Q==}
+    dev: true
+
   /@types/prismjs/1.16.6:
     resolution: {integrity: sha512-dTvnamRITNqNkqhlBd235kZl3KfVJQQoT5jkXeiWSBK7i4/TLKBNLV0S1wOt8gy4E2TY722KLtdmv2xc6+Wevg==}
     dev: false
@@ -2840,6 +2848,11 @@ packages:
     resolution: {integrity: sha1-BDP0TYCWgP3rYO0mDxsMJi6CpAs=}
     engines: {node: '>=0.1.90'}
     dev: false
+
+  /colors/1.4.0:
+    resolution: {integrity: sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==}
+    engines: {node: '>=0.1.90'}
+    dev: true
 
   /combined-stream/1.0.8:
     resolution: {integrity: sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==}
@@ -6075,6 +6088,14 @@ packages:
       ansi-regex: 5.0.1
       ansi-styles: 5.2.0
       react-is: 17.0.2
+    dev: true
+
+  /prettyjson/1.2.5:
+    resolution: {integrity: sha512-rksPWtoZb2ZpT5OVgtmy0KHVM+Dca3iVwWY9ifwhcexfjebtgjg3wmrUt9PvJ59XIYBcknQeYHD8IAnVlh9lAw==}
+    hasBin: true
+    dependencies:
+      colors: 1.4.0
+      minimist: 1.2.5
     dev: true
 
   /prismjs/1.25.0:

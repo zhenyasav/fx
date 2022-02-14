@@ -1,6 +1,8 @@
 import inquirer from "inquirer";
 import { z } from "zod";
 import path from "path";
+import prettyjson from "prettyjson";
+
 import { Fx, getQuestions, generateResourceChoiceQuestions } from "../src";
 const fixtures = path.resolve(__dirname, "./fixtures");
 
@@ -26,12 +28,28 @@ describe("core", () => {
     const [question] = generateResourceChoiceQuestions(config, shape, "bar");
     expect(question).toMatchObject({
       type: "list",
-      choices: ["foo:foo-1", "foo:foo-2", "Create a new 'foo'"],
+      choices: [
+        {
+          name: "foo:foo-1",
+          type: "choice",
+          value: { $resource: "foo:foo-1" },
+        },
+        {
+          name: "foo:foo-2",
+          type: "choice",
+          value: { $resource: "foo:foo-2" },
+        },
+        {
+          name: `Create a new 'foo'`,
+          type: "choice",
+          value: { $resource: "foo" },
+        },
+      ],
       default: 0,
     });
   });
 
-  it.only("resource choice question for a union", async () => {
+  it("resource choice question for a union", async () => {
     const shape = z
       .union([
         z.literal("foo").describe("Use a foo resource"),
@@ -67,7 +85,23 @@ describe("core", () => {
       type: "list",
       name: "dux",
       message: "Use a foo resource",
-      choices: ["foo:foo-1", "foo:foo-2", `Create a new 'foo'`],
+      choices: [
+        {
+          name: "foo:foo-1",
+          type: "choice",
+          value: { $resource: "foo:foo-1" },
+        },
+        {
+          name: "foo:foo-2",
+          type: "choice",
+          value: { $resource: "foo:foo-2" },
+        },
+        {
+          name: `Create a new 'foo'`,
+          type: "choice",
+          value: { $resource: "foo" },
+        },
+      ],
     };
     expect(typeQuestion).toMatchObject(shouldType);
     expect(typeQuestion.when).toBeDefined();
@@ -101,9 +135,42 @@ describe("core", () => {
     expect(questions).toHaveLength(1);
     const qn: inquirer.ListQuestion = {
       type: "list",
-      choices: ["foo:foo-1", "foo:foo-2", "Create a new 'foo'"],
+      choices: [
+        {
+          name: "foo:foo-1",
+          type: "choice",
+          value: { $resource: "foo:foo-1" },
+        },
+        {
+          name: "foo:foo-2",
+          type: "choice",
+          value: { $resource: "foo:foo-2" },
+        },
+        {
+          name: `Create a new 'foo'`,
+          type: "choice",
+          value: { $resource: "foo" },
+        },
+      ],
       default: 0,
     };
     expect(questions[0]).toMatchObject(qn);
+  });
+
+  it("plans a create method", async () => {
+    const fx = new Fx({
+      cwd: fixtures
+    });
+    const plan = await fx.planCreateResource('foo');
+    expect(plan).toHaveLength(2);
+  })
+
+  it.only("plans a create method with dependencies", async () => {
+    const fx = new Fx({
+      cwd: fixtures,
+    });
+    const plan = await fx.planCreateResource("bar");
+    console.log(prettyjson.render(plan));
+    console.log(fx.printEffects(plan));
   });
 });

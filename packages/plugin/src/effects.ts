@@ -6,6 +6,16 @@ export function isEffect(o: any): o is Effect.Base {
   return o && o?.$effect;
 }
 
+export function effects<T extends Effect.Base = Effect.Any>() {
+  return function (o: T): T {
+    if (isEffect(o)) return o as T;
+    else throw new Error(`invalid effect ${o}`);
+  }
+}
+
+export const effect = effects<Effect.Any>();
+
+
 export type ObjectWithEffects = {
   [k: string]: any | Effect.Base;
 };
@@ -62,11 +72,11 @@ export namespace Effect {
     instance: ResourceInstance<TArgs>;
   };
 
-  export type ResourceMethod<TArgs extends object = any> = {
+  export type ResourceMethod<TInput extends object = any> = {
     $effect: "resource-method";
     resourceId: string;
     method: string;
-    args: TArgs;
+    input: TInput;
   };
 
   export type Any =
@@ -77,11 +87,20 @@ export namespace Effect {
     | ResourceMethod;
 }
 
-export type Effector<T extends Effect.Base = Effect.Any, C = any> = {
-  describe(effect: T, context: C): string;
-  apply(effect: T, context: C): Promise<any>;
+export type ResourceEffect<T extends Effect.Base = Effect.Any> = {
+  effect: T;
+  origin?: {
+    resource: ResourceInstance;
+    method: string;
+    path?: (string | number)[];
+  };
 };
 
-export type EffectorSet<TEffect extends Effect.Base = Effect.Any> = {
-  [T in TEffect["$effect"]]: Effector<Extract<TEffect, { $effect: T }>>;
+export type Effector<T extends Effect.Base = Effect.Any, C = any> = {
+  describe(effect: ResourceEffect<T>, context: C): string;
+  apply(effect: ResourceEffect<T>, context: C): Promise<any>;
+};
+
+export type EffectorSet<TEffect extends Effect.Base = Effect.Any, C = any> = {
+  [T in TEffect["$effect"]]: Effector<Extract<TEffect, { $effect: T }>, C>;
 };
