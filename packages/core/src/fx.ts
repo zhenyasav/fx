@@ -46,7 +46,7 @@ export class Fx {
       (r) => r.definition?.methods && methodName in r.definition.methods
     );
   }
-  async printEffects(effects: ResourceEffect<Effect.Any>[]): Promise<string[]> {
+  async printPlan(effects: Plan): Promise<string[]> {
     const config = await this.config();
     const desc = effects.map((e) => {
       const effector = getEffector(e.effect);
@@ -54,7 +54,7 @@ export class Fx {
     });
     return desc;
   }
-  async executeEffects(effects: ResourceEffect<Effect.Any>[]) {
+  async executePlan(effects: Plan) {
     const config = await this.config();
     for (let i in effects) {
       const effect = effects[i];
@@ -185,112 +185,4 @@ export class Fx {
       input
     ) as Promise<ResourcePlan<TInput>>;
   }
-  // async createResource(
-  //   type: string,
-  //   inputs?: { name?: string },
-  //   dryRun = false
-  // ) {
-  //   const config = await this.config();
-  //   const definition = config.getResourceDefinition(type);
-  //   if (!definition) throw new Error("resource type not found");
-  //   const instance: ResourceInstance = {
-  //     id: randomString(),
-  //     type,
-  //     inputs: inputs,
-  //     outputs: {},
-  //   };
-  //   if ("create" in (definition?.methods ?? {})) {
-  //     await this.invokeResourceMethod(
-  //       {
-  //         instance,
-  //         definition,
-  //       },
-  //       "create",
-  //       {
-  //         dryRun,
-  //         defaultArgs: inputs,
-  //       }
-  //     );
-  //   }
-  //   if (!dryRun) {
-  //     config.project.resources.push(instance);
-  //     await config.projectFile.save();
-  //   }
-  //   return instance;
-  // }
-  // async invokeMethodOnAllResources(methodName: string) {
-  // const resources = await this.getResourcesWithMethod(methodName);
-  // if (!resources) return;
-  // resources.forEach((res) => {
-  //   console.log(`invoking ${res.instance.type}.${methodName}`);
-  //   this.invokeResourceMethod(res, methodName);
-  // });
-  // }
-  // async invokeResourceMethod(
-  //   resource: LoadedResource,
-  //   methodName: string,
-  //   options?: { dryRun: boolean; defaultArgs?: any }
-  // ) {
-  //   const { dryRun, defaultArgs } = { dryRun: false, ...options };
-  //   const { definition, instance } = resource;
-  //   if (!definition)
-  //     throw new Error(`resoure definition not found for ${instance?.type}`);
-  //   const method = definition.methods?.[methodName];
-  //   if (!method)
-  //     throw new Error(
-  //       `the resource ${instance?.type}(${instance?.id}) has no method ${methodName}`
-  //     );
-  //   const config = await this.config();
-  //   const input = await promise(
-  //     method.inputs?.({
-  //       defaults: defaultArgs,
-  //       questionGenerator: getResourceQuestionGenerator(config),
-  //       resource,
-  //       config,
-  //     })
-  //   );
-  //   if (input) {
-  //     const pendingResourceRefs = getPendingResourceReferences(input) ?? [];
-  //     for (let ref of pendingResourceRefs) {
-  //       console.log(`Creating a ${ref.$resource}:`);
-  //       const resourceInstance = await this.createResource(ref.$resource);
-  //       if (resourceInstance) {
-  //         ref.$resource = resourceId(resourceInstance);
-  //       }
-  //     }
-  //     instance.inputs = instance.inputs || {};
-  //     instance.inputs[methodName] = input;
-  //   }
-
-  //   const methodResult = await promise<MethodResult>(
-  //     method.body?.({
-  //       input,
-  //       resource,
-  //       config,
-  //     })
-  //   );
-
-  //   if (methodResult) {
-  //     const effects = getEffects(methodResult);
-  //     if (effects.length) {
-  //       console.log(printEffects(effects?.map((e) => e.effect)) + "\n");
-  //       if (!dryRun) {
-  //         (await applyEffects(effects?.map((e) => e.effect)))?.forEach(
-  //           (r, i) => {
-  //             const key = effects[i].path[0];
-  //             methodResult[key] = r;
-  //           }
-  //         );
-  //       }
-  //     }
-  //     if (!dryRun) {
-  //       instance.outputs = instance.outputs || {};
-  //       instance.outputs[methodName] = methodResult;
-  //       const config = await this.config();
-  //       await config.projectFile.save();
-  //     }
-  //   }
-
-  //   return methodResult;
-  // }
 }

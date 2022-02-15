@@ -224,6 +224,48 @@
           }
         }
       }
+    },
+    {
+      "id": "1c3a",
+      "type": "teams-manifest",
+      "inputs": {
+        "create": {
+          "directory": "teams-manifest",
+          "buildDirectory": "teams-manifest/build",
+          "name": "foo",
+          "description": "An app built with Teams Toolkit",
+          "packageName": "com.zhenya.app",
+          "developerName": "zhenya"
+        }
+      }
+    },
+    {
+      "id": "205e",
+      "type": "teams-manifest",
+      "inputs": {
+        "create": {
+          "directory": "packages/cli/teams-manifest",
+          "buildDirectory": "packages/cli/build/teams-manifest",
+          "name": "foo",
+          "description": "An app built with Teams Toolkit",
+          "packageName": "com.zhenya.app",
+          "developerName": "zhenya"
+        }
+      }
+    },
+    {
+      "id": "75e1",
+      "type": "teams-manifest",
+      "inputs": {
+        "create": {
+          "directory": "teams-manifest",
+          "buildDirectory": "teams-manifest/build",
+          "name": "foo",
+          "description": "An app built with Teams Toolkit",
+          "packageName": "com.zhenya.app",
+          "developerName": "zhenya"
+        }
+      }
     }
   ]
 }

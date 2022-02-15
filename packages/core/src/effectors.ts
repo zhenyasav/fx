@@ -86,9 +86,14 @@ const Resource: Effector<Effect.Resource<any>, EffectorContext> = {
     const existing = project?.resources?.find(
       (r) => resourceId(r) == resourceId(instance)
     );
+    const detail = instance.inputs?.[method];
+    const dstr =
+      detail && Object.keys(detail).length
+        ? prettyjson.render(detail, {}, 2)
+        : "";
     return `${!!existing ? "update" : "create"} resource ${resourceId(
       instance
-    )}${os.EOL}${prettyjson.render(instance.inputs?.[method], {}, 2)}`;
+    )}${dstr ? os.EOL + dstr : ""}`;
   },
   async apply(e, c) {
     const {

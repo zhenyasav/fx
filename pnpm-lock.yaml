@@ -96,7 +96,7 @@ importers:
       '@types/node': 16.11.11
       '@types/yargs': 17.0.7
       chai: 4.3.4
-      ts-node: 10.4.0_da99649b9595d74a434baad5a687e462
+      ts-node: 10.4.0_@types+node@16.11.11
 
   packages/core:
     specifiers:
@@ -6932,6 +6932,35 @@ packages:
       diff: 4.0.2
       make-error: 1.3.6
       typescript: 4.5.5
+      yn: 3.1.1
+    dev: true
+
+  /ts-node/10.4.0_@types+node@16.11.11:
+    resolution: {integrity: sha512-g0FlPvvCXSIO1JDF6S232P5jPYqBkRL9qly81ZgAOSU7rwI0stphCgd2kLiCrU9DjQCrJMWEqcNSjQL02s6d8A==}
+    hasBin: true
+    peerDependencies:
+      '@swc/core': '>=1.2.50'
+      '@swc/wasm': '>=1.2.50'
+      '@types/node': '*'
+      typescript: '>=2.7'
+    peerDependenciesMeta:
+      '@swc/core':
+        optional: true
+      '@swc/wasm':
+        optional: true
+    dependencies:
+      '@cspotcode/source-map-support': 0.7.0
+      '@tsconfig/node10': 1.0.8
+      '@tsconfig/node12': 1.0.9
+      '@tsconfig/node14': 1.0.1
+      '@tsconfig/node16': 1.0.2
+      '@types/node': 16.11.11
+      acorn: 8.6.0
+      acorn-walk: 8.2.0
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.2
+      make-error: 1.3.6
       yn: 3.1.1
     dev: true
 

@@ -1,8 +1,8 @@
 // import path from "path";
 import { Plugin } from "@fx/plugin";
 import { botService } from "@fx/bots";
+import { manifest } from "./manifest";
 // import { template } from "@fx/templates";
-// import { manifest } from "./manifest";
 // import { tabInput } from "./inputs/tab";
 // import { teamsBot } from "./teamsBot";
 // import { tab } from "./tab";
@@ -13,7 +13,7 @@ export function teams(): Plugin {
     name: "teams",
     resources() {
       return [
-        // manifest(),
+        manifest(),
         // tab(),
         // teamsBot(),
         botService(),

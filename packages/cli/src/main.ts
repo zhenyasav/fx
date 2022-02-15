@@ -10,12 +10,37 @@ import {
   info,
   error,
 } from "./prettyPrint";
+import { Plan } from "@fx/core";
 import config from "./config";
 import { gray } from "chalk";
 
 const fx = new Fx({
   aadAppId: config.teamsfxcliAadAppId,
 });
+
+async function executePlan(dry: boolean, plan: Plan) {
+  console.log(`Plan with ${plan?.length} steps:`);
+  console.group();
+  console.log((await fx.printPlan(plan)).join(os.EOL));
+  console.groupEnd();
+  console.log("");
+
+  if (!dry) {
+    console.log(`executing ${plan.length} tasks ...`);
+    await fx.executePlan(plan);
+    console.log("done");
+  } else {
+    console.log("dry run, no changes made.");
+  }
+}
+
+async function withLoader<T = any>(
+  loading: string,
+  work: () => Promise<T>,
+  done: string = loading + " done"
+): Promise<T | undefined> {
+  return work();
+}
 
 const parser = yargs(process.argv.slice(2))
   .scriptName("fx")
@@ -38,13 +63,15 @@ const parser = yargs(process.argv.slice(2))
     "search resources",
     (yargs) => yargs,
     async (args) => {
-      const resources = (await fx.config())?.getResourceDefinitions();
-      if (!resources.length) {
-        info("there are no resource definitions installed in this project");
-      } else {
+      const resources = await withLoader("loading resources", async () =>
+        (await fx.config())?.getResourceDefinitions()
+      );
+      if (resources && resources.length) {
         console.log(`${resources.length} resource types available:`);
-        // resources.forEach(printResourceDefinition);
         printResources(resources);
+      } else {
+        info("there are no resource definitions installed in this project");
+        // resources.forEach(printResourceDefinition);
       }
       console.log("");
     }
@@ -68,21 +95,13 @@ const parser = yargs(process.argv.slice(2))
       if (!type) throw new Error("type is required");
       try {
         console.log(gray("cwd: " + process.cwd()));
+        const plan = await withLoader("planning", () =>
+          fx.planCreateResource(type, { ...rest, name })
+        );
+        if (!plan) return;
         console.log(`Creating '${type}':`);
-        const plan = await fx.planCreateResource(type, { ...rest, name });
-        console.log('');
-        console.log(`Plan with ${plan?.length} steps:`);
-        console.group();
-        console.log((await fx.printEffects(plan)).join(os.EOL));
-        console.groupEnd();
-        console.log('');
-
-        if (!dry) {
-          await fx.executeEffects(plan);
-          console.log('done.');
-        } else {
-          console.log('dry run, no changes made.');
-        }
+        console.log("");
+        await executePlan(dry, plan);
       } catch (err: any) {
         console.error(err.message);
       }
@@ -116,12 +135,13 @@ const parser = yargs(process.argv.slice(2))
     false,
     () => {},
     async (argv) => {
-      const [arg] = argv._;
-      if (!arg) {
+      const [method] = argv._;
+      const { dry } = argv;
+      if (!method) {
         console.error("at least one command is required");
         return;
       }
-      const methodName = arg.toString();
+      const methodName = method.toString();
       const resources = await fx.getResourcesWithMethod(methodName);
       if (!resources.length) {
         error(
@@ -139,7 +159,10 @@ const parser = yargs(process.argv.slice(2))
         }
         process.exit(1);
       }
-      // await fx.invokeMethodOnAllResources(methodName);
+      const plan = await fx.planMethod(methodName);
+      console.log(`Invoking ${methodName}:`);
+      console.log("");
+      await executePlan(dry, plan);
     }
   )
   .showHelpOnFail(false);

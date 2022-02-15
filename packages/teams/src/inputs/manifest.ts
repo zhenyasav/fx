@@ -11,7 +11,7 @@ export const manifestInput = z.object({
   buildDirectory: z
     .string()
     .describe("choose a folder where to produce the teams app zip bundle")
-    .default("./build/teams-manifest"),
+    .default("./teams-manifest/build"),
   name: z.string().describe("enter a short, friendly application name"),
   description: z
     .string()
