@@ -2,6 +2,7 @@ import path from "path";
 import { z } from "zod";
 import {
   method,
+  effect,
   ResourceDefinition,
   LoadedResource,
   ResourceReference,
@@ -17,10 +18,7 @@ export const tabInput = z.object({
   name: z.string().describe("enter the friendly tab name"),
   url: z
     .union([
-      z
-        .string()
-        .describe("enter the https url of the tab")
-        .default("https://localhost:3000"),
+      z.string().describe("enter the https url of the tab"),
       z.literal("tunnel").describe("use a tunnel resource"),
     ])
     .describe("identify the tab URL"),
@@ -68,12 +66,10 @@ export function tab(): ResourceDefinition {
           manifest.staticTabs = manifest?.staticTabs ?? [];
           manifest.staticTabs.push(tab as any);
           return {
-            effects: [
-              {
-                type: "write-file",
-                file,
-              },
-            ],
+            manifest: effect({
+              $effect: "file",
+              file,
+            }),
           };
         },
       }),

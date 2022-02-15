@@ -1,0 +1,36 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.11/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.11",
+  "version": "1.0.0",
+  "id": "19b88a5f-b98c-400d-9bca-73ea5f088e0b",
+  "packageName": "com.zhenya.app",
+  "developer": {
+    "name": "zhenya",
+    "privacyUrl": "",
+    "termsOfUseUrl": "",
+    "websiteUrl": "",
+    "mpnId": ""
+  },
+  "name": {
+    "short": "foo",
+    "full": "foo"
+  },
+  "description": {
+    "short": "An app built with Teams Toolkit",
+    "full": "An app built with Teams Toolkit"
+  },
+  "icons": {
+    "outline": "resources/color.png",
+    "color": "resources/color.png"
+  },
+  "staticTabs": [
+    {
+      "name": "foo",
+      "scopes": [
+        "personal"
+      ],
+      "entityId": "foo",
+      "contentUrl": "https://foobar.com"
+    }
+  ]
+}

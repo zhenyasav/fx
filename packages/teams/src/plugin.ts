@@ -4,8 +4,8 @@ import { botService } from "@fx/bots";
 import { manifest } from "./manifest";
 // import { template } from "@fx/templates";
 // import { tabInput } from "./inputs/tab";
-// import { teamsBot } from "./teamsBot";
-// import { tab } from "./tab";
+import { teamsBot } from "./teamsBot";
+import { tab } from "./tab";
 import { tunnel } from "@fx/tunnel";
 
 export function teams(): Plugin {
@@ -14,8 +14,8 @@ export function teams(): Plugin {
     resources() {
       return [
         manifest(),
-        // tab(),
-        // teamsBot(),
+        tab(),
+        teamsBot(),
         botService(),
         tunnel()
       ];
