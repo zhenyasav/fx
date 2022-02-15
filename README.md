@@ -7,19 +7,19 @@ Use [`pnpm`](https://pnpm.io/) to drive this repo. node16, pnpm6. See [`nvm`](ht
 ## Installation:
 
 ```bash
-pnpm i # this will fail at first, that's ok
+pnpm i
 pnpm build
-pnpm i # this will succeed
 ```
 
 test some fx commands:
 
 ```bash
-pnpm fx -- --help
-pnpm fx se                  # shows what resources are available to create
+pnpm fx help
+pnpm fx se # shows what resources are available to create
+pnpm fx ls # shows what resources are in the project
 ```
 
-Note that a double dash is required for pnpm to pass flags to the fx process, so only in this repo when debugging we have to say `pnpm fx -- -d add package foo` instead of the production command `fx -d add package foo`.
+Note that a double dash is required for pnpm to pass flags to the fx process, so only in this repo when debugging we have to say `pnpm fx -- -d add package foo` instead of the production command `fx -d add package foo` (-d is "dry").
 
 ## Create a new package (add resource):
 
@@ -29,9 +29,16 @@ pnpm fx add package foobar
 
 This will execute the template found in `./templates/package`. Every file with a `.t.ts` extension will be treated as a typescript template, every other file will be copied over to the new package directory.
 
+Also try creating a teams tab or teams manifest:
+```bash
+pnpm fx add teams-tab # to add manifest and supporting devops
+...
+pnpm fx dev # to start up Teams client
+```
+
 ## Configuration
 
-The plugin configuration is found in `.fx.js` at the root, which is a module that exports a single default export that looks like this:
+The plugin configuration is found in `.fx.ts` at the root, which is a module that exports a single default export that looks like this:
 
 ```js
 export default {
@@ -40,22 +47,27 @@ export default {
   ],
 };
 ```
+This repo shows how plugins (resource definitions) can be created locally (see `package` resource), or loaded from other npm modules like the `teams` plugin.
 
 ## Features
 
 done:
 
+- [x] resources, methods, cli, and resource dependencies
 - [x] generate a new package from a customizeable template
 - [x] drop in a teams manifest template
+- [x] ngrok tunnels
+- [x] teams tabs
 
 todo:
 
+- [ ] add a bot registration
 - [ ] add SSO auth to my existing code:
   - [ ] SPA
   - [ ] serverless code
   - [ ] a Bot Framework bot
 - [ ] add hosting / deploy ops with azure and github
-- [ ] add teams features
+- [ ] add more teams features
   - [ ] add an adaptive card notification
   - [ ] add a messaging extension
   - [ ] add a bot app to existing 
