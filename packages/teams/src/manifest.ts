@@ -45,7 +45,7 @@ export function manifest() {
       test: method({
         body({ resource, config }) {
           return {
-            valid: effect({
+            errors: effect({
               $effect: "function",
               description: "validate Teams manifest with Teams Dev Portal",
               async body() {
@@ -70,7 +70,7 @@ export function manifest() {
                     ? "errors:\n" + JSON.stringify(result, null, 2)
                     : "manifest ok"
                 );
-                return { errors: result };
+                return result ?? [];
               },
             }),
           };
