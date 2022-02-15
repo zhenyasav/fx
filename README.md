@@ -62,6 +62,7 @@ done:
 todo:
 
 - [ ] add a bot registration
+- [ ] switch to swc loader for faster config loading
 - [ ] add SSO auth to my existing code:
   - [ ] SPA
   - [ ] serverless code
