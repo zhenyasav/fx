@@ -21,20 +21,20 @@ pnpm fx ls # shows what resources are in the project
 
 Note that a double dash is required for pnpm to pass flags to the fx process, so only in this repo when debugging we have to say `pnpm fx -- -d add package foo` instead of the production command `fx -d add package foo` (-d is "dry").
 
-## Create a new package (add resource):
-
-```bash
-pnpm fx add package foobar
-```
-
-This will execute the template found in `./templates/package`. Every file with a `.t.ts` extension will be treated as a typescript template, every other file will be copied over to the new package directory.
-
-Also try creating a teams tab or teams manifest:
+## Adding resources:
+Try creating a teams tab or teams manifest:
 ```bash
 pnpm fx add teams-tab # to add manifest and supporting devops
 ...
 pnpm fx dev # to start up Teams client
 ```
+
+## Create a new package 
+```bash
+pnpm fx add package foobar
+```
+
+This will execute the template found in `./templates/package`. Every file with a `.t.ts` extension will be treated as a typescript template, every other file will be copied over to the new package directory.
 
 ## Configuration
 
