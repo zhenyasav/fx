@@ -113,16 +113,23 @@ export class Fx {
         instance.inputs[methodName] = input;
       }
 
-      results.push({
-        effect: {
-          $effect: "resource",
-          instance,
-        },
-        origin: {
-          method: methodName,
-          resource: resource.instance,
-        },
-      });
+      const existing = config.getResource({ $resource: resourceId(instance) });
+      if (
+        !existing ||
+        JSON.stringify(existing.instance.inputs?.[methodName]) !=
+          JSON.stringify(instance.inputs?.[methodName])
+      ) {
+        results.push({
+          effect: {
+            $effect: "resource",
+            instance,
+          },
+          origin: {
+            method: methodName,
+            resource: resource.instance,
+          },
+        });
+      }
 
       if (methodName != "create") {
         const dependencies = getResourceDependencies(instance);
