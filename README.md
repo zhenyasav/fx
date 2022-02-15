@@ -43,7 +43,7 @@ The plugin configuration is found in `.fx.ts` at the root, which is a module tha
 ```js
 export default {
   plugins: [
-    /* plugins go here, instances of { Plugin } from "@nice/fx" ... */
+    /* plugins go here, instances of { Plugin } from "@fx/plugin" ... */
   ],
 };
 ```
