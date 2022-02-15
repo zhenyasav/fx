@@ -5,7 +5,9 @@
   "scripts": {
     "build": "pnpm run build -r --if-present",
     "clean": "pnpm run clean -r --if-present",
-    "fx": "pnpm exec fx"
+    "fx": "fx",
+    "test": "fx test",
+    "dev": "fx dev"
   },
   "engines": {
     "node": "=16",
