@@ -5,10 +5,11 @@
 Use [`pnpm`](https://pnpm.io/) to drive this repo. node16, pnpm6. See [`nvm`](https://github.com/nvm-sh/nvm) (optional).
 
 ## Installation:
-
+ 
 ```bash
-pnpm i
-pnpm build
+pnpm i # first time will fail, that's ok, it's because this repo is self-hosting
+pnpm build # everything should build fine
+pnpm i # this should succeed
 ```
 
 test some fx commands:
