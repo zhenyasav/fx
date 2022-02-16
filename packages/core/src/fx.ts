@@ -13,13 +13,11 @@ import {
   Plan,
 } from "@fx/plugin";
 import { randomString } from "./util/random";
-// import { compact } from "./util/collections";
 import { getEffector } from "./effectors";
 import { ConfigLoaderOptions, ConfigLoader } from "./config";
 import { getResourceQuestionGenerator } from "./resourceDeps";
 import { ResourceInstance } from "@fx/plugin/build/resource";
 
-// import { timer } from "./util/timer";
 
 export type FxOptions = ConfigLoaderOptions & {
   aadAppId?: string;

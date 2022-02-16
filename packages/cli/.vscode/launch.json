@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Attach to node",
+      "request": "attach",
+      "type": "node",
+      "port": 9229,
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "internalConsoleOptions": "neverOpen"
+    }
+  ]
+}

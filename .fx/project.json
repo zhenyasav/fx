@@ -1,33 +1,5 @@
 {
   "resources": [
-    {
-      "id": "0046",
-      "type": "teams-manifest",
-      "inputs": {
-        "create": {
-          "directory": "teams-manifest",
-          "buildDirectory": "teams-manifest/build",
-          "name": "foo",
-          "description": "An app built with Teams Toolkit",
-          "packageName": "com.zhenya.app",
-          "developerName": "zhenya"
-        }
-      }
-    },
-    {
-      "id": "e4ee",
-      "type": "teams-tab",
-      "inputs": {
-        "create": {
-          "name": "foo",
-          "manifest": {
-            "$resource": "teams-manifest:0046"
-          },
-          "id": "foo",
-          "url-type": "string",
-          "url": "https://foobar.com"
-        }
-      }
-    }
+    
   ]
 }

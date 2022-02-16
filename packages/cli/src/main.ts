@@ -13,9 +13,10 @@ import {
 import { Plan } from "@fx/core";
 import config from "./config";
 import { gray } from "chalk";
+import inquirer from "inquirer";
 
 const fx = new Fx({
-  aadAppId: config.teamsfxcliAadAppId,
+  aadAppId: config.teamsfxcliAadAppId, // TODO: idk y i wrote this
 });
 
 async function executePlan(dry: boolean, plan: Plan) {
@@ -26,14 +27,25 @@ async function executePlan(dry: boolean, plan: Plan) {
   console.log("");
 
   if (!dry) {
-    console.log(`executing ${plan.length} tasks ...`);
-    await fx.executePlan(plan);
-    console.log("done");
+    const { confirmed } = await inquirer.prompt([
+      {
+        type: "confirm",
+        default: true,
+        message: `execute ${plan.length} tasks?`,
+        name: "confirmed",
+      },
+    ]);
+    if (confirmed) {
+      console.log(`executing ${plan.length} tasks ...`);
+      await fx.executePlan(plan);
+      console.log("done");
+    }
   } else {
     console.log("dry run, no changes made.");
   }
 }
 
+// TODO: implement loader
 async function withLoader<T = any>(
   loading: string,
   work: () => Promise<T>,
