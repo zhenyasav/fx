@@ -4,11 +4,9 @@ import {
   method,
   effect,
   ResourceDefinition,
-  LoadedResource,
   ResourceReference,
   isResourceReference,
 } from "@fx/plugin";
-import { ManifestInput } from "./inputs/manifest";
 import { JSONFile } from "@fx/templates";
 import { IStaticTab, TeamsAppManifest } from "@fx/teams-dev-portal";
 
@@ -37,9 +35,9 @@ export function tab(): ResourceDefinition {
           // const res = resource as LoadedResource<TabInput>;
           // find a reference to the manifest resource
           const manifestRef = input.manifest as any as ResourceReference;
-          const manifestResource = config.getResource(
-            manifestRef
-          ) as LoadedResource<ManifestInput>;
+          const manifestResource = config.getResource(manifestRef);
+          if (!manifestResource)
+            throw new Error(`resource ${manifestRef?.$resource} not found`);
           // load the existing manifest
           const file = new JSONFile<TeamsAppManifest>({
             path: [

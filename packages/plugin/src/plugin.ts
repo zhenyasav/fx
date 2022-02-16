@@ -6,6 +6,9 @@ import { MaybePromise } from "./promise";
 import { JSONFile } from "@nice/file";
 import { ResourceInstance } from "./resource";
 
+export const FRAMEWORK_FOLDER = `.fx`;
+export const PROJECT_FILE_NAME = "project.json";
+
 export type Plugin = {
   readonly name: string;
   resources(): MaybePromise<ResourceDefinition[]>;
@@ -15,7 +18,11 @@ export type Config = {
   plugins?: Plugin[];
 };
 
-export type LoadedConfig = Config & {
+export type Project = {
+  resources: ResourceInstance[];
+};
+
+export type LoadedProjectConfig = Config & {
   configFilePath: string;
   project: Project;
   projectFile: ProjectFile;
@@ -23,36 +30,13 @@ export type LoadedConfig = Config & {
   getResourceDefinition(type: string): ResourceDefinition | undefined;
   getResources(): LoadedResource[];
   getResource(ref: ResourceReference): LoadedResource | undefined;
+  setResource(instance: ResourceInstance): ResourceInstance;
+  clone(): LoadedProjectConfig;
 };
-
-export const FRAMEWORK_FOLDER = `.fx`;
-export const PROJECT_FILE_NAME = "project.json";
-
-export function resourceId(instance: ResourceInstance) {
-  if (!instance) return `[null]`;
-  const { id, type } = instance;
-  return `${type}:${id}`;
-}
-
-export function getResourceDependencies(
-  instance: ResourceInstance
-): ResourceReference[] {
-  if (!instance) return [];
-  const result = [];
-  for (let m in instance.inputs) {
-    const methodResult = instance.inputs[m];
-    result.push(...getResourceReferences(methodResult));
-  }
-  return result;
-}
 
 export type LoadedResource<TCreateInput = any> = {
   instance: ResourceInstance<TCreateInput>;
   definition?: ResourceDefinition<TCreateInput>;
-};
-
-export type Project = {
-  resources: ResourceInstance[];
 };
 
 export type ProjectLoadOptions =
@@ -81,6 +65,12 @@ export type ResourceReference = {
   $resource: string;
 };
 
+export function resourceId(instance: ResourceInstance) {
+  if (!instance) return `[null]`;
+  const { id, type } = instance;
+  return `${type}:${id}`;
+}
+
 export function isResourceReference(o: any): o is ResourceReference {
   return !!o && typeof o == "object" && "$resource" in o;
 }
@@ -95,12 +85,24 @@ export function getPendingResourceReferences(object: any) {
   );
 }
 
+export function getResourceDependencies(
+  instance: ResourceInstance
+): ResourceReference[] {
+  if (!instance) return [];
+  const result = [];
+  for (let m in instance.inputs) {
+    const methodResult = instance.inputs[m];
+    result.push(...getResourceReferences(methodResult));
+  }
+  return result;
+}
+
 export type MethodResult<TEffect extends Effect.Base = Effect.Any> = void | {
   [k: string]: any | TEffect;
 };
 
 export type MethodContext = {
-  config: LoadedConfig;
+  config: LoadedProjectConfig;
   resource: LoadedResource;
 };
 

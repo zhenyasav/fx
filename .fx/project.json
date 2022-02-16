@@ -1,5 +1,21 @@
 {
   "resources": [
-    
+    {
+      "id": "0823",
+      "type": "teams-tab",
+      "inputs": {
+        "create": {
+          "name": "",
+          "manifest": {
+            "$resource": "teams-manifest:67a1"
+          },
+          "id": "",
+          "url-type": "tunnel",
+          "url": {
+            "$resource": "tunnel:4dd3"
+          }
+        }
+      }
+    }
   ]
 }

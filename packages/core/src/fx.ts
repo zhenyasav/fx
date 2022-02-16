@@ -2,7 +2,7 @@ import {
   resourceId,
   promise,
   LoadedResource,
-  LoadedConfig,
+  LoadedProjectConfig,
   getPendingResourceReferences,
   MethodResult,
   getEffectLocations,
@@ -18,14 +18,13 @@ import { ConfigLoaderOptions, ConfigLoader } from "./config";
 import { getResourceQuestionGenerator } from "./resourceDeps";
 import { ResourceInstance } from "@fx/plugin/build/resource";
 
-
 export type FxOptions = ConfigLoaderOptions & {
   aadAppId?: string;
 };
 
 export class Fx {
   private options: FxOptions;
-  private _config: LoadedConfig | null = null;
+  private _config: LoadedProjectConfig | null = null;
   private configLoader: ConfigLoader;
   constructor(options?: FxOptions) {
     this.options = { cwd: process.cwd(), ...options };
@@ -52,6 +51,7 @@ export class Fx {
     });
     return desc;
   }
+  async applyEffect(effect: ResourceEffect) {}
   async executePlan(effects: Plan) {
     const config = await this.config();
     for (let i in effects) {
@@ -62,17 +62,20 @@ export class Fx {
   }
   async planMethod(
     methodName: string,
-    resource?: LoadedResource,
-    args?: { [k: string]: any }
+    options?: {
+      resource?: LoadedResource;
+      input?: { [k: string]: any };
+      config?: LoadedProjectConfig;
+    }
   ): Promise<Plan> {
+    const { resource, input: args } = { ...options };
     const resources = resource
       ? [resource]
       : await this.getResourcesWithMethod(methodName);
     if (!resources?.length) return [];
 
     const results: ResourceEffect<Effect.Any>[] = [];
-    const config = await this.config();
-
+    const config = options?.config ?? (await this.config()).clone();
     const plannedResourceMethods = new Map<
       LoadedResource,
       { [methodName: string]: boolean }
@@ -117,7 +120,7 @@ export class Fx {
         JSON.stringify(existing.instance.inputs?.[methodName]) !=
           JSON.stringify(instance.inputs?.[methodName])
       ) {
-        results.push({
+        const resourceEffect: ResourceEffect = {
           effect: {
             $effect: "resource",
             instance,
@@ -126,7 +129,9 @@ export class Fx {
             method: methodName,
             resource: resource.instance,
           },
-        });
+        };
+        results.push(resourceEffect);
+        
       }
 
       if (methodName != "create") {
@@ -137,10 +142,12 @@ export class Fx {
             !!dependentResource &&
             plannedResourceMethods.get(dependentResource)?.[methodName];
           if (alreadyPlanned) continue;
-          const dependentPlan = await this.planMethod(
-            methodName,
-            dependentResource
-          );
+          const dependentPlan = await this.planMethod(methodName, {
+            resource: dependentResource,
+            config,
+          });
+          // TODO: possibly commit all resource effects from the dependent plans
+          // too
           results.push(...dependentPlan);
         }
       }
@@ -184,10 +191,9 @@ export class Fx {
       id: randomString(),
       type,
     };
-    return this.planMethod(
-      "create",
-      { instance, definition },
-      input
-    ) as Promise<ResourcePlan<TInput>>;
+    return this.planMethod("create", {
+      resource: { instance, definition },
+      input,
+    }) as Promise<ResourcePlan<TInput>>;
   }
 }

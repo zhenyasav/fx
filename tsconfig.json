@@ -16,7 +16,7 @@
     "composite": true,
     "incremental": true,
     "declaration": true,
-    "inlineSourceMap": true
+    "sourceMap": true
   },
   "ts-node": {
     // these options are overrides used only by ts-node

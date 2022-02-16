@@ -8,11 +8,11 @@ import {
   Effector,
   EffectorSet,
   resourceId,
-  LoadedConfig,
+  LoadedProjectConfig,
 } from "@fx/plugin";
 
 export type EffectorContext = {
-  config: LoadedConfig;
+  config: LoadedProjectConfig;
 };
 
 const File: Effector<Effect.File, EffectorContext> = {
@@ -100,16 +100,9 @@ const Resource: Effector<Effect.Resource<any>, EffectorContext> = {
       effect: { instance },
     } = e;
     const {
-      config: { project, projectFile },
+      config,
     } = c;
-    const existingIndex = project?.resources?.findIndex(
-      (r) => resourceId(r) == resourceId(instance)
-    );
-    if (existingIndex >= 0) {
-      project.resources.splice(existingIndex, 1, instance);
-    } else {
-      project.resources.push(instance);
-    }
+    config.setResource(instance);
     await projectFile.save();
   },
 };
