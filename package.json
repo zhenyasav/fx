@@ -26,8 +26,5 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zhenyasav/fx.git"
-  },
-  "dependencies": {
-    "@fx/tunnel": "workspace:^0.0.1"
   }
 }
