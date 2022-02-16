@@ -16,7 +16,6 @@
     "composite": true,
     "incremental": true,
     "declaration": true,
-    "sourceMap": true,
     "inlineSourceMap": true
   },
   "ts-node": {
