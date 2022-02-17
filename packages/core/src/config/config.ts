@@ -4,15 +4,15 @@ import {
   ResourceDefinition,
   Config,
   ProjectFile,
-  LoadedProjectConfig,
   resourceId,
   ResourceInstance,
   Project,
-  FRAMEWORK_FOLDER,
-  PROJECT_FILE_NAME,
+  LoadedResource,
+  LoadedConfiguration
 } from "@fx/plugin";
 import { cosmiconfig } from "cosmiconfig";
 import tsloader from "@endemolshinegroup/cosmiconfig-typescript-loader";
+
 // import { swcLoader } from "./swcLoader";
 
 export type ConfigLoaderOptions = {
@@ -22,11 +22,12 @@ export type ConfigLoaderOptions = {
 
 // const swcloader = swcLoader();
 
-export type LoadConfigResult = {
+type LoadConfigResult = {
   config: Config;
   filepath: string;
   isEmpty: boolean;
 };
+
 
 export class ConfigLoader {
   private cosmiconfig = cosmiconfig("fx", {
@@ -69,7 +70,7 @@ export class ConfigLoader {
       }
     }
   }
-  async load(options?: ConfigLoaderOptions): Promise<LoadedProjectConfig> {
+  async load(options?: ConfigLoaderOptions): Promise<LoadedConfiguration> {
     const { cwd, configFile } = {
       cwd: process.cwd(),
       configFile: null,
@@ -80,10 +81,9 @@ export class ConfigLoader {
         ? await this.cosmiconfig.load(configFile)
         : await this.cosmiconfig.search(cwd);
       if (file) {
-        return await loadProjectConfig({
+        return getProjectApi({
           config: file.config,
-          filepath: file.filepath,
-          isEmpty: file.isEmpty ?? false,
+          configFilePath: file.filepath,
         });
       } else throw new Error("fx project configuration file not found");
     } else {
@@ -92,10 +92,12 @@ export class ConfigLoader {
   }
 }
 
-export async function loadProjectConfig(
-  config: LoadConfigResult
-): Promise<LoadedProjectConfig> {
-  const { plugins } = config.config;
+export async function getProjectApi(options: {
+  config: Config;
+  configFilePath: string;
+}): Promise<LoadedConfiguration> {
+  const { configFilePath, config } = options;
+  const { plugins } = config;
   const allDefs: ResourceDefinition[] = [];
   const defsByPlugin = new Map<Plugin, ResourceDefinition[]>();
   const defsByType = new Map<
@@ -110,34 +112,34 @@ export async function loadProjectConfig(
       allDefs.push(def);
     }
   }
-  const projectFile = new ProjectFile({
-    projectFolder: path.dirname(config.filepath),
+  const projectFile: ProjectFile = new ProjectFile({
+    projectFolder: path.dirname(configFilePath),
   });
+
+  projectFile.parsed = { resources: [] };
+  projectFile.content = JSON.stringify(projectFile.parsed);
   try {
     await projectFile.load();
-  } catch (err) {
-    // suppress whatever load failure we get
-  }
-  const loaded: LoadedProjectConfig = {
-    ...(config.config as Config),
+  } catch (err) {}
+
+  const api: LoadedConfiguration = {
+    config,
+    configFilePath,
     projectFile,
-    configFilePath: config.filepath,
-    get project() {
-      return this.projectFile?.parsed ?? { resources: [] };
+    get project(): Project {
+      return this.projectFile.parsed!;
     },
-    set project(p: Project) {
-      this.projectFile.parsed = p;
+    getResourceDefinitions(): ResourceDefinition[] {
+      return [...allDefs];
     },
     getResourceDefinition(type: string) {
       return defsByType.get(type)?.definition;
     },
-    getResourceDefinitions() {
-      return [...allDefs];
-    },
-    getResources() {
+    getResources(): LoadedResource[] {
+      const { resources } = this.project;
       return (
-        this.project.resources?.map((r) => {
-          const definition = defsByType.get(r.type)?.definition;
+        resources?.map((r) => {
+          const definition = this.getResourceDefinition(r.type);
           return {
             instance: r,
             definition,
@@ -145,31 +147,28 @@ export async function loadProjectConfig(
         }) ?? []
       );
     },
-    getResource({ $resource }) {
+    getResource({ $resource }): LoadedResource | undefined {
       return this.getResources()?.find(
         (lr) => resourceId(lr.instance) == $resource
       );
     },
-    setResource(instance: ResourceInstance) {
-      const { project } = this;
-      const existingIndex = project?.resources?.findIndex(
+    setResource(instance): ResourceInstance {
+      const { resources } = this.project;
+      const existingIndex = resources.findIndex(
         (r) => resourceId(r) == resourceId(instance)
       );
-      if (existingIndex >= 0) {
-        project.resources.splice(existingIndex, 1, instance);
+      if (typeof existingIndex == "number" && existingIndex >= 0) {
+        resources.splice(existingIndex, 1, instance);
       } else {
-        project.resources.push(instance);
+        resources.push(instance);
       }
       return instance;
     },
-    clone() {
-      const { project, projectFile, ...rest } = this;
-      const pf = new ProjectFile({
-        projectFolder: path.dirname(config.filepath),
-      });
-      pf.parsed = JSON.parse(JSON.stringify(projectFile.parsed));
-      return { project: pf.parsed!, projectFile: pf, ...rest };
+    clone(): LoadedConfiguration {
+      const { projectFile, ...rest } = this;
+      const clone = projectFile.clone() as ProjectFile;
+      return { ...rest, projectFile: clone };
     },
   };
-  return loaded;
+  return api;
 }

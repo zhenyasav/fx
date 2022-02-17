@@ -1,16 +1,17 @@
 import { z } from "zod";
 import inquirer from "inquirer";
-import { resourceId, QuestionGenerator, LoadedConfig } from "@fx/plugin";
+import { resourceId, QuestionGenerator } from "@fx/plugin";
+import { LoadedConfiguration } from "@fx/plugin";
 
 export function getResourceQuestionGenerator(
-  config: LoadedConfig
+  config: LoadedConfiguration
 ): QuestionGenerator {
   return (shape, key) =>
     generateResourceChoiceQuestions(config, shape, key.toString());
 }
 
 export function generateResourceChoiceQuestions(
-  config: LoadedConfig,
+  config: LoadedConfiguration,
   shape: z.ZodTypeAny,
   key: string | number,
   merge?: Partial<inquirer.DistinctQuestion>
@@ -65,7 +66,7 @@ export function generateResourceChoiceQuestions(
       q.choices = choices;
       q.default = 0;
     } else if (typeName == "ZodUnion") {
-      const {options, description} = (shape as z.ZodUnion<any>)._def;
+      const { options, description } = (shape as z.ZodUnion<any>)._def;
       const q = question as inquirer.ListQuestion;
       q.type = "list";
       q.name = `${key.toString()}-type`;

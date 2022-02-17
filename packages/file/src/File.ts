@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import * as path from "path";
 import mkdirp from "mkdirp";
-import { relative, fileExists, ellipsis, kib } from "./utils"
+import { relative, fileExists, ellipsis, kib } from "./utils";
 
 export type FileOptions<D> = {
   path: string | string[];
@@ -43,6 +43,16 @@ export class File<D = any> {
     Object.assign(this, { root, base, dir, ext, name });
     this.overwrite = overwrite;
   }
+  clone() {
+    const { path, content, parsed } = this;
+    const ctor = this.constructor as typeof File;
+    const clone = new ctor({
+      path,
+      content,
+      parsed: JSON.parse(JSON.stringify(parsed)),
+    });
+    return clone;
+  }
   isLoaded() {
     return this.content != null;
   }
@@ -60,7 +70,7 @@ export class File<D = any> {
         const parsedPath = path.parse(this.path);
         const exists = await fileExists(this.path);
         if (exists && !this.overwrite)
-        throw new Error("file save failed, file exists: " + this.path);
+          throw new Error("file save failed, file exists: " + this.path);
         if (!exists) await mkdirp(parsedPath.dir);
         let handle;
         try {
@@ -86,8 +96,8 @@ export class File<D = any> {
     return Object.toString.call(this.parsed) ?? this.content;
   }
   shortDescription() {
-    return `${ellipsis(relative(this.dir))}/${this.name}${
-      this.ext
-    }: ${kib(this.content?.length ?? 0)}`;
+    return `${ellipsis(relative(this.dir))}/${this.name}${this.ext}: ${kib(
+      this.content?.length ?? 0
+    )}`;
   }
 }

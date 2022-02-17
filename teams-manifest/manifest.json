@@ -22,5 +22,14 @@
   "icons": {
     "outline": "resources/color.png",
     "color": "resources/color.png"
-  }
+  },
+  "staticTabs": [
+    {
+      "name": "foo",
+      "scopes": [
+        "personal"
+      ],
+      "entityId": "foo"
+    }
+  ]
 }

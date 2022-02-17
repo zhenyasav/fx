@@ -66,7 +66,7 @@ export namespace Effect {
     cwd?: string;
   };
 
-  export type Resource<TArgs> = {
+  export type Resource<TArgs extends object = any> = {
     $effect: "resource";
     instance: ResourceInstance<TArgs>;
   };

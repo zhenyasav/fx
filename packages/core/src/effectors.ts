@@ -8,11 +8,11 @@ import {
   Effector,
   EffectorSet,
   resourceId,
-  LoadedProjectConfig,
+  LoadedConfiguration
 } from "@fx/plugin";
 
 export type EffectorContext = {
-  config: LoadedProjectConfig;
+  config: LoadedConfiguration;
 };
 
 const File: Effector<Effect.File, EffectorContext> = {
@@ -99,11 +99,9 @@ const Resource: Effector<Effect.Resource<any>, EffectorContext> = {
     const {
       effect: { instance },
     } = e;
-    const {
-      config,
-    } = c;
+    const { config } = c;
     config.setResource(instance);
-    await projectFile.save();
+    return config.projectFile.save();
   },
 };
 

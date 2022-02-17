@@ -1,7 +1,6 @@
 import path from "path";
 import { z } from "zod";
 import { inquire, QuestionGenerator } from "@fx/zod-inquirer";
-import { Effect } from "./effects";
 import { MaybePromise } from "./promise";
 import { JSONFile } from "@nice/file";
 import { ResourceInstance } from "./resource";
@@ -22,21 +21,9 @@ export type Project = {
   resources: ResourceInstance[];
 };
 
-export type LoadedProjectConfig = Config & {
-  configFilePath: string;
-  project: Project;
-  projectFile: ProjectFile;
-  getResourceDefinitions(): ResourceDefinition[];
-  getResourceDefinition(type: string): ResourceDefinition | undefined;
-  getResources(): LoadedResource[];
-  getResource(ref: ResourceReference): LoadedResource | undefined;
-  setResource(instance: ResourceInstance): ResourceInstance;
-  clone(): LoadedProjectConfig;
-};
-
-export type LoadedResource<TCreateInput = any> = {
+export type LoadedResource<TCreateInput = any, TContext = {}> = {
   instance: ResourceInstance<TCreateInput>;
-  definition?: ResourceDefinition<TCreateInput>;
+  definition?: ResourceDefinition<TCreateInput, TContext>;
 };
 
 export type ProjectLoadOptions =
@@ -58,6 +45,19 @@ export class ProjectFile extends JSONFile<Project> {
     super({ path: resolvedProjectFileName });
   }
 }
+
+export type LoadedConfiguration = {
+  config: Config;
+  configFilePath: string;
+  projectFile: ProjectFile;
+  project: Project;
+  getResourceDefinitions(): ResourceDefinition[];
+  getResourceDefinition(type: string): ResourceDefinition | undefined;
+  getResources(): LoadedResource[];
+  getResource(ref: ResourceReference): LoadedResource | undefined;
+  setResource(instance: ResourceInstance): ResourceInstance;
+  clone(): LoadedConfiguration;
+};
 
 export type Typed = { type: string };
 
@@ -97,50 +97,47 @@ export function getResourceDependencies(
   return result;
 }
 
-export type MethodResult<TEffect extends Effect.Base = Effect.Any> = void | {
-  [k: string]: any | TEffect;
-};
+export type MethodResult = void | object;
 
-export type MethodContext = {
-  config: LoadedProjectConfig;
-  resource: LoadedResource;
-};
-
-export type Method<TInput = any, TEffect extends Effect.Base = Effect.Any> = {
+export type Method<TInput = any, TContext = {}> = {
   inputs?(
     context: {
       defaults?: Partial<TInput>;
+      resource: LoadedResource<TInput, TContext>;
+      config: LoadedConfiguration;
       questionGenerator?: QuestionGenerator;
-    } & MethodContext
+    } & TContext
   ): MaybePromise<TInput>;
   body?(
     context: {
       input: TInput;
-    } & MethodContext
-  ): MaybePromise<MethodResult<TEffect>>;
+      resource: LoadedResource<TInput, TContext>;
+      config: LoadedConfiguration;
+    } & TContext
+  ): MaybePromise<MethodResult>;
   requires?: string[];
   implies?: string[];
 };
 
-export type Methods<TCreateInput = any> = {
-  create?: Method<TCreateInput>;
-} & { [methodName: string]: Method };
+export type Methods<TCreateInput = any, TContext = {}> = {
+  create?: Method<TCreateInput, TContext>;
+} & { [methodName: string]: Method<any, TContext> };
 
-export type Transform<T, C = MethodContext> = (
+export type Transform<T, C = any> = (
   t: T,
   context: C
 ) => { [k in keyof T]: any };
 
-export function method<T extends z.ZodObject<z.ZodRawShape>>({
+export function method<T extends z.ZodObject<z.ZodRawShape>, TContext = any>({
   inputShape,
   inputTransform,
   ...rest
 }: {
   inputShape?: T;
-  inputTransform?: Transform<z.infer<T>>;
+  inputTransform?: Transform<z.infer<T>, TContext>;
   requires?: string[];
   implies?: string[];
-} & Pick<Method<z.infer<T>>, "body">): Method<z.infer<T>> {
+} & Pick<Method<z.infer<T>, TContext>, "body">): Method<z.infer<T>, TContext> {
   return inputShape
     ? {
         async inputs(context) {
@@ -165,8 +162,8 @@ export function method<T extends z.ZodObject<z.ZodRawShape>>({
       };
 }
 
-export type ResourceDefinition<TCreateInput = any> = {
+export type ResourceDefinition<TCreateInput = any, TContext = {}> = {
   type: string;
   description?: string;
-  methods?: Methods<TCreateInput>;
+  methods?: Methods<TCreateInput, TContext>;
 };

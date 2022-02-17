@@ -1,6 +1,14 @@
 import { z } from "zod";
 import { executeDirectoryTemplate } from "@nice/ts-template";
-import { method, ResourceDefinition, Methods, Transform, effect } from "@fx/plugin";
+import {
+  method,
+  ResourceDefinition,
+  Methods,
+  Transform,
+  effect,
+  LoadedResource,
+  LoadedConfiguration,
+} from "@fx/plugin";
 
 export type TemplateResourceOptions<
   I extends z.ZodObject<z.ZodRawShape> = z.AnyZodObject
@@ -9,7 +17,10 @@ export type TemplateResourceOptions<
   description?: string;
   templateDirectory: string;
   input?: I;
-  inputTransform?: Transform<z.infer<I>>;
+  inputTransform?: Transform<
+    z.infer<I>,
+    { resource: LoadedResource; config: LoadedConfiguration }
+  >;
   outputDirectory?: string | ((inputs: z.infer<I>) => string);
   methods?: Omit<Methods, "create">;
 };
@@ -42,9 +53,9 @@ export function template<
       create: method<I>({
         inputShape: input ?? (templateInput as any),
         inputTransform,
-        async body({ input, config, resource }) {
+        async body({ input, resource, ...rest }) {
           const inputXform = (v: any) =>
-            inputTransform ? inputTransform?.(v, { config, resource }) : v;
+            inputTransform ? inputTransform?.(v, { resource, ...rest }) : v;
           const od =
             typeof outputDirectory == "string"
               ? outputDirectory
@@ -59,9 +70,9 @@ export function template<
           return {
             files: files?.map((f) => {
               return effect({
-                $effect: 'file',
-                file: f
-              })
+                $effect: "file",
+                file: f,
+              });
             }),
           };
         },

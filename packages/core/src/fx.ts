@@ -2,7 +2,6 @@ import {
   resourceId,
   promise,
   LoadedResource,
-  LoadedProjectConfig,
   getPendingResourceReferences,
   MethodResult,
   getEffectLocations,
@@ -11,20 +10,28 @@ import {
   ResourcePlan,
   ResourceEffect,
   Plan,
+  LoadedConfiguration,
 } from "@fx/plugin";
 import { randomString } from "./util/random";
 import { getEffector } from "./effectors";
 import { ConfigLoaderOptions, ConfigLoader } from "./config";
 import { getResourceQuestionGenerator } from "./resourceDeps";
-import { ResourceInstance } from "@fx/plugin/build/resource";
+import { ResourceInstance } from "@fx/plugin";
+import { EffectorContext } from ".";
 
 export type FxOptions = ConfigLoaderOptions & {
   aadAppId?: string;
 };
 
+function isResourceEffect(
+  o: ResourceEffect<Effect.Any>
+): o is ResourceEffect<Effect.Resource> {
+  return o.effect.$effect == "resource";
+}
+
 export class Fx {
   private options: FxOptions;
-  private _config: LoadedProjectConfig | null = null;
+  private _config: LoadedConfiguration | null = null;
   private configLoader: ConfigLoader;
   constructor(options?: FxOptions) {
     this.options = { cwd: process.cwd(), ...options };
@@ -65,11 +72,11 @@ export class Fx {
     options?: {
       resource?: LoadedResource;
       input?: { [k: string]: any };
-      config?: LoadedProjectConfig;
+      config?: LoadedConfiguration;
     }
   ): Promise<Plan> {
     const { resource, input: args } = { ...options };
-    const resources = resource
+    const resources: LoadedResource<any, EffectorContext>[] = resource
       ? [resource]
       : await this.getResourcesWithMethod(methodName);
     if (!resources?.length) return [];
@@ -131,7 +138,7 @@ export class Fx {
           },
         };
         results.push(resourceEffect);
-        
+        config.setResource(instance);
       }
 
       if (methodName != "create") {
@@ -146,9 +153,14 @@ export class Fx {
             resource: dependentResource,
             config,
           });
-          // TODO: possibly commit all resource effects from the dependent plans
-          // too
           results.push(...dependentPlan);
+
+          const resourceEffects = dependentPlan.filter(
+            isResourceEffect
+          ) as ResourceEffect<Effect.Resource>[];
+          resourceEffects.forEach((re) => {
+            config.setResource(re.effect.instance);
+          });
         }
       }
 
