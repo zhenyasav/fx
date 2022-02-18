@@ -32,40 +32,42 @@ export function tab(): ResourceDefinition {
       create: method({
         inputShape: tabInput,
         async body({ input, config }) {
-          // const res = resource as LoadedResource<TabInput>;
           // find a reference to the manifest resource
           const manifestRef = input.manifest as any as ResourceReference;
           const manifestResource = config.getResource(manifestRef);
           if (!manifestResource)
             throw new Error(`resource ${manifestRef?.$resource} not found`);
-          // load the existing manifest
+
           const file = new JSONFile<TeamsAppManifest>({
             path: [
               path.dirname(config.configFilePath),
               manifestResource.instance.inputs?.create?.directory!,
               "manifest.json",
             ],
-          });
-          await file.load();
-          // create the tab:
-          // figure out the url:
-          const contentUrl = isResourceReference(input.url)
-            ? void 0
-            : input.url;
+            transform(existing) {
+              // create the tab:
+              // figure out the url:
+              const contentUrl = isResourceReference(input.url)
+                ? void 0
+                : input.url;
 
-          const tab: IStaticTab = {
-            name: input.name,
-            scopes: ["personal"],
-            entityId: input.id,
-            ...(contentUrl ? { contentUrl } : {}),
-          };
-          // add the tab
-          const manifest = file.parsed!;
-          manifest.staticTabs = manifest?.staticTabs ?? [];
-          manifest.staticTabs.push(tab as any);
+              const tab: IStaticTab = {
+                name: input.name,
+                scopes: ["personal"],
+                entityId: input.id,
+                ...(contentUrl ? { contentUrl } : {}),
+              };
+
+              existing.staticTabs = existing.staticTabs || [];
+              existing.staticTabs.push(tab);
+
+              return existing;
+            }
+          });
           return {
             manifest: effect({
               $effect: "file",
+              description: "add tab definition to manifest.staticTabs",
               file,
             }),
           };

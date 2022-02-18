@@ -1,19 +1,10 @@
 import path from "path";
 // import { promises as fs } from "fs";
-import { File } from "@nice/file";
+import { File, MaybePromise, promise } from "@nice/file";
 import * as tsnode from "ts-node";
 
 export const TEMPLATE_REGEX = /(.*)\.t\.ts$/;
 
-export type MaybePromise<T> = T | Promise<T>;
-
-export function isPromise<T>(p: any): p is Promise<T> {
-  return typeof p?.then == "function";
-}
-
-export function promise<T>(p: MaybePromise<T>): Promise<T> {
-  return isPromise(p) ? p : Promise.resolve(p);
-}
 
 export function isTemplateFile(file: string): boolean {
   return TEMPLATE_REGEX.test(file);

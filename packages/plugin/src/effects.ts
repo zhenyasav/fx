@@ -2,6 +2,45 @@ import { File as NiceFile } from "@nice/file";
 import { MaybePromise } from "./promise";
 import { ResourceInstance } from "./resource";
 
+export namespace Effect {
+  export type Base = { $effect: any };
+
+  export type File<D = any> = {
+    $effect: "file";
+    description?: string;
+    file: NiceFile<D>;
+  };
+
+  export type Function<R = any> = {
+    $effect: "function";
+    description?: string;
+    body: () => MaybePromise<R>;
+  };
+
+  export type Shell = {
+    $effect: "shell";
+    description?: string;
+    command: string;
+    cwd?: string;
+  };
+
+  export type Resource<TArgs extends object = any> = {
+    $effect: "resource";
+    description?: string;
+    instance: ResourceInstance<TArgs>;
+  };
+
+  export type ResourceMethod<TInput extends object = any> = {
+    $effect: "resource-method";
+    description?: string;
+    resourceId: string;
+    method: string;
+    input: TInput;
+  };
+
+  export type Any = File | Function | Shell | Resource | ResourceMethod;
+}
+
 export function isEffect(o: any): o is Effect.Base {
   return o && o?.$effect;
 }
@@ -44,46 +83,6 @@ export function getEffectLocations<T extends Effect.Base = Effect.Any>(
     }
   }
   return results;
-}
-
-export namespace Effect {
-  export type Base = { $effect: any };
-
-  export type File = {
-    $effect: "file";
-    file: NiceFile;
-  };
-
-  export type Function<R = any> = {
-    $effect: "function";
-    description?: string;
-    body: () => MaybePromise<R>;
-  };
-
-  export type Shell = {
-    $effect: "shell";
-    command: string;
-    cwd?: string;
-  };
-
-  export type Resource<TArgs extends object = any> = {
-    $effect: "resource";
-    instance: ResourceInstance<TArgs>;
-  };
-
-  export type ResourceMethod<TInput extends object = any> = {
-    $effect: "resource-method";
-    resourceId: string;
-    method: string;
-    input: TInput;
-  };
-
-  export type Any =
-    | File
-    | Function<any>
-    | Shell
-    | Resource<any>
-    | ResourceMethod;
 }
 
 export type ResourceEffect<T extends Effect.Base = Effect.Any> = {

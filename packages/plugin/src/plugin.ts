@@ -52,9 +52,13 @@ export type LoadedConfiguration = {
   projectFile: ProjectFile;
   project: Project;
   getResourceDefinitions(): ResourceDefinition[];
-  getResourceDefinition(type: string): ResourceDefinition | undefined;
+  getResourceDefinition<TInput = any>(
+    type: string
+  ): ResourceDefinition<TInput> | undefined;
   getResources(): LoadedResource[];
-  getResource(ref: ResourceReference): LoadedResource | undefined;
+  getResource<TInput = any>(
+    ref: ResourceReference
+  ): LoadedResource<TInput> | undefined;
   setResource(instance: ResourceInstance): ResourceInstance;
   clone(): LoadedConfiguration;
 };

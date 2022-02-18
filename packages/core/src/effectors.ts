@@ -8,7 +8,7 @@ import {
   Effector,
   EffectorSet,
   resourceId,
-  LoadedConfiguration
+  LoadedConfiguration,
 } from "@fx/plugin";
 
 export type EffectorContext = {
@@ -17,9 +17,11 @@ export type EffectorContext = {
 
 const File: Effector<Effect.File, EffectorContext> = {
   describe(e) {
-    const { file } = e.effect;
-    return file.isCopy()
-      ? `copy file: ${ellipsis(relative(file.sourcePath))} to ${ellipsis(
+    const { file, description } = e.effect;
+    return description
+      ? description + ' ' + file.shortDescription()
+      : file.isCopy()
+      ? `copy file: ${ellipsis(relative(file.copyFrom!))} to ${ellipsis(
           relative(file.path)
         )}`
       : `create file: ${file.shortDescription()}`;

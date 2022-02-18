@@ -116,8 +116,8 @@ export async function getProjectApi(options: {
     projectFolder: path.dirname(configFilePath),
   });
 
-  projectFile.parsed = { resources: [] };
-  projectFile.content = JSON.stringify(projectFile.parsed);
+  projectFile.content = { resources: [] };
+  
   try {
     await projectFile.load();
   } catch (err) {}
@@ -127,7 +127,7 @@ export async function getProjectApi(options: {
     configFilePath,
     projectFile,
     get project(): Project {
-      return this.projectFile.parsed!;
+      return this.projectFile.content!;
     },
     getResourceDefinitions(): ResourceDefinition[] {
       return [...allDefs];

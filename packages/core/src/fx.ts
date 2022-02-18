@@ -58,12 +58,12 @@ export class Fx {
     });
     return desc;
   }
-  async applyEffect(effect: ResourceEffect) {}
   async executePlan(effects: Plan) {
     const config = await this.config();
     for (let i in effects) {
       const effect = effects[i];
       const effector = getEffector(effect.effect);
+      console.debug('applying', effector.describe(effect, { config }));
       await effector.apply(effect, { config });
     }
   }
