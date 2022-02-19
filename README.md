@@ -10,7 +10,7 @@
 - Any number of any kind of resource can be added to a project
 - Resources can implement any arbitrary lifecycle methods they want
 - Method implementations can arbitrarily depend on other methods (i.e. must `build` before `deploy`)
-- Resources can accept arbitrary inputs from the user at execution time for any method
+- Resources can accept arbitrary inputs from the user at execution time for any method, and will be fulfilled by `inquirer` prompts
 - Resources can depend on each other by accepting other resources as inputs
 - A method invoked on the whole solution will be invoked on all supporting resources in correct dependency order
 - Resources can have forward and reverse dependencies (i.e. I must execute before or after this other resource)
