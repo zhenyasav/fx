@@ -4,6 +4,10 @@
 
 > using the CLI, developers can "stack resources" to scaffold working projects with multiple integrated systems working together without manual configuration.
 
+## Currently Supported Scenarios:
+- Developer can add a Teams custom tab feature via `fx add teams-tab` to any existing web app and obtain the ability to F5 directly into the Teams client via the `fx dev` command.
+- Developer can scaffold a new package in the repo using a template they can control
+
 ## Feature Highlights:
 - Plugins and resource definitions can be implemented in separate packages
 - Plugins and resource definitions can be implemented "locally" by the developer within the project they are working on
@@ -23,10 +27,6 @@ Other features:
 - A solution for writing file templates in TypeScript with type checking and dual-syntax highlighting is provided in `@nice/ts-template` (i.e.: both the template's output language and the embedded typescript statements can be highlighted together in the same file)
 - A solution for conveniently modifying existing files on disk is provided in `@nice/file`
 - Inputs to resource methods are expressed much like regular interfaces with [zod type-checking schemas](https://github.com/colinhacks/zod) which are used to automatically generate TypeScript types and `inquirer` question sequences to fulfill the inputs via `@fx/zod-inquirer`
-
-## Currently Supported Scenarios:
-- Developer can add a Teams custom tab feature via `fx add teams-tab` to any existing web app and obtain the ability to F5 directly into the Teams client via the `fx dev` command.
-- Developer can scaffold a new package in the repo using a template they can control
 
 ## Installation:
 
