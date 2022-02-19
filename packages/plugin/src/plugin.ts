@@ -15,6 +15,7 @@ export type Plugin = {
 };
 
 export type Config = {
+  resources?: ResourceDefinition[];
   plugins?: Plugin[];
 };
 
@@ -67,6 +68,12 @@ export type LoadedConfiguration = {
     ref: ResourceReference
   ): LoadedResource<TInput> | undefined;
   setResource(instance: ResourceInstance): ResourceInstance;
+  setMethodResult(
+    instance: ResourceInstance,
+    method: string,
+    path: (string | number)[],
+    result: any
+  ): ResourceInstance;
   clone(): LoadedConfiguration;
 };
 

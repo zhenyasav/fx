@@ -98,14 +98,24 @@ export async function getProjectApi(options: {
   configFilePath: string;
 }): Promise<LoadedConfiguration> {
   const { configFilePath, config } = options;
-  const { plugins } = config;
+  const { plugins, resources } = config;
   const allDefs: ResourceDefinition[] = [];
   const defsByPlugin = new Map<Plugin, ResourceDefinition[]>();
   const defsByType = new Map<
     string,
     { plugin: Plugin; definition: ResourceDefinition }
   >();
-  for (let plugin of plugins ?? []) {
+  const localPlugin: Plugin = {
+    name: "local-resources",
+    resources() {
+      return resources ?? [];
+    },
+  };
+  const allPlugins = [
+    ...(resources?.length ? [localPlugin] : []),
+    ...(plugins ?? []),
+  ];
+  for (let plugin of allPlugins) {
     const defs = await plugin.resources();
     defsByPlugin.set(plugin, defs);
     for (let def of defs) {
