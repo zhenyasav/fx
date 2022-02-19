@@ -1,4 +1,10 @@
-import { Config, effect, method, ResourceDefinition } from "@fx/core";
+import {
+  Config,
+  ResourceInstance,
+  effect,
+  method,
+  ResourceDefinition,
+} from "@fx/core";
 import { packageTemplate } from "./templates/package/template.t";
 import { teams } from "@fx/teams";
 import { z } from "zod";
@@ -9,7 +15,21 @@ const inputShape = z.object({
 
 type CowsayInput = z.infer<typeof inputShape>;
 
-const cowsay: ResourceDefinition<CowsayInput> = {
+type LiteralResourceDefinition<T> = ResourceDefinition<T> & {
+  instances: Omit<ResourceInstance<T>, "type">[];
+};
+
+const cowsay: LiteralResourceDefinition<CowsayInput> = {
+  instances: [
+    {
+      id: "something",
+      inputs: {
+        create: {
+          what: "literally moo",
+        },
+      },
+    },
+  ],
   type: "cowsay",
   description: "a cow that says",
   methods: {
@@ -18,7 +38,7 @@ const cowsay: ResourceDefinition<CowsayInput> = {
       body({ input }) {
         return {
           say: input.what,
-          cowsay: effect({
+          stdout: effect({
             $effect: "shell",
             command: `npx cowsay "${input.what}"`,
             description: `cowsay ${input.what}`,
@@ -27,13 +47,16 @@ const cowsay: ResourceDefinition<CowsayInput> = {
       },
     }),
     moo: method({
+      implies: ["build"],
       body({ resource }) {
         const what = resource.instance.inputs?.create?.what;
-        return effect({
-          $effect: "shell",
-          description: 'say the thing',
-          command: `npx cowsay ${what}`,
-        });
+        return {
+          stdout: effect({
+            $effect: "shell",
+            description: "say the thing",
+            command: `npx cowsay ${what}`,
+          }),
+        };
       },
     }),
   },

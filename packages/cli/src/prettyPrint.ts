@@ -42,12 +42,7 @@ export function printResources(
   table.push(
     [gray("type"), gray("description"), ...(methods ? [gray("methods")] : [])],
     ...resources?.map((r) => {
-      const methodKeys = (methods && r?.methods ? Object.keys(r.methods) : [])
-        .filter((m) => m != "create")
-        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-      const formattedMethods = methods
-        ? methodKeys.map((m) => yellow(`[${m}]`)).join(" ")
-        : "";
+      const formattedMethods = printMethods(r)
       return [
         cyan(r.type),
         r.description,
@@ -58,12 +53,30 @@ export function printResources(
   console.log(table.toString());
 }
 
+export function printMethods(def: ResourceDefinition) {
+  const methodKeys = (def?.methods ? Object.keys(def.methods) : [])
+    .filter((m) => m != "create")
+    .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+  const formattedMethods = methodKeys?.length
+    ? methodKeys.map((m) => yellow(`[${m}]`)).join(" ")
+    : "";
+  return formattedMethods;
+}
+
 export function printResourceDefinition(resource: ResourceDefinition) {
   console.log(`${cyan(resource.type)} ${gray("-")} ${resource.description}`);
 }
 
-export function printResourceInstance(resource: ResourceInstance) {
-  console.log(`${white(resource.type)} ${gray(resource.id)}`);
+export function printResourceInstance(
+  resource: ResourceInstance,
+  def: ResourceDefinition
+) {
+  const methodFmt = printMethods(def);
+  console.log(
+    `${white(resource.type)} ${gray(resource.id)}${
+      methodFmt ? gray(" methods: ") + methodFmt : ""
+    }`
+  );
   if (resource?.inputs)
     console.log(gray(prettyjson.render(resource.inputs, {}, 2)));
 }

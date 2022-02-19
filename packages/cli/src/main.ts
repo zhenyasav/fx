@@ -155,7 +155,9 @@ const parser = yargs(process.argv.slice(2))
         ? config.project.resources?.filter((res) => res.type == type)
         : config.project.resources;
       console.log(`${resources ? resources.length : 0} resources in project:`);
-      resources?.forEach(printResourceInstance);
+      resources?.forEach((r) =>
+        printResourceInstance(r, config.getResourceDefinition(r.type)!)
+      );
     }
   )
   .command(
