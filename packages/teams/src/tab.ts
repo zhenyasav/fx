@@ -32,7 +32,7 @@ export type TabInput = z.infer<typeof tabInput>;
 export function tab(): ResourceDefinition<TabInput> {
   return {
     type: "teams-tab",
-    description: "A Teams Tab",
+    description: "a Teams custom tab",
     methods: {
       create: method({
         inputShape: tabInput,

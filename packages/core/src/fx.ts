@@ -6,7 +6,6 @@ import {
   MethodResult,
   getEffectLocations,
   Effect,
-  // getResourceDependencies,
   ResourcePlan,
   ResourceEffect,
   Plan,
@@ -21,16 +20,17 @@ import {
 } from "./resourceDeps";
 import { ResourceInstance } from "@fx/plugin";
 import { solve } from "dependency-solver";
+import { yellow } from "chalk";
+
+function isResourceEffect(
+  o: ResourceEffect<Effect.Any>
+): o is ResourceEffect<Effect.Resource> {
+  return o && o.effect?.$effect == "resource";
+}
 
 export type FxOptions = ConfigLoaderOptions & {
   aadAppId?: string;
 };
-
-// function isResourceEffect(
-//   o: ResourceEffect<Effect.Any>
-// ): o is ResourceEffect<Effect.Resource> {
-//   return o.effect.$effect == "resource";
-// }
 
 export class Fx {
   private options: FxOptions;
@@ -63,16 +63,22 @@ export class Fx {
   }
   async executePlan(effects: Plan) {
     const config = await this.config();
+    const createdResources = [];
     for (let i in effects) {
       const effect = effects[i];
       const effector = getEffector(effect.effect);
-      console.debug("applying", effector.describe(effect, { config }));
+      console.log("applying", effector.describe(effect, { config }));
       const result = await effector.apply(effect, { config });
-      // commit result to state
-      const { resource, method, path } = effect.origin;
-      config.setMethodResult(resource, method, path ?? [], result);
-      await config.projectFile.save();
+      if (isResourceEffect(effect)) {
+        createdResources.push(effect);
+      }
+      if (typeof result != 'undefined') {
+        const { resource, method, path } = effect.origin;
+        config.setMethodResult(resource, method, path ?? [], result);
+        await config.projectFile.save();
+      }
     }
+    return { created: createdResources };
   }
   async planMethod(
     methodName: string,
@@ -139,10 +145,13 @@ export class Fx {
       if (input && Object.keys(input).length) {
         const pendingResourceRefs = getPendingResourceReferences(input) ?? [];
         for (let ref of pendingResourceRefs) {
+          console.log("");
           console.log(
-            `Creating '${ref.entity.$resource}' for ${resourceId(
-              instance
-            )}.${ref.path.join(".")}:`
+            yellow(
+              `Creating '${ref.entity.$resource}' for ${resourceId(
+                instance
+              )}.${ref.path.join(".")}:`
+            )
           );
           const newResourcePlan = await this.planCreateResource(
             ref.entity.$resource,

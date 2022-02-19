@@ -9,6 +9,7 @@ import {
   Project,
   LoadedResource,
   LoadedConfiguration,
+  scrubEffects,
 } from "@fx/plugin";
 import { cosmiconfig } from "cosmiconfig";
 import tsloader from "@endemolshinegroup/cosmiconfig-typescript-loader";
@@ -167,7 +168,7 @@ export async function getProjectApi(options: {
     setMethodResult(instance, method, path, result) {
       const v = ensurePath(instance, ["outputs", method, ...path]);
       const lastKey = path[path.length - 1];
-      v[lastKey] = result;
+      v[lastKey] = scrubEffects(result);
       return instance;
     },
     clone(): LoadedConfiguration {

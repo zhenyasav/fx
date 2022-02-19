@@ -55,6 +55,45 @@ export function effects<T extends Effect.Base = Effect.Any>() {
 
 export const effect = effects<Effect.Any>();
 
+export function scrubEffect<T extends Effect.Base = Effect.Any>(o: T) {
+  const result: any = {};
+  for (let i in o) {
+    const v = o[i];
+    result[i] =
+      typeof v == "number" ||
+      typeof v == "string" ||
+      typeof v == "boolean" ||
+      v instanceof Date
+        ? v
+        : null;
+  }
+  return result;
+}
+
+export function scrubEffects(obj: any) {
+  const result: any = {};
+  if (
+    typeof obj === "undefined" ||
+    obj === null ||
+    typeof obj == "number" ||
+    typeof obj == "string" ||
+    typeof obj == "boolean" ||
+    obj instanceof Date
+  )
+    return obj;
+  for (let key in obj) {
+    const val = obj[key];
+    if (Array.isArray(val)) {
+      result[key] = val?.map((v) => scrubEffects(v));
+    } else if (isEffect(val)) {
+      result[key] = scrubEffect(val);
+    } else {
+      result[key] = val;
+    }
+  }
+  return result;
+}
+
 export type ObjectWithEffects = {
   [k: string]: any | Effect.Base;
 };

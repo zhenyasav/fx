@@ -103,7 +103,7 @@ const Resource: Effector<Effect.Resource<any>, EffectorContext> = {
     } = e;
     const { config } = c;
     config.setResource(instance);
-    return config.projectFile.save();
+    await config.projectFile.save();
   },
 };
 

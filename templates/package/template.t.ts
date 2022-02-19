@@ -17,7 +17,7 @@ export function removeScope(s: string) {
 export function packageTemplate() {
   return template({
     name: "package",
-    description: "creates a new typescript package in ./packages/",
+    description: "a typescript package template",
     input: packageInput,
     templateDirectory: __dirname,
     outputDirectory: (input) =>

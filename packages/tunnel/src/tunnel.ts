@@ -10,7 +10,10 @@ import {
 import ngrok from "ngrok";
 
 export const createTunnelInput = z.object({
-  port: z.number().describe("the local port the tunnel will reach"),
+  port: z
+    .number()
+    .describe("the local port the tunnel will reach")
+    .default(3000),
 });
 
 export type CreateTunnelInput = z.infer<typeof createTunnelInput>;
@@ -24,7 +27,7 @@ export type TunnelResource = LoadedResource<CreateTunnelInput>;
 export function tunnel(): TunnelResourceDefinition {
   return {
     type: "tunnel",
-    description: "create an ngrok tunnel",
+    description: "an ngrok tunnel",
     methods: {
       create: method({
         inputShape: createTunnelInput,

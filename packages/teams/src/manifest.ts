@@ -20,7 +20,7 @@ export type Manifest = typeof sample;
 export function manifest() {
   return template({
     name: "teams-manifest",
-    description: "Create a Teams manifest template and build scripts",
+    description: "a Teams application manifest bundle",
     templateDirectory: path.resolve(__dirname, "../templates/manifest"),
     input: manifestInput,
     inputTransform: (input, context) => {

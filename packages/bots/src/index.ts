@@ -4,7 +4,7 @@ import { Plugin, ResourceDefinition, method } from "@fx/plugin";
 export function botService(): ResourceDefinition {
   return {
     type: "azure-bot-service",
-    description: "Azure Bot Service bot registration",
+    description: "an Azure Bot Service bot registration",
     methods: {
       create: method({
         inputShape: z.object({

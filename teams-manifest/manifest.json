@@ -2,7 +2,7 @@
   "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.11/MicrosoftTeams.schema.json",
   "manifestVersion": "1.11",
   "version": "1.0.0",
-  "id": "f048efeb-16f3-4c6e-992b-b724718913b2",
+  "id": "9a6e1f25-337b-4466-b3fc-648e9d8fe0e4",
   "packageName": "com.zhenya.app",
   "developer": {
     "name": "zhenya",
@@ -12,8 +12,8 @@
     "mpnId": ""
   },
   "name": {
-    "short": "foo",
-    "full": "foo"
+    "short": "",
+    "full": ""
   },
   "description": {
     "short": "An app built with Teams Toolkit",
@@ -25,12 +25,11 @@
   },
   "staticTabs": [
     {
-      "name": "foo",
+      "name": "",
       "scopes": [
         "personal"
       ],
-      "entityId": "foo",
-      "contentUrl": "https://346f-174-127-243-36.ngrok.io"
+      "entityId": ""
     }
   ]
 }

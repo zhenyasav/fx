@@ -15,7 +15,11 @@ export function printLogo() {
   console.log(cyan(logo));
 }
 
-export function printResources(resources: ResourceDefinition[]) {
+export function printResources(
+  resources: ResourceDefinition[],
+  options?: { methods?: boolean }
+) {
+  const { methods } = { methods: false, ...options };
   const table = new Table({
     chars: {
       top: "",
@@ -35,7 +39,22 @@ export function printResources(resources: ResourceDefinition[]) {
       middle: "",
     },
   });
-  table.push(...resources?.map((r) => [cyan(r.type), r.description]));
+  table.push(
+    [gray("type"), gray("description"), ...(methods ? [gray("methods")] : [])],
+    ...resources?.map((r) => {
+      const methodKeys = (methods && r?.methods ? Object.keys(r.methods) : [])
+        .filter((m) => m != "create")
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+      const formattedMethods = methods
+        ? methodKeys.map((m) => yellow(`[${m}]`)).join(" ")
+        : "";
+      return [
+        cyan(r.type),
+        r.description,
+        ...(methods ? [formattedMethods] : []),
+      ];
+    })
+  );
   console.log(table.toString());
 }
 

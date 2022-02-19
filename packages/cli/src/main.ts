@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import os from "os";
 import yargs from "yargs";
-import { Fx } from "@fx/core";
+import { Fx, resourceId } from "@fx/core";
 import {
   printLogo,
   printResourceInstance,
@@ -12,7 +12,7 @@ import {
 } from "./prettyPrint";
 import { Plan } from "@fx/core";
 import config from "./config";
-import { gray } from "chalk";
+import { gray, red, yellow } from "chalk";
 import inquirer from "inquirer";
 
 const fx = new Fx({
@@ -37,8 +37,21 @@ async function executePlan(dry: boolean, plan: Plan) {
     ]);
     if (confirmed) {
       console.log(`executing ${plan.length} tasks ...`);
-      await fx.executePlan(plan);
-      console.log("done");
+      const { created } = await fx.executePlan(plan);
+      console.log(`\n${plan.length} tasks done.\n`);
+      if (created.length) {
+        console.log("new resources:");
+        const config = await fx.config();
+        const newResources = created.map(
+          (c) =>
+            config.getResource({ $resource: resourceId(c.effect.instance) })
+              ?.definition!
+        );
+        console.group();
+        printResources(newResources, { methods: true });
+        console.groupEnd();
+        console.log("");
+      }
     }
   } else {
     console.log("dry run, no changes made.");
@@ -107,14 +120,17 @@ const parser = yargs(process.argv.slice(2))
       if (!type) throw new Error("type is required");
       try {
         console.log(gray("cwd: " + process.cwd()));
+
+        console.log("");
+        console.log(yellow(`Creating '${type}':`));
         const plan = await withLoader("planning", () =>
           fx.planCreateResource(type, { input: { ...rest, name } })
         );
         if (!plan) return;
-        console.log(`Creating '${type}':`);
         console.log("");
         await executePlan(dry, plan);
       } catch (err: any) {
+        console.error(red("problem while executing plan:"));
         console.error(err.message);
       }
     }
