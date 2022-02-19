@@ -69,6 +69,7 @@ const Shell: Effector<Effect.Shell, EffectorContext> = {
         { cwd: cwd ? cwd : process.cwd() },
         (err, stdout, stderr) => {
           if (err || stderr) return reject({ error: err || stderr });
+          console.log(stdout);
           resolve(stdout);
         }
       );

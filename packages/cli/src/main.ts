@@ -93,7 +93,7 @@ const parser = yargs(process.argv.slice(2))
       );
       if (resources && resources.length) {
         console.log(`${resources.length} resource types available:`);
-        printResources(resources);
+        printResources(resources, { methods: true });
       } else {
         info("there are no resource definitions installed in this project");
         // resources.forEach(printResourceDefinition);
