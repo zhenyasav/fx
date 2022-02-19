@@ -15,7 +15,7 @@
 - A method invoked on the whole solution will be invoked on all supporting resources in correct dependency order
 - Resources can have forward and reverse dependencies (i.e. I must execute before or after this other resource)
 - All method actions can be previewed without changes to the project in the `--dry` run mode
-- Any unfunfilled resource dependencies can be created on-demand during resource creation (i.e when `foo` depends on `bar` and user creates a `foo` without a `bar` already present, they will have the option to create a `bar` on the fly)
+- Any unfulfilled resource dependencies can be created on-demand during resource creation (i.e when `foo` depends on `bar` and user creates a `foo` without a `bar` already present, they will have the option to create a `bar` on the fly)
 - Existing code and assets can be imported and treated as resources
 
 Other features:
