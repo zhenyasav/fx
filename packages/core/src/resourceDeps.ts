@@ -1,13 +1,74 @@
 import { z } from "zod";
 import inquirer from "inquirer";
-import { resourceId, QuestionGenerator } from "@fx/plugin";
-import { LoadedConfiguration } from "@fx/plugin";
+import { resourceId, QuestionGenerator, ResourceReference } from "@fx/plugin";
+import {
+  LoadedConfiguration,
+  LoadedResource,
+  getResourceDependencies,
+} from "@fx/plugin";
 
 export function getResourceQuestionGenerator(
   config: LoadedConfiguration
 ): QuestionGenerator {
   return (shape, key) =>
     generateResourceChoiceQuestions(config, shape, key.toString());
+}
+
+export type Graph = {
+  [id: string]: string[];
+};
+
+export function getDependencyGraph({
+  resources,
+  methodName
+}: {
+  resources: LoadedResource[];
+  methodName: string;
+}): {
+  graph: Graph;
+  independents: string[];
+  errors: string[];
+} {
+  const graph: Graph = {};
+  const independents: string[] = [];
+  const errors: string[] = [];
+  for (let resource of resources) {
+    const { dependencies, errors: depErrs } = getResourceDependencies(
+      resource,
+      methodName
+    );
+    errors.push(...depErrs);
+    const { instance } = resource;
+    if (dependencies?.length) {
+      const forward = dependencies
+        .filter((d) => !d.before)
+        .map((f) => f.$resource);
+      const reverse = dependencies
+        .filter((d) => d.before)
+        .map((f) => f.$resource);
+      const rid = resourceId(instance);
+      if (forward.length) {
+        graph[rid] = graph[rid] || [];
+        graph[rid].push(...forward);
+      }
+      if (reverse.length) {
+        reverse.forEach((rev) => {
+          graph[rev] = graph[rev] || [];
+          graph[rev].push(rid);
+        });
+      }
+    } else independents.push(resourceId(instance));
+  }
+  return { graph, independents, errors };
+}
+
+export function parseReferenceLiteral(literalValue: string): ResourceReference {
+  const bfx = /before:/;
+  const isBefore = bfx.test(literalValue);
+  return {
+    $resource: isBefore ? literalValue.slice(7) : literalValue,
+    ...(isBefore ? { before: true } : {}),
+  };
 }
 
 export function generateResourceChoiceQuestions(
@@ -36,18 +97,21 @@ export function generateResourceChoiceQuestions(
       q.name = key.toString();
     } else if (typeName == "ZodLiteral") {
       const q = question as inquirer.ListQuestion;
-      const resourceType = shape._def.value;
+      const resourceRef = parseReferenceLiteral(shape._def.value);
       const resources = config.getResources();
       const applicableResources = resources.filter(
-        (res) => res.instance.type == resourceType
+        (res) => res.instance.type == resourceRef.$resource
       );
       const applicableDefinitions = config
         .getResourceDefinitions()
-        .filter((def) => def.type == resourceType);
+        .filter((def) => def.type == resourceRef.$resource);
       const resourceChoices = applicableResources.map((res) => ({
         type: "choice" as "choice",
         name: resourceId(res.instance),
-        value: { $resource: resourceId(res.instance) },
+        value: {
+          $resource: resourceId(res.instance),
+          ...(resourceRef.before ? { before: true } : {}),
+        },
       }));
       q.type = "list";
       q.name = key.toString();
@@ -57,8 +121,8 @@ export function generateResourceChoiceQuestions(
           ? [
               {
                 type: "choice" as "choice",
-                name: `Create a new '${resourceType}'`,
-                value: { $resource: resourceType },
+                name: `Create a new '${resourceRef.$resource}'`,
+                value: resourceRef,
               },
             ]
           : []),
@@ -82,7 +146,7 @@ export function generateResourceChoiceQuestions(
               : typeName == "ZodNumber"
               ? "number"
               : typeName == "ZodLiteral"
-              ? opt._def.value
+              ? parseReferenceLiteral(opt._def.value).$resource
               : description,
         };
         return choice;

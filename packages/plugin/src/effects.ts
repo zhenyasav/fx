@@ -1,6 +1,7 @@
 import { File as NiceFile } from "@nice/file";
 import { MaybePromise } from "./promise";
 import { ResourceInstance } from "./resource";
+import { Location, getPatternLocations } from "./locations";
 
 export namespace Effect {
   export type Base = { $effect: any };
@@ -58,31 +59,10 @@ export type ObjectWithEffects = {
   [k: string]: any | Effect.Base;
 };
 
-export type EffectLocation<T extends Effect.Base> = {
-  effect: T;
-  path: (string | number)[];
-};
-
 export function getEffectLocations<T extends Effect.Base = Effect.Any>(
   o: ObjectWithEffects
-): EffectLocation<T>[] {
-  if (typeof o != "object") return [];
-  const results: EffectLocation<T>[] = [];
-  for (let i in o) {
-    const v = o[i];
-    if (isEffect(v)) {
-      results.push({ effect: v as T, path: [i] });
-    } else if (Array.isArray(v)) {
-      const effectsInArray = v.filter(isEffect);
-      results.push(
-        ...effectsInArray.map((e, x) => ({
-          effect: e as T,
-          path: [i, x],
-        }))
-      );
-    }
-  }
-  return results;
+): Location<T>[] {
+  return getPatternLocations(o, isEffect);
 }
 
 export type ResourceEffect<T extends Effect.Base = Effect.Any> = {

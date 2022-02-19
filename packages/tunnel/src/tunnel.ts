@@ -4,17 +4,24 @@ import {
   method,
   effect,
   Plugin,
+  ResourceInstance,
   ResourceDefinition,
 } from "@fx/plugin";
 import ngrok from "ngrok";
 
-const createTunnelInput = z.object({
+export const createTunnelInput = z.object({
   port: z.number().describe("the local port the tunnel will reach"),
 });
 
-type CreateTunnelInput = z.infer<typeof createTunnelInput>;
+export type CreateTunnelInput = z.infer<typeof createTunnelInput>;
 
-export function tunnel(): ResourceDefinition<CreateTunnelInput> {
+export type TunnelResourceDefinition = ResourceDefinition<CreateTunnelInput>;
+
+export type TunnelResourceInstance = ResourceInstance<CreateTunnelInput>;
+
+export type TunnelResource = LoadedResource<CreateTunnelInput>;
+
+export function tunnel(): TunnelResourceDefinition {
   return {
     type: "tunnel",
     description: "create an ngrok tunnel",

@@ -1,5 +1,60 @@
 {
   "resources": [
-    
+    {
+      "id": "c2b5",
+      "type": "teams-manifest",
+      "inputs": {
+        "create": {
+          "directory": "teams-manifest",
+          "buildDirectory": "teams-manifest/build",
+          "name": "foo",
+          "description": "An app built with Teams Toolkit",
+          "packageName": "com.zhenya.app",
+          "developerName": "zhenya"
+        }
+      },
+      "outputs": {
+        "build": {
+          "output": "/Users/zhenya/exp/localregistry/fx/teams-manifest/build/teams-app.zip"
+        }
+      }
+    },
+    {
+      "id": "5dc7",
+      "type": "tunnel",
+      "inputs": {
+        "create": {
+          "port": 3000
+        }
+      },
+      "outputs": {
+        "dev": {
+          "url": "https://346f-174-127-243-36.ngrok.io"
+        }
+      }
+    },
+    {
+      "id": "4ebc",
+      "type": "teams-tab",
+      "inputs": {
+        "create": {
+          "name": "foo",
+          "manifest": {
+            "$resource": "teams-manifest:c2b5",
+            "before": true
+          },
+          "id": "foo",
+          "url-type": "tunnel",
+          "url": {
+            "$resource": "tunnel:5dc7"
+          }
+        }
+      },
+      "outputs": {
+        "dev": {
+          "contentUrl": "teams-manifest/manifest.json"
+        }
+      }
+    }
   ]
 }

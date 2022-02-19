@@ -13,7 +13,9 @@
     "@endemolshinegroup/cosmiconfig-typescript-loader": "^3.0.2",
     "@fx/plugin": "workspace:^1.0.0",
     "@nice/ts-template": "workspace:^1.0.0",
+    "@types/dependency-solver": "^1.0.1",
     "cosmiconfig": "^7.0.1",
+    "dependency-solver": "^1.0.6",
     "lodash.compact": "^3.0.1",
     "mkdirp": "^1.0.4",
     "zod": "^3.11.6"

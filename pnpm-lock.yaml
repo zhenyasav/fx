@@ -102,10 +102,12 @@ importers:
       '@nice/ts-template': workspace:^1.0.0
       '@swc/cli': ^0.1.55
       '@swc/jest': ^0.2.17
+      '@types/dependency-solver': ^1.0.1
       '@types/jest': ^27.4.0
       '@types/node': ^16.11.11
       '@types/prettyjson': ^0.0.30
       cosmiconfig: ^7.0.1
+      dependency-solver: ^1.0.6
       jest: ^27.4.5
       lodash.compact: ^3.0.1
       mkdirp: ^1.0.4
@@ -118,7 +120,9 @@ importers:
       '@endemolshinegroup/cosmiconfig-typescript-loader': 3.0.2_e1c3b685f8b7686dcc885a02fd14c5f0
       '@fx/plugin': link:../plugin
       '@nice/ts-template': link:../ts-template
+      '@types/dependency-solver': 1.0.1
       cosmiconfig: 7.0.1
+      dependency-solver: 1.0.6
       lodash.compact: 3.0.1
       mkdirp: 1.0.4
       zod: 3.11.6
@@ -1616,6 +1620,10 @@ packages:
       '@types/ms': 0.7.31
     dev: false
 
+  /@types/dependency-solver/1.0.1:
+    resolution: {integrity: sha512-qwQhM99gKICA6w5kNzwe6Z3csFXbhmgdTUN6uywmZ+e7tEqr/gAk4b3BApCBMxCRN6zTfe6MpDX++TXv51MAbA==}
+    dev: false
+
   /@types/diff/5.0.2:
     resolution: {integrity: sha512-uw8eYMIReOwstQ0QKF0sICefSy8cNO/v7gOTiIy9SbwuHyEecJUm7qlgueOO5S1udZ5I/irVydHVwMchgzbKTg==}
     dev: false
@@ -2974,6 +2982,10 @@ packages:
   /depd/1.1.2:
     resolution: {integrity: sha1-m81S4UwJd2PnSbJ0xDRu0uVgtak=}
     engines: {node: '>= 0.6'}
+    dev: false
+
+  /dependency-solver/1.0.6:
+    resolution: {integrity: sha1-dMQQXNt+caDimANu33ooGKTCbLM=}
     dev: false
 
   /destroy/1.0.4:
@@ -4423,7 +4435,7 @@ packages:
       pretty-format: 27.5.1
       slash: 3.0.0
       strip-json-comments: 3.1.1
-      ts-node: 10.5.0_typescript@4.5.5
+      ts-node: 10.5.0_ad16171857a0edcfc445c7bfcf336eb6
     transitivePeerDependencies:
       - bufferutil
       - canvas
@@ -6811,7 +6823,7 @@ packages:
       '@types/jest': 27.4.0
       bs-logger: 0.2.6
       fast-json-stable-stringify: 2.1.0
-      jest: 27.5.1
+      jest: 27.5.1_ts-node@10.5.0
       jest-util: 27.5.1
       json5: 2.2.0
       lodash.memoize: 4.1.2

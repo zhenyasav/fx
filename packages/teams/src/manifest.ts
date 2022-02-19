@@ -77,6 +77,7 @@ export function manifest() {
         },
       }),
       dev: method({
+        implies: ['build'],
         body({ resource, config }) {
           return {
             devPortal: effect({
@@ -102,7 +103,7 @@ export function manifest() {
                 const tokenProvider = AppStudioLogin.getInstance();
                 const token = await tokenProvider.getAccessToken();
                 if (!token) throw new Error("unable to get AppStudio token");
-                console.log("ensuring app");
+                console.log("ensuring app with TDP...");
                 const existing = await AppStudioClient.getApp(
                   manifest?.id,
                   token
@@ -112,6 +113,7 @@ export function manifest() {
                   console.log("created app:", result);
                   return { app: result };
                 } else {
+                  console.log("app exists", existing);
                   return { app: existing };
                 }
               },

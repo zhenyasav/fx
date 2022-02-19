@@ -8,10 +8,11 @@ import {
   ResourceInstance,
   Project,
   LoadedResource,
-  LoadedConfiguration
+  LoadedConfiguration,
 } from "@fx/plugin";
 import { cosmiconfig } from "cosmiconfig";
 import tsloader from "@endemolshinegroup/cosmiconfig-typescript-loader";
+import { ensurePath } from "../util/objects";
 
 // import { swcLoader } from "./swcLoader";
 
@@ -27,7 +28,6 @@ type LoadConfigResult = {
   filepath: string;
   isEmpty: boolean;
 };
-
 
 export class ConfigLoader {
   private cosmiconfig = cosmiconfig("fx", {
@@ -117,7 +117,7 @@ export async function getProjectApi(options: {
   });
 
   projectFile.content = { resources: [] };
-  
+
   try {
     await projectFile.load();
   } catch (err) {}
@@ -162,6 +162,12 @@ export async function getProjectApi(options: {
       } else {
         resources.push(instance);
       }
+      return instance;
+    },
+    setMethodResult(instance, method, path, result) {
+      const v = ensurePath(instance, ["outputs", method, ...path]);
+      const lastKey = path[path.length - 1];
+      v[lastKey] = result;
       return instance;
     },
     clone(): LoadedConfiguration {

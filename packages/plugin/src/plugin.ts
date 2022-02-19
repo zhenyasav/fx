@@ -4,6 +4,7 @@ import { inquire, QuestionGenerator } from "@fx/zod-inquirer";
 import { MaybePromise } from "./promise";
 import { JSONFile } from "@nice/file";
 import { ResourceInstance } from "./resource";
+import { getPatternLocations, Location } from "./locations";
 
 export const FRAMEWORK_FOLDER = `.fx`;
 export const PROJECT_FILE_NAME = "project.json";
@@ -21,9 +22,15 @@ export type Project = {
   resources: ResourceInstance[];
 };
 
-export type LoadedResource<TCreateInput = any, TContext = {}> = {
+export type ResourceDefinition<TCreateInput = any> = {
+  type: string;
+  description?: string;
+  methods?: Methods<TCreateInput>;
+};
+
+export type LoadedResource<TCreateInput = any> = {
   instance: ResourceInstance<TCreateInput>;
-  definition?: ResourceDefinition<TCreateInput, TContext>;
+  definition?: ResourceDefinition<TCreateInput>;
 };
 
 export type ProjectLoadOptions =
@@ -67,6 +74,7 @@ export type Typed = { type: string };
 
 export type ResourceReference = {
   $resource: string;
+  before?: boolean;
 };
 
 export function resourceId(instance: ResourceInstance) {
@@ -79,69 +87,94 @@ export function isResourceReference(o: any): o is ResourceReference {
   return !!o && typeof o == "object" && "$resource" in o;
 }
 
+export type ResourceReferenceLocation = {
+  reference: ResourceReference;
+  path: (string | number)[];
+};
+
 export function getResourceReferences(object: any) {
   return Object.values(object)?.filter(isResourceReference);
 }
 
-export function getPendingResourceReferences(object: any) {
-  return getResourceReferences(object)?.filter(
-    (ref) => !/:/.test(ref.$resource)
+export function getResourceReferenceLocations(o: any) {
+  return getPatternLocations(o, isResourceReference);
+}
+
+export function isResourceReferencePending(ref: ResourceReference): boolean {
+  return !/:/.test(ref.$resource);
+}
+
+export function getPendingResourceReferences(
+  object: any
+): Location<ResourceReference>[] {
+  return getPatternLocations(
+    object,
+    (o) => isResourceReference(o) && isResourceReferencePending(o)
   );
 }
 
 export function getResourceDependencies(
-  instance: ResourceInstance
-): ResourceReference[] {
-  if (!instance) return [];
+  resource: LoadedResource,
+  ...methodNames: string[]
+): { dependencies: ResourceReference[]; errors: string[] } {
+  const { instance, definition } = resource;
   const result = [];
-  for (let m in instance.inputs) {
-    const methodResult = instance.inputs[m];
-    result.push(...getResourceReferences(methodResult));
+  const errors = [];
+  const targetMethodNames =
+    methodNames ?? Object.keys(definition?.methods ?? {});
+  for (let methodName of targetMethodNames) {
+    const methodResult = instance.inputs?.[methodName];
+    if (methodName in (definition?.methods ?? {}) && !methodResult) {
+      errors.push(
+        `method ${methodName} of ${resourceId(instance)} has not run yet`
+      );
+    }
+    if (methodResult) result.push(...getResourceReferences(methodResult));
   }
-  return result;
+  return { dependencies: result, errors };
 }
 
 export type MethodResult = void | object;
 
-export type Method<TInput = any, TContext = {}> = {
-  inputs?(
-    context: {
-      defaults?: Partial<TInput>;
-      resource: LoadedResource<TInput, TContext>;
-      config: LoadedConfiguration;
-      questionGenerator?: QuestionGenerator;
-    } & TContext
-  ): MaybePromise<TInput>;
-  body?(
-    context: {
-      input: TInput;
-      resource: LoadedResource<TInput, TContext>;
-      config: LoadedConfiguration;
-    } & TContext
-  ): MaybePromise<MethodResult>;
+export type Method<TInput = any, TCreateInput = TInput> = {
+  inputs?(context: {
+    defaults?: Partial<TInput>;
+    resource: LoadedResource<TCreateInput>;
+    config: LoadedConfiguration;
+    questionGenerator?: QuestionGenerator;
+  }): MaybePromise<TInput>;
+  body?(context: {
+    input: TInput;
+    resource: LoadedResource<TCreateInput>;
+    config: LoadedConfiguration;
+  }): MaybePromise<MethodResult>;
   requires?: string[];
   implies?: string[];
 };
 
-export type Methods<TCreateInput = any, TContext = {}> = {
-  create?: Method<TCreateInput, TContext>;
-} & { [methodName: string]: Method<any, TContext> };
+export type Methods<TCreateInput = any> = {
+  create?: Method<TCreateInput, TCreateInput>;
+} & { [methodName: string]: Method<any, TCreateInput> };
 
 export type Transform<T, C = any> = (
   t: T,
   context: C
 ) => { [k in keyof T]: any };
 
-export function method<T extends z.ZodObject<z.ZodRawShape>, TContext = any>({
+export function method<
+  T extends z.ZodObject<z.ZodRawShape>,
+  TCreateInput = any
+>({
   inputShape,
   inputTransform,
   ...rest
 }: {
   inputShape?: T;
-  inputTransform?: Transform<z.infer<T>, TContext>;
+  inputTransform?: Transform<z.infer<T>>;
   requires?: string[];
   implies?: string[];
-} & Pick<Method<z.infer<T>, TContext>, "body">): Method<z.infer<T>, TContext> {
+  body?: Method<z.infer<T>, TCreateInput>["body"];
+}): Method<z.infer<T>, TCreateInput> {
   return inputShape
     ? {
         async inputs(context) {
@@ -165,9 +198,3 @@ export function method<T extends z.ZodObject<z.ZodRawShape>, TContext = any>({
         ...rest,
       };
 }
-
-export type ResourceDefinition<TCreateInput = any, TContext = {}> = {
-  type: string;
-  description?: string;
-  methods?: Methods<TCreateInput, TContext>;
-};

@@ -165,12 +165,16 @@ describe("core", () => {
     expect(plan).toHaveLength(2);
   })
 
-  it.only("plans a create method with dependencies", async () => {
+  it("plans a create method with dependencies", async () => {
     const fx = new Fx({
       cwd: fixtures,
     });
     const plan = await fx.planCreateResource("bar");
     console.log(prettyjson.render(plan));
-    console.log(fx.printEffects(plan));
+    console.log(fx.printPlan(plan));
+  });
+
+  it("understands dependencies", async () => {
+    
   });
 });

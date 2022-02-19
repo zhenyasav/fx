@@ -15,6 +15,9 @@ export function botService(): ResourceDefinition {
               .describe("Dynamic URL from a tunneling service"),
           ]).describe("Enter your bot's messaging endpoint URL"),
         }),
+        body(context) {
+          
+        }
       }),
     },
   };
