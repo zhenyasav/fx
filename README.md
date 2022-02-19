@@ -52,18 +52,24 @@ export default {
 ```
 This repo shows how plugins (resource definitions) can be created locally (see `package` resource), or loaded from other npm modules like the `teams` plugin.
 
-## Features
+## Feature highlights
+- Plugins and resource definitions can be implemented in separate packages
+- Plugins and resource definitions can be implemented "locally" by the developer within the project they are working on
+- Any number of any kind of resource can be added to a project
+- Resources can implement any arbitrary lifecycle methods they want, only the `create` method is standard.
+- Method implementations can arbitrarily depend on other methods (i.e. must `build` before `deploy`)
+- Resources can accept arbitrary inputs from the user at execution time for any method
+- Resources can depend on each other by accepting other resources as inputs
+- A method invoked on the whole solution will be invoked on all supporting methods in correct dependency order
+- Resources can have forward and reverse dependencies (i.e. I must execute before or after this other resource)
+- All method actions can be previewed without changes to the project in the `--dry` run mode
 
-done:
-
+## Task List:
 - [x] resources, methods, cli, and resource dependencies
 - [x] generate a new package from a customizeable template
 - [x] drop in a teams manifest template
 - [x] ngrok tunnels
 - [x] teams tabs
-
-todo:
-
 - [ ] add a bot registration
 - [ ] switch to swc loader for faster config loading
 - [ ] add SSO auth to my existing code:
@@ -75,8 +81,8 @@ todo:
   - [ ] add an adaptive card notification
   - [ ] add a messaging extension
   - [ ] add a bot app to existing 
-- [ ] generate teams sample code
+- [ ] generate teams sample code (invoke other generators)
   - [ ] production tab app
   - [ ] production bot app
-- [ ] convert a project to a monorepo
+- [ ] convert a project to a monorepo (wrap a folder package with a monorepo)
 - [ ] update templated files with [three-way-merge-lines](https://www.npmjs.com/package/three-way-merge-lines)
