@@ -15,14 +15,14 @@
 - A method invoked on the whole solution will be invoked on all supporting resources in correct dependency order
 - Resources can have forward and reverse dependencies (i.e. I must execute before or after this other resource)
 - All method actions can be previewed without changes to the project in the `--dry` run mode
-- Any unfunfilled resource dependencies can be created on-demand during resource creation
+- Any unfunfilled resource dependencies can be created on-demand during resource creation (i.e when `foo` depends on `bar` and user creates a `foo` without a `bar` already present, they will have the option to create a `bar` on the fly)
 - Existing code and assets can be imported and treated as resources
 
 Other features:
 
-- A solution for writing file templates in TypeScript with type checking and dual-syntax highlighting is provided
-- A solution for conveniently modifying existing files on disk is provided
-- Inputs to resource methods are expressed much like regular interfaces with [zod type-checking schemas](https://github.com/colinhacks/zod) which are used to automatically generate TypeScript types and `inquirer` question sequences to fulfill the inputs
+- A solution for writing file templates in TypeScript with type checking and dual-syntax highlighting is provided in `@nice/ts-template` (i.e.: both the template's output language and the embedded typescript statements can be highlighted together in the same file)
+- A solution for conveniently modifying existing files on disk is provided in `@nice/file`
+- Inputs to resource methods are expressed much like regular interfaces with [zod type-checking schemas](https://github.com/colinhacks/zod) which are used to automatically generate TypeScript types and `inquirer` question sequences to fulfill the inputs via `@fx/zod-inquirer`
 
 ## Currently Supported Scenarios:
 - Developer can add a Teams custom tab feature via `fx add teams-tab` to any existing web app and obtain the ability to F5 directly into the Teams client via the `fx dev` command.
