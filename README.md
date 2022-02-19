@@ -25,7 +25,7 @@ Other features:
 - Inputs to resource methods are expressed much like regular interfaces with [zod type-checking schemas](https://github.com/colinhacks/zod) which are used to automatically generate TypeScript types and `inquirer` question sequences to fulfill the inputs
 
 ## Currently Supported Scenarios:
-- Developer can add a Teams custom tab feature to any existing web app and install the ability to F5 directly into the Teams client via `fx add teams-tab`
+- Developer can add a Teams custom tab feature via `fx add teams-tab` to any existing web app and obtain the ability to F5 directly into the Teams client via the `fx dev` command.
 - Developer can scaffold a new package in the repo using a template they can control
 
 ## Installation:
