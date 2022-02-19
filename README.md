@@ -4,10 +4,34 @@
 
 > using the CLI, developers can "stack resources" to scaffold working projects with multiple integrated systems working together without manual configuration.
 
-Use [`pnpm`](https://pnpm.io/) to drive this repo. node16, pnpm6. See [`nvm`](https://github.com/nvm-sh/nvm) (optional).
+## Feature Highlights:
+- Plugins and resource definitions can be implemented in separate packages
+- Plugins and resource definitions can be implemented "locally" by the developer within the project they are working on
+- Any number of any kind of resource can be added to a project
+- Resources can implement any arbitrary lifecycle methods they want
+- Method implementations can arbitrarily depend on other methods (i.e. must `build` before `deploy`)
+- Resources can accept arbitrary inputs from the user at execution time for any method
+- Resources can depend on each other by accepting other resources as inputs
+- A method invoked on the whole solution will be invoked on all supporting resources in correct dependency order
+- Resources can have forward and reverse dependencies (i.e. I must execute before or after this other resource)
+- All method actions can be previewed without changes to the project in the `--dry` run mode
+- Any unfunfilled resource dependencies can be created on-demand during resource creation
+- Existing code and assets can be imported and treated as resources
+
+Other features:
+
+- A solution for writing file templates in TypeScript with type checking and dual-syntax highlighting is provided
+- A solution for conveniently modifying existing files on disk is provided
+- Inputs to resource methods are expressed much like regular interfaces with [zod type-checking schemas](https://github.com/colinhacks/zod) which are used to automatically generate TypeScript types and `inquirer` question sequences to fulfill the inputs
+
+## Currently Supported Scenarios:
+- Developer can add a Teams custom tab feature to any existing web app and install the ability to F5 directly into the Teams client via `fx add teams-tab`
+- Developer can scaffold a new package in the repo using a template they can control
 
 ## Installation:
- 
+
+Use [`pnpm`](https://pnpm.io/) to drive this repo. node16, pnpm6. See [`nvm`](https://github.com/nvm-sh/nvm) (optional).
+
 ```bash
 pnpm i # first time will fail, that's ok, it's because this repo is self-hosting
 pnpm build # everything should build fine
@@ -25,14 +49,17 @@ pnpm fx ls # shows what resources are in the project
 Note that a double dash is required for pnpm to pass flags to the fx process, so only in this repo when debugging we have to say `pnpm fx -- -d add package foo` instead of the production command `fx -d add package foo` (-d is "dry").
 
 ## Adding resources:
+
 Try creating a teams tab or teams manifest:
+
 ```bash
 pnpm fx add teams-tab # to add manifest and supporting devops
 ...
 pnpm fx dev # to start up Teams client
 ```
 
-## Create a new package 
+## Create a new package
+
 ```bash
 pnpm fx add package foobar
 ```
@@ -50,37 +77,28 @@ export default {
   ],
 };
 ```
+
 This repo shows how plugins (resource definitions) can be created locally (see `package` resource), or loaded from other npm modules like the `teams` plugin.
 
-## Feature highlights
-- Plugins and resource definitions can be implemented in separate packages
-- Plugins and resource definitions can be implemented "locally" by the developer within the project they are working on
-- Any number of any kind of resource can be added to a project
-- Resources can implement any arbitrary lifecycle methods they want, only the `create` method is standard.
-- Method implementations can arbitrarily depend on other methods (i.e. must `build` before `deploy`)
-- Resources can accept arbitrary inputs from the user at execution time for any method
-- Resources can depend on each other by accepting other resources as inputs
-- A method invoked on the whole solution will be invoked on all supporting methods in correct dependency order
-- Resources can have forward and reverse dependencies (i.e. I must execute before or after this other resource)
-- All method actions can be previewed without changes to the project in the `--dry` run mode
-
 ## Task List:
+
 - [x] resources, methods, cli, and resource dependencies
 - [x] generate a new package from a customizeable template
 - [x] drop in a teams manifest template
 - [x] ngrok tunnels
 - [x] teams tabs
 - [ ] add a bot registration
-- [ ] switch to swc loader for faster config loading
+- [ ] multiple environment support
 - [ ] add SSO auth to my existing code:
   - [ ] SPA
   - [ ] serverless code
   - [ ] a Bot Framework bot
 - [ ] add hosting / deploy ops with azure and github
+- [ ] switch to swc loader for faster config loading
 - [ ] add more teams features
   - [ ] add an adaptive card notification
   - [ ] add a messaging extension
-  - [ ] add a bot app to existing 
+  - [ ] add a bot app to existing
 - [ ] generate teams sample code (invoke other generators)
   - [ ] production tab app
   - [ ] production bot app
