@@ -199,7 +199,7 @@ importers:
       '@fx/bots': workspace:^0.1.0
       '@fx/plugin': workspace:^0.1.0
       '@fx/teams-dev-portal': workspace:^0.1.0
-      '@fx/templates': workspace:^0.1.0
+      '@fx/templates': workspace:^0.1.1
       '@fx/tunnel': workspace:^0.1.0
       '@nice/plate': workspace:^0.1.0
       '@types/node': ^16.11.11
@@ -270,7 +270,7 @@ importers:
     specifiers:
       '@fx/plugin': workspace:^0.1.0
       '@fx/zod-inquirer': workspace:^0.1.0
-      '@nice/plate': workspace:^0.1.0
+      '@nice/plate': workspace:^0.1.1
       zod: ^3.11.6
     dependencies:
       '@fx/plugin': link:../plugin
@@ -5341,6 +5341,7 @@ packages:
     resolution: {integrity: sha512-yJHVQEhyqPLUTgt9B83PXu6W3rx4MvvHvSUvToogpwoGDOUQ+yDrR0HRot+yOCdCO7u4hX3pWft6kWBBcqh0UA==}
     dependencies:
       brace-expansion: 1.1.11
+    dev: false
 
   /minimatch/3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
