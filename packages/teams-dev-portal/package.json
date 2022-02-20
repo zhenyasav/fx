@@ -1,12 +1,12 @@
 {
   "name": "@fx/teams-dev-portal",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "build/index.js",
   "typings": "build/index.d.ts",
   "types": "build/index.d.ts",
   "scripts": {
     "clean": "rm -rf build && tsc --build --clean",
-    "build": "tsc",
+    "build": "tsc && mkdir -p build/auth && cp -r src/auth/codeFlowResult build/auth/",
     "check": "tsc --noEmit",
     "test": "jest"
   },
