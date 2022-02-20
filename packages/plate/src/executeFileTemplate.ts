@@ -24,6 +24,7 @@ async function loadTemplate<I = any>(p: string): Promise<TemplateFunction<I>> {
   tsnode.register({
     transpileOnly: true,
     swc: true,
+    skipIgnore: true,
     compilerOptions: {
       strict: false,
       target: 'es5',
