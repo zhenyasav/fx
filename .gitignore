@@ -1,6 +1,7 @@
 .DS_Store
 *.tsbuildinfo
 build
+.npmrc
 
 # Logs
 logs
