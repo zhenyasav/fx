@@ -1,3 +1,4 @@
+import path from "path";
 import {
   resourceId,
   promise,
@@ -11,6 +12,7 @@ import {
   Plan,
   LoadedConfiguration,
 } from "@fx/plugin";
+import { executeDirectoryTemplate } from "@nice/ts-template";
 import { randomString } from "./util/random";
 import { getEffector } from "./effectors";
 import { ConfigLoaderOptions, ConfigLoader } from "./config";
@@ -28,13 +30,11 @@ function isResourceEffect(
   return o && o.effect?.$effect == "resource";
 }
 
-export type FxOptions = ConfigLoaderOptions & {
-  aadAppId?: string;
-};
+export type FxOptions = ConfigLoaderOptions;
 
 export class Fx {
   private options: FxOptions;
-  private _config: LoadedConfiguration | null = null;
+  private _config: LoadedConfiguration | undefined;
   private configLoader: ConfigLoader;
   constructor(options?: FxOptions) {
     this.options = { cwd: process.cwd(), ...options };
@@ -46,8 +46,14 @@ export class Fx {
       (this._config = await this.configLoader.load(this.options))
     );
   }
-  async getResourcesWithMethod(methodName: string): Promise<LoadedResource[]> {
+  public async requireConfig(): Promise<LoadedConfiguration> {
     const config = await this.config();
+    if (!config)
+      throw new Error("no fx project configuration file .fx.* found");
+    return config;
+  }
+  async getResourcesWithMethod(methodName: string): Promise<LoadedResource[]> {
+    const config = await this.requireConfig();
     const resources = config?.getResources();
     return resources?.filter(
       (r) => r.definition?.methods && methodName in r.definition.methods
@@ -72,13 +78,58 @@ export class Fx {
       if (isResourceEffect(effect)) {
         createdResources.push(effect);
       }
-      if (typeof result != 'undefined') {
+      if (typeof result != "undefined" && effect.origin && config) {
         const { resource, method, path } = effect.origin;
         config.setMethodResult(resource, method, path ?? [], result);
         await config.projectFile.save();
       }
     }
     return { created: createdResources };
+  }
+  public async planInit(options?: { selector?: string }): Promise<Plan> {
+    const { selector } = { ...options };
+    if (selector) {
+      // init resource
+      // const config = await this.requireConfig();
+      return [];
+    } else {
+      // init project
+      const config = await this.config();
+      if (config)
+        throw new Error(`fx project already exists ${config.configFilePath}`);
+      const cwd = process.cwd();
+      const files = await executeDirectoryTemplate({
+        templateDirectory: path.resolve(__dirname, "../templates/project"),
+        outputDirectory: cwd,
+      });
+      if (files?.length) {
+        return files.map((file) => ({
+          effect: {
+            $effect: "file",
+            file,
+          },
+        }));
+      } else {
+        throw new Error("failed to create fx project");
+      }
+    }
+  }
+  async planCreateResource<TInput extends object>(
+    type: string,
+    options?: { input?: TInput; config?: LoadedConfiguration }
+  ): Promise<ResourcePlan<TInput>> {
+    const conf = options?.config ?? (await this.requireConfig());
+    const definition = conf.getResourceDefinition(type);
+    if (!definition) throw new Error(`resource of type '${type}' not found`);
+    const instance: ResourceInstance = {
+      id: randomString(),
+      type,
+    };
+    return this.planMethod("create", {
+      resource: { instance, definition },
+      input: options?.input,
+      config: conf,
+    }) as Promise<ResourcePlan<TInput>>;
   }
   async planMethod(
     methodName: string,
@@ -95,21 +146,23 @@ export class Fx {
     if (!resources?.length) return [];
 
     const results: ResourceEffect<Effect.Any>[] = [];
-    const config = options?.config ?? (await this.config()).clone();
+    const config = options?.config ?? (await this.requireConfig()).clone();
 
     function orderResources(resources: LoadedResource[]): LoadedResource[] {
       if (methodName == "create") {
         return resources;
       }
-      const dependencyGraph = getDependencyGraph({
+      const { graph, independents, errors } = getDependencyGraph({
         resources,
         methodName: "create",
       });
-      if (dependencyGraph.errors.length) {
-        throw new Error(dependencyGraph.errors.join(", "));
+      if (errors.length) {
+        throw new Error(errors.join(", "));
       }
-      const sequence = solve(dependencyGraph.graph);
-      return sequence.map((id) => config.getResource({ $resource: id })!);
+      const sequence = solve(graph);
+      return [...independents, ...sequence].map(
+        (id) => config.getResource({ $resource: id })!
+      );
     }
 
     const ordered =
@@ -215,22 +268,5 @@ export class Fx {
       }
     }
     return results;
-  }
-  async planCreateResource<TInput extends object>(
-    type: string,
-    options?: { input?: TInput; config?: LoadedConfiguration }
-  ): Promise<ResourcePlan<TInput>> {
-    const conf = options?.config ?? (await this.config());
-    const definition = conf.getResourceDefinition(type);
-    if (!definition) throw new Error(`resource of type '${type}' not found`);
-    const instance: ResourceInstance = {
-      id: randomString(),
-      type,
-    };
-    return this.planMethod("create", {
-      resource: { instance, definition },
-      input: options?.input,
-      config: conf,
-    }) as Promise<ResourcePlan<TInput>>;
   }
 }

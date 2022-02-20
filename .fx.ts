@@ -1,4 +1,5 @@
 import {
+  z,
   Config,
   ResourceInstance,
   effect,
@@ -7,7 +8,6 @@ import {
 } from "@fx/core";
 import { packageTemplate } from "./templates/package/template.t";
 import { teams } from "@fx/teams";
-import { z } from "zod";
 
 const inputShape = z.object({
   what: z.string().describe("what to say").default("moo"),
@@ -16,7 +16,7 @@ const inputShape = z.object({
 type CowsayInput = z.infer<typeof inputShape>;
 
 type LiteralResourceDefinition<T> = ResourceDefinition<T> & {
-  instances: Omit<ResourceInstance<T>, "type">[];
+  instances?: Omit<ResourceInstance<T>, "type">[];
 };
 
 const cowsay: LiteralResourceDefinition<CowsayInput> = {
@@ -47,7 +47,7 @@ const cowsay: LiteralResourceDefinition<CowsayInput> = {
       },
     }),
     moo: method({
-      implies: ["build"],
+      // implies: ["build"],
       body({ resource }) {
         const what = resource.instance.inputs?.create?.what;
         return {

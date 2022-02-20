@@ -90,5 +90,5 @@ export function error(...args: any[]) {
 }
 
 export function info(...args: any[]) {
-  console.info(...args.map((c) => gray(c)));
+  console.info(...args);
 }

@@ -5,22 +5,18 @@ import { Fx, resourceId } from "@fx/core";
 import {
   printLogo,
   printResourceInstance,
-  printResourceDefinition,
   printResources,
   info,
   error,
 } from "./prettyPrint";
 import { Plan } from "@fx/core";
-import config from "./config";
-import { gray, red, yellow } from "chalk";
+import { gray, green, red, yellow } from "chalk";
 import inquirer from "inquirer";
 
-const fx = new Fx({
-  aadAppId: config.teamsfxcliAadAppId, // TODO: idk y i wrote this
-});
+const fx = new Fx();
 
 async function executePlan(dry: boolean, plan: Plan) {
-  console.log(`Plan with ${plan?.length} steps:`);
+  console.log(`plan with ${plan?.length} tasks:`);
   console.group();
   console.log((await fx.printPlan(plan)).join(os.EOL));
   console.groupEnd();
@@ -36,12 +32,14 @@ async function executePlan(dry: boolean, plan: Plan) {
       },
     ]);
     if (confirmed) {
-      console.log(`executing ${plan.length} tasks ...`);
+      console.log(`\nexecuting ${plan.length} tasks ...`);
+      console.group();
       const { created } = await fx.executePlan(plan);
-      console.log(`\n${plan.length} tasks done.\n`);
+      console.groupEnd();
+      console.log(green(`\n${plan.length} tasks done.\n`));
       if (created.length) {
         console.log("new resources:");
-        const config = await fx.config();
+        const config = await fx.requireConfig();
         const newResources = created.map(
           (c) =>
             config.getResource({ $resource: resourceId(c.effect.instance) })
@@ -76,29 +74,41 @@ const parser = yargs(process.argv.slice(2))
     default: false,
     description: "do not touch anything, just show the plan",
   })
-  .option("verbose", {
-    alias: "v",
-    type: "boolean",
-    default: false,
-    description: "print more stuff",
-  })
-  .demandCommand(1, "at least one command is required")
+  .version(false)
   .command(
-    "se",
+    "init",
+    "initialize a project or resource",
+    (yargs) => yargs,
+    async ({ dry }) => {
+      try {
+        const plan = await fx.planInit();
+        await executePlan(dry, plan);
+      } catch (err) {
+        error(err);
+        process.exit(1);
+      }
+    }
+  )
+  .command(
+    ["search", "se"],
     "search resources",
     (yargs) => yargs,
-    async (args) => {
-      const resources = await withLoader("loading resources", async () =>
-        (await fx.config())?.getResourceDefinitions()
-      );
+    async () => {
+      const resources = await withLoader("loading resources", async () => {
+        try {
+          return (await fx.config())?.getResourceDefinitions();
+        } catch (err) {
+          error(err);
+          process.exit(1);
+        }
+      });
       if (resources && resources.length) {
-        console.log(`${resources.length} resource types available:`);
+        info(`${resources.length} resource types available:`);
         printResources(resources, { methods: true });
       } else {
         info("there are no resource definitions installed in this project");
-        // resources.forEach(printResourceDefinition);
       }
-      console.log("");
+      info("");
     }
   )
   .command(
@@ -136,7 +146,7 @@ const parser = yargs(process.argv.slice(2))
     }
   )
   .command(
-    "ls [type]",
+    ["list [type]", "ls"],
     "show resources configured in the current project",
     (yargs) => {
       return yargs.positional("type", {
@@ -146,15 +156,15 @@ const parser = yargs(process.argv.slice(2))
     },
     async (argv) => {
       const { type } = argv;
-      const config = await fx.config();
+      const config = await fx.requireConfig();
       if (!config.project) {
-        console.log(`project is empty`);
+        info(`project is empty`);
         return;
       }
       const resources = type
         ? config.project.resources?.filter((res) => res.type == type)
         : config.project.resources;
-      console.log(`${resources ? resources.length : 0} resources in project:`);
+      info(`${resources ? resources.length : 0} resources in project:`);
       resources?.forEach((r) =>
         printResourceInstance(r, config.getResourceDefinition(r.type)!)
       );
@@ -168,8 +178,9 @@ const parser = yargs(process.argv.slice(2))
       const [method] = argv._;
       const { dry } = argv;
       if (!method) {
-        console.error("at least one command is required");
-        return;
+        info(await parser.getHelp());
+        error("error: at least one argument is required");
+        process.exit(1);
       }
       const methodName = method.toString();
       const resources = await fx.getResourcesWithMethod(methodName);
@@ -177,21 +188,24 @@ const parser = yargs(process.argv.slice(2))
         error(
           "there are no configured resources in the project supporting this method"
         );
-        const config = await fx.config();
+        const config = await fx.requireConfig();
         const defs = config.getResourceDefinitions().filter((res) => {
           return res.methods && methodName in res.methods;
         });
         if (defs?.length) {
           info(
-            `\nThese (${defs.length}) known resource types support '${methodName}' and can be created with 'fx add <resource-type>':`
+            `\nThese (${defs.length}) known resource types support ${yellow(
+              `[${methodName}]`
+            )} and can be created with 'fx add <resource-type>':`
           );
-          defs.forEach(printResourceDefinition);
+          printResources(defs, { methods: true });
+          info('');
         }
         process.exit(1);
       }
       const plan = await fx.planMethod(methodName);
-      console.log(`Invoking ${methodName}:`);
-      console.log("");
+      info(`invoking ${yellow(`[${methodName}]`)}:`);
+      info("");
       await executePlan(dry, plan);
     }
   )
@@ -203,7 +217,7 @@ async function main() {
     await parser.parse();
   } catch (err: any) {
     error(`${err?.message}\n`);
-    console.info(await parser.getHelp());
+    info(await parser.getHelp());
   }
 }
 

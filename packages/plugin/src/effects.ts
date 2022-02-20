@@ -106,7 +106,7 @@ export function getEffectLocations<T extends Effect.Base = Effect.Any>(
 
 export type ResourceEffect<T extends Effect.Base = Effect.Any> = {
   effect: T;
-  origin: {
+  origin?: {
     resource: ResourceInstance;
     method: string;
     path?: (string | number)[];

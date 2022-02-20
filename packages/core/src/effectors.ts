@@ -1,4 +1,5 @@
 import os from "os";
+import path from "path";
 import { exec } from "child_process";
 import { ellipsis } from "./util/ellipsis";
 import { relative } from "./util/files";
@@ -10,20 +11,22 @@ import {
   resourceId,
   LoadedConfiguration,
 } from "@fx/plugin";
+import { gray } from "chalk";
 
 export type EffectorContext = {
-  config: LoadedConfiguration;
+  config?: LoadedConfiguration;
 };
 
 const File: Effector<Effect.File, EffectorContext> = {
   describe(e) {
     const { file, description } = e.effect;
     return description
-      ? description + ' ' + file.shortDescription()
+      ? description + " " + file.shortDescription()
       : file.isCopy()
-      ? `copy file: ${ellipsis(relative(file.copyFrom!))} to ${ellipsis(
-          relative(file.path)
-        )}`
+      ? `copy file: ${path.join(
+          gray(ellipsis(relative(path.dirname(file.copyFrom!)))),
+          path.basename(file.copyFrom!)
+        )} ${gray("to")} ${ellipsis(relative(file.path))}`
       : `create file: ${file.shortDescription()}`;
   },
   async apply(e) {
@@ -58,7 +61,7 @@ const Function: Effector<Effect.Function, EffectorContext> = {
 const Shell: Effector<Effect.Shell, EffectorContext> = {
   describe(e) {
     const { command, cwd } = e.effect;
-    return `invoke: '${command}'${cwd ? ` in directory ${ellipsis(cwd)}` : ``}`;
+    return `shell: '${command}'${cwd ? ` in directory ${ellipsis(cwd)}` : ``}`;
   },
   async apply(e) {
     const { command, cwd } = e.effect;
@@ -81,15 +84,17 @@ const Resource: Effector<Effect.Resource<any>, EffectorContext> = {
   describe(e, c) {
     const {
       effect: { instance },
-      origin: { method },
+      origin,
     } = e;
-    const {
-      config: { project },
-    } = c;
-    const existing = project?.resources?.find(
+    const { config } = c;
+    if (!config)
+      throw new Error(
+        "a valid fx project configuration is required to work with resources"
+      );
+    const existing = config?.project?.resources?.find(
       (r) => resourceId(r) == resourceId(instance)
     );
-    const detail = instance.inputs?.[method];
+    const detail = origin ? instance.inputs?.[origin.method] : {};
     const detailString =
       detail && Object.keys(detail).length
         ? os.EOL + prettyjson.render(detail, {}, 2)
@@ -103,6 +108,10 @@ const Resource: Effector<Effect.Resource<any>, EffectorContext> = {
       effect: { instance },
     } = e;
     const { config } = c;
+    if (!config)
+      throw new Error(
+        "a valid fx project configuration is required to work with resources"
+      );
     config.setResource(instance);
     await config.projectFile.save();
   },

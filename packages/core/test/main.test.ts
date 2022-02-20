@@ -2,6 +2,7 @@ import inquirer from "inquirer";
 import { z } from "zod";
 import path from "path";
 import prettyjson from "prettyjson";
+import { time, duration } from "../src/util/timer";
 
 import { Fx, getQuestions, generateResourceChoiceQuestions } from "../src";
 const fixtures = path.resolve(__dirname, "./fixtures");
@@ -15,8 +16,20 @@ describe("core", () => {
     const fx = new Fx({
       cwd: fixtures,
     });
+
     const config = await fx.config();
     expect(config).toBeDefined();
+  });
+
+  it.only("loads config repeatedly", async () => {
+    const fx = new Fx({
+      cwd: fixtures,
+    });
+    const attempts = 4;
+    for (let i = 0; i < attempts; i++) {
+      const t = await time(() => fx.config());
+      console.log(`attempt ${i}:`, duration(t));
+    }
   });
 
   it("resource choice question for a literal", async () => {
@@ -159,11 +172,11 @@ describe("core", () => {
 
   it("plans a create method", async () => {
     const fx = new Fx({
-      cwd: fixtures
+      cwd: fixtures,
     });
-    const plan = await fx.planCreateResource('foo');
+    const plan = await fx.planCreateResource("foo");
     expect(plan).toHaveLength(2);
-  })
+  });
 
   it("plans a create method with dependencies", async () => {
     const fx = new Fx({
@@ -174,7 +187,5 @@ describe("core", () => {
     console.log(fx.printPlan(plan));
   });
 
-  it("understands dependencies", async () => {
-    
-  });
+  it("understands dependencies", async () => {});
 });
