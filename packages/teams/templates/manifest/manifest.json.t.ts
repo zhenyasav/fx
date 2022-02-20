@@ -1,4 +1,4 @@
-import { TemplateFunction } from "@nice/ts-template";
+import { TemplateFunction } from "@nice/plate";
 import { Manifest } from "../../src/manifest";
 import { ManifestInput } from "../../src/inputs/manifest";
 import { v4 as uuid } from "uuid";

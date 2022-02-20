@@ -4,10 +4,10 @@ importers:
 
   .:
     specifiers:
-      '@fx/cli': workspace:^1.0.0
-      '@fx/core': workspace:^1.0.0
-      '@fx/teams': workspace:^1.0.0
-      '@fx/templates': workspace:^1.0.0
+      '@fx/cli': workspace:^0.0.1
+      '@fx/core': workspace:^0.0.1
+      '@fx/teams': workspace:^0.0.1
+      '@fx/templates': workspace:^0.0.1
       change-case: ^4.1.2
       typescript: 4.5.5
       zod: ^3.11.6
@@ -23,7 +23,7 @@ importers:
   packages/aad:
     specifiers:
       '@azure/msal-node': ^1.5.0
-      '@fx/plugin': workspace:^1.0.0
+      '@fx/plugin': workspace:^0.0.1
       '@pnp/cli-microsoft365': ^4.2.0
       '@types/chai': ^4.2.22
       '@types/jest': ^27.4.0
@@ -54,14 +54,14 @@ importers:
 
   packages/bots:
     specifiers:
-      '@fx/plugin': workspace:^1.0.0
+      '@fx/plugin': workspace:^0.0.1
     dependencies:
       '@fx/plugin': link:../plugin
 
   packages/cli:
     specifiers:
-      '@fx/core': workspace:^1.0.0
-      '@nice/ts-template': workspace:^1.0.0
+      '@fx/core': workspace:^0.0.1
+      '@nice/plate': workspace:^0.0.1
       '@types/chai': ^4.2.22
       '@types/cli-table': ^0.3.0
       '@types/inquirer': ^8.1.3
@@ -78,7 +78,7 @@ importers:
       zod: ^3.11.6
     dependencies:
       '@fx/core': link:../core
-      '@nice/ts-template': link:../ts-template
+      '@nice/plate': link:../plate
       chalk: 4.1.2
       cli-table: 0.3.11
       inquirer: 8.2.0
@@ -98,8 +98,8 @@ importers:
   packages/core:
     specifiers:
       '@endemolshinegroup/cosmiconfig-typescript-loader': ^3.0.2
-      '@fx/plugin': workspace:^1.0.0
-      '@nice/ts-template': workspace:^1.0.0
+      '@fx/plugin': workspace:^0.0.1
+      '@nice/plate': workspace:^0.0.1
       '@swc/cli': ^0.1.55
       '@swc/jest': ^0.2.17
       '@types/dependency-solver': ^1.0.1
@@ -109,6 +109,7 @@ importers:
       chalk: '4'
       cosmiconfig: ^7.0.1
       dependency-solver: ^1.0.6
+      detect-package-manager: ^2.0.1
       jest: ^27.4.5
       lodash.compact: ^3.0.1
       mkdirp: ^1.0.4
@@ -120,11 +121,12 @@ importers:
     dependencies:
       '@endemolshinegroup/cosmiconfig-typescript-loader': 3.0.2_e1c3b685f8b7686dcc885a02fd14c5f0
       '@fx/plugin': link:../plugin
-      '@nice/ts-template': link:../ts-template
+      '@nice/plate': link:../plate
       '@types/dependency-solver': 1.0.1
       chalk: 4.1.2
       cosmiconfig: 7.0.1
       dependency-solver: 1.0.6
+      detect-package-manager: 2.0.1
       lodash.compact: 3.0.1
       mkdirp: 1.0.4
       zod: 3.11.6
@@ -153,10 +155,39 @@ importers:
       '@types/node': 16.11.25
       typescript: 4.5.5
 
+  packages/plate:
+    specifiers:
+      '@nice/file': workspace:^0.0.1
+      '@types/lodash.flatten': ^4.4.6
+      '@types/lodash.zip': ^4.2.6
+      '@types/prettier': ^2.4.2
+      '@types/recursive-readdir': ^2.2.0
+      esbuild: ^0.14.0
+      lodash.flatten: ^4.4.0
+      lodash.zip: ^4.2.0
+      prettier: ^2.5.1
+      recursive-readdir: ^2.2.2
+      ts-node: ^10.4.0
+      typescript: ^4.5.5
+    dependencies:
+      esbuild: 0.14.21
+      prettier: 2.5.1
+    devDependencies:
+      '@nice/file': link:../file
+      '@types/lodash.flatten': 4.4.6
+      '@types/lodash.zip': 4.2.6
+      '@types/prettier': 2.4.4
+      '@types/recursive-readdir': 2.2.0
+      lodash.flatten: 4.4.0
+      lodash.zip: 4.2.0
+      recursive-readdir: 2.2.2
+      ts-node: 10.5.0_typescript@4.5.5
+      typescript: 4.5.5
+
   packages/plugin:
     specifiers:
-      '@fx/zod-inquirer': workspace:^1.0.0
-      '@nice/file': workspace:^1.0.0
+      '@fx/zod-inquirer': workspace:^0.0.1
+      '@nice/file': workspace:^0.0.1
       zod: ^3.11.6
     dependencies:
       '@fx/zod-inquirer': link:../zod-inquirer
@@ -167,12 +198,12 @@ importers:
     specifiers:
       '@fx/aad': workspace:^0.0.1
       '@fx/bots': workspace:^0.0.1
-      '@fx/plugin': workspace:^1.0.0
+      '@fx/plugin': workspace:^0.0.1
       '@fx/teams-dev-portal': workspace:^0.0.1
-      '@fx/templates': workspace:^1.0.0
+      '@fx/templates': workspace:^0.0.1
       '@fx/tunnel': workspace:^0.0.1
-      '@fx/yo': workspace:^1.0.0
-      '@nice/ts-template': workspace:^1.0.0
+      '@fx/yo': workspace:^0.0.1
+      '@nice/plate': workspace:^0.0.1
       '@types/node': ^16.11.11
       '@types/uuid': ^8.3.4
       axios: ^0.24.0
@@ -190,7 +221,7 @@ importers:
       '@fx/templates': link:../templates
       '@fx/tunnel': link:../tunnel
       '@fx/yo': link:../yo
-      '@nice/ts-template': link:../ts-template
+      '@nice/plate': link:../plate
       axios: 0.24.0
       chalk: 4.1.2
       jszip: 3.7.1
@@ -241,48 +272,19 @@ importers:
 
   packages/templates:
     specifiers:
-      '@fx/plugin': workspace:^1.0.0
-      '@fx/zod-inquirer': workspace:^1.0.0
-      '@nice/ts-template': workspace:^1.0.0
+      '@fx/plugin': workspace:^0.0.1
+      '@fx/zod-inquirer': workspace:^0.0.1
+      '@nice/plate': workspace:^0.0.1
       zod: ^3.11.6
     dependencies:
       '@fx/plugin': link:../plugin
       '@fx/zod-inquirer': link:../zod-inquirer
-      '@nice/ts-template': link:../ts-template
+      '@nice/plate': link:../plate
       zod: 3.11.6
-
-  packages/ts-template:
-    specifiers:
-      '@nice/file': workspace:^1.0.0
-      '@types/lodash.flatten': ^4.4.6
-      '@types/lodash.zip': ^4.2.6
-      '@types/prettier': ^2.4.2
-      '@types/recursive-readdir': ^2.2.0
-      esbuild: ^0.14.0
-      lodash.flatten: ^4.4.0
-      lodash.zip: ^4.2.0
-      prettier: ^2.5.1
-      recursive-readdir: ^2.2.2
-      ts-node: ^10.4.0
-      typescript: ^4.5.5
-    dependencies:
-      esbuild: 0.14.21
-      prettier: 2.5.1
-    devDependencies:
-      '@nice/file': link:../file
-      '@types/lodash.flatten': 4.4.6
-      '@types/lodash.zip': 4.2.6
-      '@types/prettier': 2.4.4
-      '@types/recursive-readdir': 2.2.0
-      lodash.flatten: 4.4.0
-      lodash.zip: 4.2.0
-      recursive-readdir: 2.2.2
-      ts-node: 10.5.0_typescript@4.5.5
-      typescript: 4.5.5
 
   packages/tunnel:
     specifiers:
-      '@fx/plugin': workspace:^1.0.0
+      '@fx/plugin': workspace:^0.0.1
       '@swc-node/register': ^1.4.2
       ngrok: ^4.3.0
       regenerator-runtime: ^0.13.9
@@ -297,8 +299,8 @@ importers:
 
   packages/yo:
     specifiers:
-      '@fx/plugin': workspace:^1.0.0
-      '@fx/templates': workspace:^1.0.0
+      '@fx/plugin': workspace:^0.0.1
+      '@fx/templates': workspace:^0.0.1
       '@types/yeoman-environment': ^2.10.5
       yeoman-environment: ^3.8.1
       zod: ^3.11.6
@@ -3004,6 +3006,13 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
+  /detect-package-manager/2.0.1:
+    resolution: {integrity: sha512-j/lJHyoLlWi6G1LDdLgvUtz60Zo5GEj+sVYtTVXnYLDPuzgC3llMxonXym9zIwhhUII8vjdw0LXxavpLqTbl1A==}
+    engines: {node: '>=12'}
+    dependencies:
+      execa: 5.1.1
+    dev: false
+
   /dezalgo/1.0.3:
     resolution: {integrity: sha1-f3Qt4Gb8dIvI24IFad3c5Jvw1FY=}
     dependencies:
@@ -4437,7 +4446,7 @@ packages:
       pretty-format: 27.5.1
       slash: 3.0.0
       strip-json-comments: 3.1.1
-      ts-node: 10.5.0_ad16171857a0edcfc445c7bfcf336eb6
+      ts-node: 10.5.0_typescript@4.5.5
     transitivePeerDependencies:
       - bufferutil
       - canvas
@@ -6825,7 +6834,7 @@ packages:
       '@types/jest': 27.4.0
       bs-logger: 0.2.6
       fast-json-stable-stringify: 2.1.0
-      jest: 27.5.1_ts-node@10.5.0
+      jest: 27.5.1
       jest-util: 27.5.1
       json5: 2.2.0
       lodash.memoize: 4.1.2

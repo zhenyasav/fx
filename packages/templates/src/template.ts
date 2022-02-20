@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { executeDirectoryTemplate } from "@nice/ts-template";
+import { executeDirectoryTemplate } from "@nice/plate";
 import {
   method,
   ResourceDefinition,

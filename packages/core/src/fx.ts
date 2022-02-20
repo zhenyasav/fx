@@ -12,7 +12,7 @@ import {
   Plan,
   LoadedConfiguration,
 } from "@fx/plugin";
-import { executeDirectoryTemplate } from "@nice/ts-template";
+import { executeDirectoryTemplate } from "@nice/plate";
 import { randomString } from "./util/random";
 import { getEffector } from "./effectors";
 import { ConfigLoaderOptions, ConfigLoader } from "./config";
@@ -103,12 +103,22 @@ export class Fx {
         outputDirectory: cwd,
       });
       if (files?.length) {
-        return files.map((file) => ({
+        const filesPlan: Plan = files.map((file) => ({
           effect: {
             $effect: "file",
             file,
           },
-        }));
+        }))
+        return [
+          ...filesPlan,
+          {
+            effect: {
+              description: 'add @fx/core to dev dependencies',
+              $effect: "shell",
+              command: 'npm i -D @fx/core'
+            }
+          }
+        ];
       } else {
         throw new Error("failed to create fx project");
       }

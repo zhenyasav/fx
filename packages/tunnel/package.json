@@ -11,7 +11,7 @@
     "check": "tsc --noEmit"
   },
   "dependencies": {
-    "@fx/plugin": "workspace:^1.0.0",
+    "@fx/plugin": "workspace:^0.0.1",
     "ngrok": "^4.3.0"
   },
   "devDependencies": {

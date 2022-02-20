@@ -1,7 +1,6 @@
 import {
   z,
   Config,
-  ResourceInstance,
   effect,
   method,
   ResourceDefinition,
@@ -15,21 +14,7 @@ const inputShape = z.object({
 
 type CowsayInput = z.infer<typeof inputShape>;
 
-type LiteralResourceDefinition<T> = ResourceDefinition<T> & {
-  instances?: Omit<ResourceInstance<T>, "type">[];
-};
-
-const cowsay: LiteralResourceDefinition<CowsayInput> = {
-  instances: [
-    {
-      id: "something",
-      inputs: {
-        create: {
-          what: "literally moo",
-        },
-      },
-    },
-  ],
+const cowsay: ResourceDefinition<CowsayInput> = {
   type: "cowsay",
   description: "a cow that says",
   methods: {

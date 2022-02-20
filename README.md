@@ -24,7 +24,7 @@
 
 Other features:
 
-- A solution for writing file templates in TypeScript with type checking and dual-syntax highlighting is provided in `@nice/ts-template` (i.e.: both the template's output language and the embedded typescript statements can be highlighted together in the same file)
+- A solution for writing file templates in TypeScript with type checking and dual-syntax highlighting is provided in `@nice/plate` (i.e.: both the template's output language and the embedded typescript statements can be highlighted together in the same file)
 - A solution for conveniently modifying existing files on disk is provided in `@nice/file`
 - Inputs to resource methods are expressed much like regular interfaces with [zod type-checking schemas](https://github.com/colinhacks/zod) which are used to automatically generate TypeScript types and `inquirer` question sequences to fulfill the inputs via `@fx/zod-inquirer`
 

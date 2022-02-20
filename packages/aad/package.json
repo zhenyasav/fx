@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@azure/msal-node": "^1.5.0",
-    "@fx/plugin": "workspace:^1.0.0",
+    "@fx/plugin": "workspace:^0.0.1",
     "@pnp/cli-microsoft365": "^4.2.0",
     "axios": "^0.24.0",
     "zod": "^3.11.6"

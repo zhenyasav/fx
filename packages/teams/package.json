@@ -1,6 +1,6 @@
 {
   "name": "@fx/teams",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "typings": "build/index.d.ts",
   "main": "build/index.js",
   "scripts": {
@@ -10,12 +10,12 @@
   "dependencies": {
     "@fx/aad": "workspace:^0.0.1",
     "@fx/bots": "workspace:^0.0.1",
-    "@fx/plugin": "workspace:^1.0.0",
+    "@fx/plugin": "workspace:^0.0.1",
     "@fx/teams-dev-portal": "workspace:^0.0.1",
-    "@fx/templates": "workspace:^1.0.0",
+    "@fx/templates": "workspace:^0.0.1",
     "@fx/tunnel": "workspace:^0.0.1",
-    "@fx/yo": "workspace:^1.0.0",
-    "@nice/ts-template": "workspace:^1.0.0",
+    "@fx/yo": "workspace:^0.0.1",
+    "@nice/plate": "workspace:^0.0.1",
     "axios": "^0.24.0",
     "chalk": "4",
     "jszip": "^3.7.1",

@@ -1,6 +1,6 @@
 {
   "name": "@nice/file",
-  "version": "1.0.2",
+  "version": "0.0.1",
   "main": "build/index.js",
   "scripts": {
     "build": "tsc",

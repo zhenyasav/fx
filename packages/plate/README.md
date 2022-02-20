@@ -1,7 +1,7 @@
 # TS-Template
 
 ```ts
-import { executeDirectoryTemplate } from "@nice/ts-template";
+import { executeDirectoryTemplate } from "@nice/plate";
 
 const result = await executeDirectoryTemplate({
   templatePath: '/path to folder',

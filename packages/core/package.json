@@ -1,6 +1,6 @@
 {
   "name": "@fx/core",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "main": "build/index.js",
   "scripts": {
     "clean": "rm -rf build && tsc --build --clean",
@@ -11,12 +11,13 @@
   },
   "dependencies": {
     "@endemolshinegroup/cosmiconfig-typescript-loader": "^3.0.2",
-    "@fx/plugin": "workspace:^1.0.0",
-    "@nice/ts-template": "workspace:^1.0.0",
+    "@fx/plugin": "workspace:^0.0.1",
+    "@nice/plate": "workspace:^0.0.1",
     "@types/dependency-solver": "^1.0.1",
     "chalk": "4",
     "cosmiconfig": "^7.0.1",
     "dependency-solver": "^1.0.6",
+    "detect-package-manager": "^2.0.1",
     "lodash.compact": "^3.0.1",
     "mkdirp": "^1.0.4",
     "zod": "^3.11.6"

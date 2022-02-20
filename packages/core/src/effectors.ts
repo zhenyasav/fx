@@ -60,8 +60,10 @@ const Function: Effector<Effect.Function, EffectorContext> = {
 
 const Shell: Effector<Effect.Shell, EffectorContext> = {
   describe(e) {
-    const { command, cwd } = e.effect;
-    return `shell: '${command}'${cwd ? ` in directory ${ellipsis(cwd)}` : ``}`;
+    const { command, cwd, description } = e.effect;
+    const desc = description ? `[${description}]` : "";
+    const cwds = cwd ? `in directory ${ellipsis(cwd)}` : ``;
+    return [`shell: '${command}'`, cwds, desc].join(" ");
   },
   async apply(e) {
     const { command, cwd } = e.effect;
@@ -71,7 +73,10 @@ const Shell: Effector<Effect.Shell, EffectorContext> = {
         command,
         { cwd: cwd ? cwd : process.cwd() },
         (err, stdout, stderr) => {
-          if (err || stderr) return reject({ error: err || stderr });
+          if (err || stderr) {
+            console.error(err || stderr);
+            return reject(err || stderr);
+          }
           console.log(stdout);
           resolve(stdout);
         }
