@@ -1,6 +1,6 @@
 {
   "name": "@fx/teams",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "typings": "build/index.d.ts",
   "main": "build/index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "@fx/bots": "workspace:^0.1.0",
     "@fx/plugin": "workspace:^0.1.0",
     "@fx/teams-dev-portal": "workspace:^0.1.0",
-    "@fx/templates": "workspace:^0.1.1",
+    "@fx/templates": "workspace:^0.1.2",
     "@fx/tunnel": "workspace:^0.1.0",
     "@nice/plate": "workspace:^0.1.0",
     "axios": "^0.24.0",

@@ -23,8 +23,10 @@ async function loadTemplate<I = any>(p: string): Promise<TemplateFunction<I>> {
   // const outpath = p.replace(/\.t\.ts$/, ".t.js");
   tsnode.register({
     transpileOnly: true,
+    swc: true,
     compilerOptions: {
       strict: false,
+      target: 'es5',
       module: 'commonjs'
     }
   });

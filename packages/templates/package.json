@@ -1,6 +1,6 @@
 {
   "name": "@fx/templates",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "build/index.js",
   "scripts": {
     "build": "tsc",
@@ -10,7 +10,7 @@
   "dependencies": {
     "@fx/plugin": "workspace:^0.1.0",
     "@fx/zod-inquirer": "workspace:^0.1.0",
-    "@nice/plate": "workspace:^0.1.1",
+    "@nice/plate": "workspace:^0.1.3",
     "zod": "^3.11.6"
   }
 }
