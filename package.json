@@ -2,6 +2,7 @@
   "name": "@fx/monorepo",
   "version": "0.1.0",
   "description": "developer automation",
+  "private": true,
   "scripts": {
     "build": "pnpm run build -r --if-present",
     "clean": "pnpm run clean -r --if-present",

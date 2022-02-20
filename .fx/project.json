@@ -1,38 +1,3 @@
 {
-  "resources": [
-    {
-      "id": "7b20",
-      "type": "cowsay",
-      "inputs": {
-        "create": {
-          "what": "moo"
-        }
-      },
-      "outputs": {
-        "create": {
-          "cowsay": " _____\n< moo >\n -----\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n"
-        },
-        "moo": {
-          "stdout": " _____\n< moo >\n -----\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n"
-        }
-      }
-    },
-    {
-      "id": "c832",
-      "type": "cowsay",
-      "inputs": {
-        "create": {
-          "what": "moo"
-        }
-      },
-      "outputs": {
-        "create": {
-          "cowsay": " _____\n< moo >\n -----\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n"
-        },
-        "moo": {
-          "stdout": " _____\n< moo >\n -----\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n"
-        }
-      }
-    }
-  ]
+  "resources": []
 }

@@ -5,6 +5,11 @@ export class JSONFile<T> extends File<T> {
     return JSON.stringify(this.content, null, 2);
   }
   protected async parse(content: Buffer, loadOptions?: any): Promise<T> {
-    return JSON.parse(content.toString('utf8'));
+    try {
+      const result = JSON.parse(content.toString('utf8'));
+      return result;
+    } catch (err: any) {
+      throw new Error(err.toString() + ' while reading ' + this.path);
+    }
   }
 }

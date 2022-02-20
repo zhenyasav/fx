@@ -3,7 +3,10 @@
     "strict": true,
     "target": "es5",
     "module": "commonjs",
-    "lib": ["DOM", "es6"],
+    "lib": [
+      "DOM",
+      "es6"
+    ],
     "jsx": "react",
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -19,15 +22,20 @@
     "sourceMap": true
   },
   "ts-node": {
-    // these options are overrides used only by ts-node
-    // same as our --compilerOptions flag and our TS_NODE_COMPILER_OPTIONS environment variable
     "compilerOptions": {
       "module": "commonjs"
     }
   },
-  "include": ["./**/*.ts", ".fx.ts"],
+  "include": [
+    "./**/*.ts",
+    ".fx.ts"
+  ],
   "references": [
-    { "path": "packages/cli" },
-    { "path": "packages/core" }
+    {
+      "path": "packages/cli"
+    },
+    {
+      "path": "packages/core"
+    }
   ]
 }

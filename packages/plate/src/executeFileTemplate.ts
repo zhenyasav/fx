@@ -5,7 +5,6 @@ import * as tsnode from "ts-node";
 
 export const TEMPLATE_REGEX = /(.*)\.t\.ts$/;
 
-
 export function isTemplateFile(file: string): boolean {
   return TEMPLATE_REGEX.test(file);
 }
@@ -25,24 +24,20 @@ async function loadTemplate<I = any>(p: string): Promise<TemplateFunction<I>> {
   tsnode.register({
     transpileOnly: true,
     compilerOptions: {
-      strict: false
+      strict: false,
+      module: 'commonjs'
     }
   });
-  // await esbuild.build({
-  //   entryPoints: [p],
-  //   outfile: outpath,
-  //   target: "es6",
-  //   platform: "node",
-  // });
   let mod;
   try {
     mod = await import(p);
+    const fn = mod?.["default"] ?? mod;
+    return typeof fn == "function" ? fn : null;
   } catch (err) {
     console.error(`problem while loading template ${p}`);
+    console.error(err);
     throw err;
   }
-  const fn = mod?.["default"] ?? mod;
-  return typeof fn == "function" ? fn : null;
 }
 
 export type ExecuteFileTemplateOptions<TInput = {}> = {
