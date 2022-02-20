@@ -1,25 +1,25 @@
 {
   "name": "@nice/plate",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "build/index.js",
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf build && tsc --build --clean"
   },
   "devDependencies": {
-    "@nice/file": "workspace:^0.1.0",
     "@types/lodash.flatten": "^4.4.6",
     "@types/lodash.zip": "^4.2.6",
     "@types/prettier": "^2.4.2",
     "@types/recursive-readdir": "^2.2.0",
-    "lodash.flatten": "^4.4.0",
-    "lodash.zip": "^4.2.0",
-    "recursive-readdir": "^2.2.2",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.5"
   },
   "dependencies": {
+    "@nice/file": "workspace:^0.1.0",
     "esbuild": "^0.14.0",
-    "prettier": "^2.5.1"
+    "prettier": "^2.5.1",
+    "lodash.flatten": "^4.4.0",
+    "lodash.zip": "^4.2.0",
+    "recursive-readdir": "^2.2.2"
   }
 }

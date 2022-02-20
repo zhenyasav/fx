@@ -170,17 +170,17 @@ importers:
       ts-node: ^10.4.0
       typescript: ^4.5.5
     dependencies:
-      esbuild: 0.14.21
-      prettier: 2.5.1
-    devDependencies:
       '@nice/file': link:../file
+      esbuild: 0.14.21
+      lodash.flatten: 4.4.0
+      lodash.zip: 4.2.0
+      prettier: 2.5.1
+      recursive-readdir: 2.2.2
+    devDependencies:
       '@types/lodash.flatten': 4.4.6
       '@types/lodash.zip': 4.2.6
       '@types/prettier': 2.4.4
       '@types/recursive-readdir': 2.2.0
-      lodash.flatten: 4.4.0
-      lodash.zip: 4.2.0
-      recursive-readdir: 2.2.2
       ts-node: 10.5.0_typescript@4.5.5
       typescript: 4.5.5
 
@@ -5072,7 +5072,7 @@ packages:
 
   /lodash.flatten/4.4.0:
     resolution: {integrity: sha1-8xwiIlqWMtK7+OSt2+8kCqdlph8=}
-    dev: true
+    dev: false
 
   /lodash.get/4.4.2:
     resolution: {integrity: sha1-LRd/ZS+jHpObRDjVNBSZ36OCXpk=}
@@ -5116,7 +5116,7 @@ packages:
 
   /lodash.zip/4.2.0:
     resolution: {integrity: sha1-7GZi5IlkCO1KtsVCo5kLcswIACA=}
-    dev: true
+    dev: false
 
   /lodash/4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
@@ -5341,7 +5341,6 @@ packages:
     resolution: {integrity: sha512-yJHVQEhyqPLUTgt9B83PXu6W3rx4MvvHvSUvToogpwoGDOUQ+yDrR0HRot+yOCdCO7u4hX3pWft6kWBBcqh0UA==}
     dependencies:
       brace-expansion: 1.1.11
-    dev: true
 
   /minimatch/3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
@@ -6206,7 +6205,7 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       minimatch: 3.0.4
-    dev: true
+    dev: false
 
   /regenerator-runtime/0.13.9:
     resolution: {integrity: sha512-p3VT+cOEgxFsRRA9X4lkI1E+k2/CtnKtU4gcxyaCUreilL/vqI6CdZ3wxVUx3UOUg+gnUOQQcRI7BmSI656MYA==}
