@@ -24,6 +24,7 @@ import { ResourceInstance } from "@fx/plugin";
 import { solve } from "dependency-solver";
 import { yellow } from "chalk";
 import { patchTsConfigForTsNode } from "./util/tsconfig";
+import { uniq } from "./util/collections";
 
 function isResourceEffect(
   o: ResourceEffect<Effect.Any>
@@ -180,9 +181,8 @@ export class Fx {
         throw new Error(errors.join(", "));
       }
       const sequence = solve(graph);
-      return [...independents, ...sequence].map(
-        (id) => config.getResource({ $resource: id })!
-      );
+      const combined = uniq([...sequence, ...independents]);
+      return combined.map((id) => config.getResource({ $resource: id })!);
     }
 
     const ordered =

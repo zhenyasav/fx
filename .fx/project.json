@@ -1,3 +1,59 @@
 {
-  "resources": []
+  "resources": [
+    {
+      "id": "4b50",
+      "type": "teams-manifest",
+      "inputs": {
+        "create": {
+          "directory": "teams-manifest",
+          "buildDirectory": "teams-manifest/build",
+          "name": "",
+          "description": "An app built with Teams Toolkit",
+          "packageName": "com.zhenya.app",
+          "developerName": "zhenya"
+        }
+      },
+      "outputs": {
+        "create": {
+          "files": [
+            "teams-manifest/resources/color.png",
+            "teams-manifest/resources/outline.png",
+            "teams-manifest/manifest.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "cf4a",
+      "type": "tunnel",
+      "inputs": {
+        "create": {
+          "port": 3000
+        }
+      }
+    },
+    {
+      "id": "dbe3",
+      "type": "teams-tab",
+      "inputs": {
+        "create": {
+          "name": "",
+          "manifest": {
+            "$resource": "teams-manifest:4b50",
+            "before": true
+          },
+          "id": "",
+          "url-type": "tunnel",
+          "url": {
+            "$resource": "tunnel:cf4a"
+          }
+        }
+      },
+      "outputs": {
+        "create": {
+          "manifest": "/Users/zhenya/exp/localregistry/fx/teams-manifest/manifest.json"
+        }
+      }
+    }
+  ]
 }
