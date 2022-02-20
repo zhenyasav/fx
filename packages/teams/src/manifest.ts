@@ -14,6 +14,7 @@ import {
 } from "@fx/teams-dev-portal";
 import jszip from "jszip";
 import mkdirp from "mkdirp";
+import { IAppDefinition } from "@fx/teams-dev-portal/build/interfaces/IAppDefinition";
 
 export type Manifest = typeof sample;
 
@@ -77,7 +78,7 @@ export function manifest() {
         },
       }),
       dev: method({
-        implies: ['build'],
+        implies: ["build"],
         body({ resource, config }) {
           return {
             devPortal: effect({
@@ -104,16 +105,35 @@ export function manifest() {
                 const token = await tokenProvider.getAccessToken();
                 if (!token) throw new Error("unable to get AppStudio token");
                 console.log("ensuring app with TDP...");
-                const existing = await AppStudioClient.getApp(
-                  manifest?.id,
-                  token
-                );
+                let existing: IAppDefinition | undefined;
+                try {
+                  existing = await AppStudioClient.getApp(manifest?.id, token);
+                } catch (err: any) {
+                  if (!/404/.test(err.toString())) {
+                    console.error("TDP error:", err.toString());
+                    throw err;
+                  }
+                }
                 if (!existing) {
                   const result = await AppStudioClient.createApp(zip, token);
-                  console.log("created app:", result);
+                  const { appId, teamsAppId, appName } = result;
+                  console.log("created app:", { appName, appId, teamsAppId });
                   return { app: result };
                 } else {
-                  console.log("app exists", existing);
+                  const { appId, teamsAppId, appName } = existing;
+                  console.log("app exists:", { appName, appId, teamsAppId });
+                  const urls: string[] = [];
+                  manifest.staticTabs.forEach((mant) => {
+                    const tab = existing?.staticTabs?.find(
+                      (t) => t.entityId == mant.entityId
+                    );
+                    if (tab) {
+                      tab.contentUrl = mant.contentUrl;
+                      urls.push(tab.contentUrl);
+                    }
+                  });
+                  console.log("updating app with tab urls:", urls.join(", "));
+                  await AppStudioClient.updateApp(teamsAppId!, existing, token);
                   return { app: existing };
                 }
               },
@@ -123,10 +143,11 @@ export function manifest() {
               description: "open a browser window to your app",
               async body() {
                 const res = resource as LoadedResource<ManifestInput>;
-                const output = res.instance.outputs?.dev?.find(
-                  (o: any) => !!o.app
-                );
-                if (!output) throw new Error("cannot find app registration");
+                const output = res.instance.outputs?.dev?.devPortal;
+                if (!output)
+                  throw new Error(
+                    "cannot find app registration from Teams Dev Portal"
+                  );
                 const launchUrl = teamsAppLaunchUrl(output.app);
                 console.log("open:", cyan(launchUrl));
                 await open(launchUrl, {

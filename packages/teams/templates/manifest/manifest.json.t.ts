@@ -24,11 +24,12 @@ const template: TemplateFunction<ManifestInput> = async (context) => {
     packageName,
     developer: {
       name: developerName,
-      privacyUrl: "",
-      termsOfUseUrl: "",
-      websiteUrl: "",
+      privacyUrl: "https://privacy.microsoft.com/en-us/privacystatement",
+      termsOfUseUrl: "https://www.microsoft.com/en-us/legal/terms-of-use",
+      websiteUrl: "https://microsoft.com",
       mpnId: "",
     },
+    accentColor: "#7B83EB",
     name: {
       short: name,
       full: name
