@@ -1,6 +1,6 @@
 {
   "name": "@fx/tunnel",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "build/index.js",
   "typings": "build/index.d.ts",
   "types": "build/index.d.ts",
@@ -11,7 +11,7 @@
     "check": "tsc --noEmit"
   },
   "dependencies": {
-    "@fx/plugin": "workspace:^0.0.1",
+    "@fx/plugin": "workspace:^0.1.0",
     "ngrok": "^4.3.0"
   },
   "devDependencies": {

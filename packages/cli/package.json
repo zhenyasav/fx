@@ -1,6 +1,6 @@
 {
   "name": "@fx/cli",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "scripts": {
     "start": "node build/index.js",
     "build": "tsc",
@@ -13,8 +13,8 @@
   "main": "build/index.js",
   "typings": "build/index.d.ts",
   "dependencies": {
-    "@fx/core": "workspace:^0.0.1",
-    "@nice/plate": "workspace:^0.0.1",
+    "@fx/core": "workspace:^0.1.0",
+    "@nice/plate": "workspace:^0.1.0",
     "chalk": "4",
     "cli-table": "^0.3.11",
     "inquirer": "^8.2.0",

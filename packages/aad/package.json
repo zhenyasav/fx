@@ -1,6 +1,6 @@
 {
   "name": "@fx/aad",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "build/index.js",
   "typings": "build/index.d.ts",
   "types": "build/index.d.ts",
@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@azure/msal-node": "^1.5.0",
-    "@fx/plugin": "workspace:^0.0.1",
+    "@fx/plugin": "workspace:^0.1.0",
     "@pnp/cli-microsoft365": "^4.2.0",
     "axios": "^0.24.0",
     "zod": "^3.11.6"

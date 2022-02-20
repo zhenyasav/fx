@@ -1,6 +1,6 @@
 {
   "name": "@fx/teams-dev-portal",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "build/index.js",
   "typings": "build/index.d.ts",
   "types": "build/index.d.ts",

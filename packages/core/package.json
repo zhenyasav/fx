@@ -1,6 +1,6 @@
 {
   "name": "@fx/core",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "main": "build/index.js",
   "scripts": {
     "clean": "rm -rf build && tsc --build --clean",
@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@endemolshinegroup/cosmiconfig-typescript-loader": "^3.0.2",
-    "@fx/plugin": "workspace:^0.0.1",
-    "@nice/plate": "workspace:^0.0.1",
+    "@fx/plugin": "workspace:^0.1.0",
+    "@nice/plate": "workspace:^0.1.0",
     "@types/dependency-solver": "^1.0.1",
     "chalk": "4",
     "cosmiconfig": "^7.0.1",

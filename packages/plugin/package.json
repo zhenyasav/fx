@@ -1,6 +1,6 @@
 {
   "name": "@fx/plugin",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "build/index.js",
   "scripts": {
     "build": "tsc",
@@ -8,8 +8,8 @@
     "clean": "rm -rf build && tsc --build --clean"
   },
   "dependencies": {
-    "@fx/zod-inquirer": "workspace:^0.0.1",
-    "@nice/file": "workspace:^0.0.1",
+    "@fx/zod-inquirer": "workspace:^0.1.0",
+    "@nice/file": "workspace:^0.1.0",
     "zod": "^3.11.6"
   }
 }

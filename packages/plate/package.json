@@ -1,13 +1,13 @@
 {
   "name": "@nice/plate",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "build/index.js",
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf build && tsc --build --clean"
   },
   "devDependencies": {
-    "@nice/file": "workspace:^0.0.1",
+    "@nice/file": "workspace:^0.1.0",
     "@types/lodash.flatten": "^4.4.6",
     "@types/lodash.zip": "^4.2.6",
     "@types/prettier": "^2.4.2",

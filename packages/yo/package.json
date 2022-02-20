@@ -1,14 +1,14 @@
 {
   "name": "@fx/yo",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "src/index.ts",
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf build && tsc --build --clean"
   },
   "dependencies": {
-    "@fx/templates": "workspace:^0.0.1",
-    "@fx/plugin": "workspace:^0.0.1",
+    "@fx/templates": "workspace:^0.1.0",
+    "@fx/plugin": "workspace:^0.1.0",
     "@types/yeoman-environment": "^2.10.5",
     "yeoman-environment": "^3.8.1",
     "zod": "^3.11.6"
