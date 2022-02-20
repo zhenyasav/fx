@@ -23,6 +23,7 @@ import {
 import { ResourceInstance } from "@fx/plugin";
 import { solve } from "dependency-solver";
 import { yellow } from "chalk";
+import { patchTsConfigForTsNode } from "./util/tsconfig";
 
 function isResourceEffect(
   o: ResourceEffect<Effect.Any>
@@ -41,6 +42,15 @@ export class Fx {
     this.configLoader = new ConfigLoader();
   }
   public async config() {
+    // ensure ts-node can run
+    const cwd = this.options.cwd
+      ? this.options.cwd
+      : this.options.configFile
+      ? path.dirname(this.options.configFile)
+      : null;
+    if (cwd && !this._config) {
+      await patchTsConfigForTsNode(cwd);
+    }
     return (
       this._config ??
       (this._config = await this.configLoader.load(this.options))
@@ -108,16 +118,16 @@ export class Fx {
             $effect: "file",
             file,
           },
-        }))
+        }));
         return [
           ...filesPlan,
           {
             effect: {
-              description: 'add @fx/core to dev dependencies',
+              description: "add @fx/core to dev dependencies",
               $effect: "shell",
-              command: 'npm i -D @fx/core'
-            }
-          }
+              command: "npm i -D @fx/core",
+            },
+          },
         ];
       } else {
         throw new Error("failed to create fx project");
