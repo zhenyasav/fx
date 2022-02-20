@@ -155,6 +155,24 @@ importers:
       '@types/node': 16.11.25
       typescript: 4.5.5
 
+  packages/foobarpackage:
+    specifiers:
+      '@swc/core': ^1.2.137
+      '@swc/jest': ^0.2.17
+      '@types/jest': ^27.4.0
+      '@types/node': ^16.11.11
+      jest: ^27.4.5
+      ts-jest: ^27.1.2
+      typescript: ^4.5.5
+    devDependencies:
+      '@swc/core': 1.2.140
+      '@swc/jest': 0.2.17_@swc+core@1.2.140
+      '@types/jest': 27.4.0
+      '@types/node': 16.11.25
+      jest: 27.5.1
+      ts-jest: 27.1.3_1e2406a8ca2ae3dc934d01f9ee2aebbb
+      typescript: 4.5.5
+
   packages/plate:
     specifiers:
       '@nice/file': workspace:^0.1.0
