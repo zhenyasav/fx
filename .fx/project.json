@@ -11,7 +11,7 @@
       "outputs": {
         "dev": {
           "port": 4000,
-          "url": "https://05a2-174-127-243-36.ngrok.io"
+          "url": "https://09ef-174-127-243-36.ngrok.io"
         }
       }
     },
@@ -26,7 +26,7 @@
       "outputs": {
         "dev": {
           "port": 3000,
-          "url": "https://9901-174-127-243-36.ngrok.io"
+          "url": "https://9493-174-127-243-36.ngrok.io"
         }
       }
     },
