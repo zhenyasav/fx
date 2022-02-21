@@ -9,6 +9,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@fx/plugin": "workspace:^0.1.0"
+    "@fx/plugin": "workspace:^0.1.0",
+    "@fx/tunnel": "workspace:^0.1.0"
   }
 }

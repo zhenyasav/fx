@@ -55,8 +55,10 @@ importers:
   packages/bots:
     specifiers:
       '@fx/plugin': workspace:^0.1.0
+      '@fx/tunnel': workspace:^0.1.0
     dependencies:
       '@fx/plugin': link:../plugin
+      '@fx/tunnel': link:../tunnel
 
   packages/cli:
     specifiers:
