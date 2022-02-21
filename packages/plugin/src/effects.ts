@@ -43,7 +43,7 @@ export namespace Effect {
     description?: string;
     resourceId: string;
     method: string;
-    input: TInput;
+    input?: TInput;
   };
 
   export type Any =
@@ -129,9 +129,13 @@ export type ResourceEffect<T extends Effect.Base = Effect.Any> = {
 
 export type Plan<E extends Effect.Base = Effect.Any> = {
   description?: string;
-  effects: ResourceEffect<E>[] | [];
+  effects: ResourceEffect<E>[];
   finalConfig?: LoadedConfiguration;
 };
+
+export function isPlan(o: any): o is Plan {
+  return !!o && typeof o == "object" && "effects" in o;
+}
 
 export type Effector<T extends Effect.Base = Effect.Any, C = any> = {
   describe(effect: ResourceEffect<T>, context: C): string;

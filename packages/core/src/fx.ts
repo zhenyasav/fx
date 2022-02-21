@@ -3,6 +3,7 @@ import path from "path";
 import {
   resourceId,
   promise,
+  isPlan,
   LoadedResource,
   getPendingResourceReferences,
   MethodResult,
@@ -52,17 +53,20 @@ function isEffectVisible(plan: Plan, config?: LoadedConfiguration) {
   const { effects } = plan;
   return (e: ResourceEffect) => {
     if (isResourceEffect(e)) {
-      const exists = config?.getResource(resourceId(e.effect.instance));
-      if (!exists) {
-        const firstResourceEffectForInstance = effects.find(
-          (ex) =>
-            isResourceEffect(ex) &&
-            resourceId(ex.effect.instance) == resourceId(e.effect.instance)
-        );
-        if (firstResourceEffectForInstance == e) {
-          return true;
-        } else return false;
-      }
+      // const exists = config?.getResource(resourceId(e.effect.instance));
+      const firstResourceEffectForInstance = effects.find(
+        (ex) =>
+          isResourceEffect(ex) &&
+          resourceId(ex.effect.instance) == resourceId(e.effect.instance)
+      );
+      return firstResourceEffectForInstance == e;
+      // if (!exists) {
+      //   if (firstResourceEffectForInstance == e) {
+      //     return true;
+      //   } else return false;
+      // } else {
+      //   return true;
+      // }
     } else {
       return true;
     }
@@ -106,18 +110,24 @@ export class Fx {
     );
   }
 
-  async printPlan(plan: Plan): Promise<string> {
+  async printPlan(
+    plan: Plan,
+    options?: { showHiddenEffects?: boolean }
+  ): Promise<string> {
+    const { showHiddenEffects } = { showHiddenEffects: false, ...options };
     const { effects, description } = plan;
     const config = await this.config();
     const indent = "  ";
-    const visibleEffects = effects.filter(isEffectVisible(plan, config));
+    const visibleEffects = showHiddenEffects
+      ? effects
+      : effects.filter(isEffectVisible(plan, config));
     const desc = visibleEffects
       .map((e) => indent + printEffect(e, config))
       .join(os.EOL);
     return `plan ${
       description
         ? description + ` (${visibleEffects.length} tasks):`
-        : `plan with ${visibleEffects.length} tasks:`
+        : `with ${visibleEffects.length} tasks:`
     }\n${desc}`;
   }
   async executePlan(plan: Plan) {
@@ -125,9 +135,9 @@ export class Fx {
     const { effects } = plan;
     const createdResources = [];
     const isVisible = isEffectVisible(plan, config);
+    const nextPlan: Plan = { effects: [] };
     for (let i in effects) {
       const effect = effects[i];
-
       const effector = getEffector(effect.effect);
       if (isVisible(effect)) {
         console.log("applying " + printEffect(effect, config));
@@ -139,21 +149,55 @@ export class Fx {
       ) {
         createdResources.push(effect);
       }
-      const result = await effector.apply(effect, { config });
-      if (typeof result != "undefined" && effect.origin && config) {
-        const { resourceId, method, path } = effect.origin;
-        config.setMethodResult(resourceId, method, path ?? [], result);
-        await config.projectFile.save();
+      const result = await effector.apply(effect, {
+        config,
+        planMethod: (method, options) => this.planMethod(method, options),
+      });
+      if (typeof result != "undefined") {
+        if (isPlan(result)) {
+          nextPlan.effects.push(...result.effects);
+        } else if (effect.origin && config) {
+          const { resourceId, method, path } = effect.origin;
+          config.setMethodResult(resourceId, method, path ?? [], result);
+          await config.projectFile.save();
+        }
       }
     }
-    return { created: createdResources };
+    return {
+      created: createdResources,
+      ...(nextPlan.effects.length ? { nextPlan } : {}),
+    };
   }
   public async planInit(options?: { selector?: string }): Promise<Plan | null> {
     const { selector } = { ...options };
     if (selector) {
       // init resource
-      // const config = await this.requireConfig();
-      return null;
+      const config = (await this.requireConfig()).clone();
+      const resources = config.getResources(selector);
+      const plan: Plan = {
+        description: `initialize resources matching: ${selector}`,
+        effects: [],
+        finalConfig: config,
+      };
+      for (let rr of resources) {
+        plan.effects.push({
+          effect: {
+            $effect: "resource-method",
+            method: "create",
+            resourceId: resourceId(rr.instance),
+          },
+          origin: {
+            resourceId: resourceId(rr.instance),
+            method: "create",
+          },
+        });
+        // const initPlan = await this.planMethod("create", {
+        //   config,
+        //   resource: rr,
+        // });
+        // if (initPlan?.effects?.length) plan.effects.push(...initPlan.effects);
+      }
+      return plan;
     } else {
       // init project
       const config = await this.config();

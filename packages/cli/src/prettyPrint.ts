@@ -1,6 +1,12 @@
-import { ResourceDefinition, ResourceInstance } from "@fx/core";
+import {
+  ResourceDefinition,
+  LoadedResource,
+  ResourceInstance,
+  resourceId,
+} from "@fx/core";
 import chalk from "chalk";
 import Table from "cli-table";
+import { compact } from "lodash";
 import prettyjson from "prettyjson";
 const { cyan, gray, white, yellow, red } = chalk;
 
@@ -16,7 +22,7 @@ export function printLogo() {
 }
 
 export function printResources(
-  resources: ResourceDefinition[],
+  resources: Partial<LoadedResource>[],
   options?: { methods?: boolean }
 ) {
   const { methods } = { methods: false, ...options };
@@ -40,14 +46,26 @@ export function printResources(
     },
   });
   table.push(
-    [gray("type"), gray("description"), ...(methods ? [gray("methods")] : [])],
-    ...resources?.map((r) => {
-      const formattedMethods = printMethods(r)
-      return [
-        cyan(r.type),
-        r.description,
-        ...(methods ? [formattedMethods] : []),
-      ];
+    [
+      gray("type[:id]"),
+      gray("description"),
+      ...(methods ? [gray("methods")] : []),
+    ],
+    ...resources?.map((resource) => {
+      const formattedMethods = resource?.definition
+        ? printMethods(resource.definition)
+        : "";
+      const identifier = resource?.instance
+        ? resourceId(resource.instance)
+        : resource?.definition
+        ? resource?.definition.type
+        : "";
+      const description = resource?.definition?.description;
+      return compact([
+        identifier ? cyan(identifier) : "",
+        description,
+        formattedMethods,
+      ]);
     })
   );
   console.log(table.toString());

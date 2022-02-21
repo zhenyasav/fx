@@ -10,11 +10,21 @@ import {
   EffectorSet,
   resourceId,
   LoadedConfiguration,
+  LoadedResource,
+  Plan,
 } from "@fx/plugin";
-import { gray } from "chalk";
+import { gray, yellow } from "chalk";
 
 export type EffectorContext = {
   config?: LoadedConfiguration;
+  planMethod?(
+    methodName: string,
+    options?: {
+      resource?: LoadedResource;
+      input?: object;
+      config?: LoadedConfiguration;
+    }
+  ): Promise<Plan | null>;
 };
 
 const File: Effector<Effect.File, EffectorContext> = {
@@ -120,7 +130,7 @@ const RemoveResource: Effector<Effect.RemoveResource, EffectorContext> = {
   },
   async apply(e, c) {
     const {
-      effect: { resourceId }
+      effect: { resourceId },
     } = e;
     const { config } = c;
     if (!config)
@@ -173,10 +183,27 @@ const ResourceMethod: Effector<Effect.ResourceMethod<any>, EffectorContext> = {
   describe(e) {
     const {
       effect: { method, resourceId },
+      origin,
     } = e;
-    return `run method ${method} on ${resourceId}`;
+    const target = origin?.resourceId != resourceId ? ` on ${resourceId}` : "";
+    return `run method ${yellow(`[${method}]`)}${target}`;
   },
-  async apply(e, c) {},
+  async apply(e, c) {
+    const {
+      effect: { method, resourceId, input },
+    } = e;
+    const { config } = c;
+    if (!config)
+      throw new Error(
+        "a valid fx project configuration is required to work with resources"
+      );
+    console.log('');
+    return c.planMethod?.(method, {
+      resource: config.getResource(resourceId),
+      input,
+      config,
+    });
+  },
 };
 
 const Effectors: EffectorSet<Effect.Any, EffectorContext> = {
@@ -185,7 +212,7 @@ const Effectors: EffectorSet<Effect.Any, EffectorContext> = {
   shell: Shell,
   resource: Resource,
   "resource-method": ResourceMethod,
-  "remove-resource": RemoveResource
+  "remove-resource": RemoveResource,
 };
 
 export function getEffector<T extends Effect.Any = Effect.Any>(

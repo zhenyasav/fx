@@ -32,8 +32,11 @@ async function executePlan(dry: boolean, plan: Plan) {
       if (confirmed) {
         info(`\nexecuting ${plan?.description ?? ""}...`);
         console.group();
-        const { created } = await fx.executePlan(plan);
+        const { created, nextPlan } = await fx.executePlan(plan);
         console.groupEnd();
+        if (nextPlan) {
+          await executePlan(dry, nextPlan);
+        }
         info(
           green(`\n${plan?.description ? plan.description + " " : ""}done.\n`)
         );
@@ -41,9 +44,7 @@ async function executePlan(dry: boolean, plan: Plan) {
           info("new resources:");
           const config = await fx.requireConfig();
           const newResources = created.map(
-            (c) =>
-              config.getResource(resourceId(c.effect.instance))
-                ?.definition!
+            (c) => config.getResource(resourceId(c.effect.instance))!
           );
           console.group();
           printResources(newResources, { methods: true });
@@ -51,7 +52,7 @@ async function executePlan(dry: boolean, plan: Plan) {
           info("");
         }
       } else {
-        info(`aborted ${plan.description}`);
+        info(`aborted ${plan.description ? plan.description : "plan"}`);
       }
     } else {
       info("dry run, no changes made.");
@@ -83,12 +84,16 @@ const parser = yargs(process.argv.slice(2))
   })
   .version(false)
   .command(
-    "init",
+    "init [selector]",
     "initialize a project or resource",
-    (yargs) => yargs,
-    async ({ dry }) => {
+    (yargs) =>
+      yargs.positional("selector", {
+        type: "string",
+        describe: "a resource selector",
+      }),
+    async ({ dry, selector }) => {
       try {
-        const plan = await fx.planInit();
+        const plan = await fx.planInit({ selector });
         if (plan) await executePlan(dry, plan);
       } catch (err) {
         error(err);
@@ -111,7 +116,12 @@ const parser = yargs(process.argv.slice(2))
       });
       if (resources && resources.length) {
         info(`${resources.length} resource types available:`);
-        printResources(resources, { methods: true });
+        printResources(
+          resources?.map((definition) => ({
+            definition,
+          })),
+          { methods: true }
+        );
       } else {
         info("there are no resource definitions installed in this project");
       }
@@ -224,7 +234,10 @@ const parser = yargs(process.argv.slice(2))
               `[${methodName}]`
             )} and can be created with 'fx add <resource-type>':`
           );
-          printResources(defs, { methods: true });
+          printResources(
+            defs?.map((definition) => ({ definition })),
+            { methods: true }
+          );
           info("");
         }
         process.exit(1);
