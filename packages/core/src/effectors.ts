@@ -132,7 +132,7 @@ const Resource: Effector<Effect.Resource<any>, EffectorContext> = {
         : "";
     return `${!!existing ? "update" : "create"} resource ${resourceId(
       instance
-    )}${detailString} ${JSON.stringify(instance)}}`;
+    )}${detailString}`;
   },
   async apply(e, c) {
     const {

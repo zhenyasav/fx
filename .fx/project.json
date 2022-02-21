@@ -74,10 +74,9 @@
         "moo": {
           "say": "i moo",
           "shell": {
-            "$effect": "shell",
-            "description": "say the thing",
-            "command": "npx cowsay i moo",
-            "async": true
+            "stdout": " _______\n< i moo >\n -------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
+            "stderr": "",
+            "code": 0
           }
         }
       }

@@ -93,7 +93,11 @@ export class Fx {
       const effector = getEffector(effect.effect);
       console.log("applying", effector.describe(effect, { config }));
       const result = await effector.apply(effect, { config });
-      if (isResourceEffect(effect)) {
+      if (
+        config &&
+        isResourceEffect(effect) &&
+        !config.getResource(resourceId(effect.effect.instance))
+      ) {
         createdResources.push(effect);
       }
       if (typeof result != "undefined" && effect.origin && config) {
