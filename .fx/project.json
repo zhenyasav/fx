@@ -77,6 +77,28 @@
           "manifest": "/Users/zhenya/exp/localregistry/fx/teams-manifest/manifest.json"
         }
       }
+    },
+    {
+      "id": "80a0",
+      "type": "azure-bot-service",
+      "inputs": {
+        "create": {
+          "resourceGroup": "foobotrg1",
+          "bicepTemplateFolder": "./azure",
+          "botServiceName": "foobot1",
+          "botDisplayName": "FooBot1",
+          "messagingEndpoint-type": "tunnel",
+          "messagingEndpoint": {
+            "$resource": "tunnel:e2e5"
+          }
+        }
+      },
+      "outputs": {
+        "create": {
+          "params": "/Users/zhenya/exp/localregistry/fx/azure/bot-service-parameters.json",
+          "bicep": "/Users/zhenya/exp/localregistry/fx/azure/bot-service.bicep"
+        }
+      }
     }
   ]
 }

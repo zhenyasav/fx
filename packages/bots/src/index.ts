@@ -38,6 +38,9 @@ export type BotServiceTemplateParameters = {
   botDisplayName: string;
 };
 
+export const BOT_SERVICE_TEMPLATE_FILE = "bot-service.bicep";
+export const BOT_SERVICE_PARAMS_FILE = "bot-service-parameters.json";
+
 export function botService(): ResourceDefinition<BotServiceInput> {
   return {
     type: "azure-bot-service",
@@ -59,18 +62,26 @@ export function botService(): ResourceDefinition<BotServiceInput> {
           );
           const destinationFolder = path.resolve(cwd, bicepTemplateFolder);
           return {
-            params: new JSONFile<BotServiceTemplateParameters>({
-              path: [destinationFolder, "bot-service-params.json"],
-              content: {
-                botServiceName,
-                botDisplayName,
-                botEndpoint:
-                  typeof messagingEndpoint == "string" ? messagingEndpoint : "",
-              },
+            params: effect({
+              $effect: "file",
+              file: new JSONFile<BotServiceTemplateParameters>({
+                path: [destinationFolder, BOT_SERVICE_PARAMS_FILE],
+                content: {
+                  botServiceName,
+                  botDisplayName,
+                  botEndpoint:
+                    typeof messagingEndpoint == "string"
+                      ? messagingEndpoint
+                      : "",
+                },
+              }),
             }),
-            bicep: new File({
-              path: [destinationFolder, "bot-service.bicep"],
-              copyFrom: bicepTemplatePath,
+            bicep: effect({
+              $effect: "file",
+              file: new File({
+                path: [destinationFolder, BOT_SERVICE_TEMPLATE_FILE],
+                copyFrom: bicepTemplatePath,
+              }),
             }),
           };
         },
@@ -79,30 +90,42 @@ export function botService(): ResourceDefinition<BotServiceInput> {
         body({ config, resource }) {
           const { resourceGroup, bicepTemplateFolder, messagingEndpoint } =
             resource.instance.inputs?.create ?? {};
-          let url = null;
+          let url: string | null = null;
           if (isResourceReference(messagingEndpoint)) {
             const tunnel =
               config.getResource<CreateTunnelInput>(messagingEndpoint);
             const baseUrl = tunnel?.instance.outputs?.url;
-            url = `${baseUrl}/messages/bot`
+            url = `${baseUrl}/api/messages`;
           }
           const cwd = process.cwd();
           const destinationFolder = path.resolve(cwd, bicepTemplateFolder!);
           const templateFile = path.resolve(
             bicepTemplateFolder!,
-            "bot-service.bicep"
+            BOT_SERVICE_TEMPLATE_FILE
           );
-          const command = `az deployment group create --resource-group ${resourceGroup} --template-file ${templateFile}`;
+          const paramsFile = path.resolve(
+            bicepTemplateFolder!,
+            BOT_SERVICE_PARAMS_FILE
+          );
           return {
-            params: effect({
-              $effect: "file",
-              file: new JSONFile({
-                path: [],
-              }),
-            }),
+            ...(url != null
+              ? {
+                  params: effect({
+                    $effect: "file",
+                    description: "write bot parameters file",
+                    file: new JSONFile<BotServiceTemplateParameters>({
+                      path: [destinationFolder, BOT_SERVICE_PARAMS_FILE],
+                      transform(existing) {
+                        const { botEndpoint, ...rest } = existing;
+                        return { botEndpoint: url!, ...rest };
+                      },
+                    }),
+                  }),
+                }
+              : {}),
             az: effect({
               $effect: "shell",
-              command,
+              command: `az deployment group create --resource-group ${resourceGroup} --template-file ${templateFile} --parameters ${paramsFile}`,
             }),
           };
         },
