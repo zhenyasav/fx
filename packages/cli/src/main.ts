@@ -42,7 +42,7 @@ async function executePlan(dry: boolean, plan: Plan) {
           const config = await fx.requireConfig();
           const newResources = created.map(
             (c) =>
-              config.getResource({ $resource: resourceId(c.effect.instance) })
+              config.getResource(resourceId(c.effect.instance))
                 ?.definition!
           );
           console.group();

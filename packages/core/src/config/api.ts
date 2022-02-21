@@ -11,6 +11,7 @@ import {
   Project,
   LoadedResource,
   scrubEffects,
+  matchesSelector,
 } from "@fx/plugin";
 import { ensurePath } from "../util/objects";
 
@@ -67,10 +68,15 @@ export async function createLoadedConfiguration(options: {
     getResourceDefinition(type: string) {
       return defsByType.get(type)?.definition;
     },
-    getResources(): LoadedResource[] {
+    getResources(selector: string): LoadedResource[] {
       const { resources } = this.project;
+      const filtered = selector
+        ? resources?.filter((r) => {
+            return matchesSelector(r, selector);
+          })
+        : resources;
       return (
-        resources?.map((r) => {
+        filtered.map((r) => {
           const definition = this.getResourceDefinition(r.type);
           return {
             instance: r,

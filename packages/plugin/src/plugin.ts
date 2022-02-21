@@ -71,7 +71,7 @@ export type LoadedConfiguration = {
   getResourceDefinition<TInput = any>(
     type: string
   ): ResourceDefinition<TInput> | undefined;
-  getResources(): LoadedResource[];
+  getResources(selector?: string): LoadedResource[];
   getResource<TInput = any>(
     refOrId: string | ResourceReference
   ): LoadedResource<TInput> | undefined;
@@ -97,6 +97,25 @@ export function resourceId(instance: ResourceInstance) {
   if (!instance) return `[null]`;
   const { id, type } = instance;
   return `${type}:${id}`;
+}
+
+export function matchesSelector(
+  instance: ResourceInstance,
+  selector: string
+): boolean {
+  if (!instance) return false;
+  if (!selector) return false;
+  if (selector === "*") return true;
+  const { id, type } = instance;
+  const result =
+    selector === type ||
+    type.includes(selector) ||
+    selector == id ||
+    id.includes(selector) ||
+    (type + id).includes(selector) ||
+    resourceId(instance).includes(selector);
+  // console.log("match", selector, resourceId(instance), result);
+  return result;
 }
 
 export function isResourceReference(o: any): o is ResourceReference {

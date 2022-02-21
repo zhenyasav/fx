@@ -36,33 +36,6 @@
           }
         }
       }
-    },
-    {
-      "id": "754f",
-      "type": "cow",
-      "inputs": {
-        "create": {
-          "what": "moo $PORT"
-        }
-      },
-      "outputs": {
-        "create": {
-          "say": "moo $PORT",
-          "shell": {
-            "stdout": " ______\n< moo  >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
-            "stderr": "",
-            "code": 0
-          }
-        },
-        "moo": {
-          "say": "moo $PORT",
-          "shell": {
-            "stdout": " __________\n< moo 3000 >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
-            "stderr": "",
-            "code": 0
-          }
-        }
-      }
     }
   ]
 }

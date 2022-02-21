@@ -127,12 +127,11 @@ export class Fx {
     const isVisible = isEffectVisible(plan, config);
     for (let i in effects) {
       const effect = effects[i];
-      
+
       const effector = getEffector(effect.effect);
       if (isVisible(effect)) {
         console.log("applying " + printEffect(effect, config));
       }
-      const result = await effector.apply(effect, { config });
       if (
         config &&
         isResourceEffect(effect) &&
@@ -140,6 +139,7 @@ export class Fx {
       ) {
         createdResources.push(effect);
       }
+      const result = await effector.apply(effect, { config });
       if (typeof result != "undefined" && effect.origin && config) {
         const { resourceId, method, path } = effect.origin;
         config.setMethodResult(resourceId, method, path ?? [], result);
@@ -223,29 +223,26 @@ export class Fx {
       effects: [createResourceEffect, ...(createplan?.effects ?? [])],
     };
   }
-  async planRemoveResource(identifier: string): Promise<Plan> {
+  async planRemoveResource(selector: string): Promise<Plan> {
     const config = (await this.requireConfig()).clone();
-    const resource = config.getResource(identifier);
-    if (!resource) {
-      throw new Error(`resource ${resourceId} not found`);
-    }
-    config.removeResource(identifier);
+    const resources = config.getResources(selector);
+    resources.forEach((r) => config.removeResource(resourceId(r.instance)));
     return {
-      description: `remove resource ${identifier}`,
+      description: `remove resources matching: ${selector}`,
       finalConfig: config,
       effects: [
-        {
+        ...resources.map((rs) => ({
           effect: {
-            $effect: 'remove-resource',
-            resourceId: identifier
+            $effect: "remove-resource" as "remove-resource",
+            resourceId: resourceId(rs.instance),
           },
           origin: {
-            resourceId: resourceId(resource.instance),
-            method: 'remove'
-          }
-        }
-      ]
-    }
+            resourceId: resourceId(rs.instance),
+            method: "remove",
+          },
+        })),
+      ],
+    };
   }
   async planMethod(
     methodName: string,
@@ -295,8 +292,7 @@ export class Fx {
         s(existing.instance[sectionKey]?.[methodName]) != s(value)
       ) {
         // const instanceClone = clone(instance);
-        const section = (instance[sectionKey] =
-          instance[sectionKey] || {});
+        const section = (instance[sectionKey] = instance[sectionKey] || {});
         section[methodName] = value;
         const resourceEffect: ResourceEffect = {
           effect: {

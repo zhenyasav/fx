@@ -32,7 +32,6 @@ const cowsay: ResourceDefinition<CowsayInput> = {
           say: what,
           shell: effect({
             $effect: "shell",
-            description: "say the thing",
             command: `npx cowsay ${what}`,
           }),
         };
