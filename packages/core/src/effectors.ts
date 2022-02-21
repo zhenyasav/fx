@@ -128,11 +128,11 @@ const Resource: Effector<Effect.Resource<any>, EffectorContext> = {
     const detail = origin ? instance.inputs?.[origin.method] : {};
     const detailString =
       detail && Object.keys(detail).length
-        ? os.EOL + prettyjson.render(detail, {}, 2)
+        ? os.EOL + prettyjson.render(detail, {}, 4)
         : "";
-    return `${!!existing ? "update" : "create"} resource ${resourceId(
-      instance
-    )}${detailString}`;
+    return `${!!existing ? "update" : "create"} resource ${
+      resourceId(instance) != origin?.resourceId ? resourceId(instance) : ""
+    }${detailString}`;
   },
   async apply(e, c) {
     const {

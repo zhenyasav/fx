@@ -3,7 +3,6 @@
     "zjcompt.es6-string-javascript",
     "wayou.vscode-todo-highlight",
     "folke.vscode-monorepo-workspace",
-
     "orta.vscode-jest"
   ]
 }

@@ -1,3 +1,4 @@
+import os from "os";
 import path from "path";
 import {
   resourceId,
@@ -7,7 +8,6 @@ import {
   MethodResult,
   getEffectLocations,
   Effect,
-  ResourcePlan,
   ResourceEffect,
   Plan,
   LoadedConfiguration,
@@ -23,10 +23,9 @@ import {
 } from "./resourceDeps";
 import { ResourceInstance } from "@fx/plugin";
 import { solve } from "dependency-solver";
-import { yellow } from "chalk";
 import { patchTsConfigForTsNode } from "./util/tsconfig";
 import { uniq } from "./util/collections";
-import { cyan } from "chalk";
+import { cyan, yellow } from "chalk";
 
 const clone = (o: any) => JSON.parse(JSON.stringify(o));
 
@@ -37,6 +36,38 @@ function isResourceEffect(
 }
 
 export type FxOptions = ConfigLoaderOptions;
+
+function printEffect(
+  e: ResourceEffect<Effect.Any>,
+  config?: LoadedConfiguration
+): string {
+  const effector = getEffector(e.effect);
+  return (
+    (e.origin ? cyan(e.origin.resourceId) + " " : "") +
+    effector.describe(e, { config })
+  );
+}
+
+function isEffectVisible(plan: Plan, config?: LoadedConfiguration) {
+  const { effects } = plan;
+  return (e: ResourceEffect) => {
+    if (isResourceEffect(e)) {
+      const exists = config?.getResource(resourceId(e.effect.instance));
+      if (!exists) {
+        const firstResourceEffectForInstance = effects.find(
+          (ex) =>
+            isResourceEffect(ex) &&
+            resourceId(ex.effect.instance) == resourceId(e.effect.instance)
+        );
+        if (firstResourceEffectForInstance == e) {
+          return true;
+        } else return false;
+      }
+    } else {
+      return true;
+    }
+  };
+}
 
 export class Fx {
   private options: FxOptions;
@@ -74,24 +105,33 @@ export class Fx {
       (r) => r.definition?.methods && methodName in r.definition.methods
     );
   }
-  async printPlan(effects: Plan): Promise<string[]> {
+
+  async printPlan(plan: Plan): Promise<string> {
+    const { effects, description } = plan;
     const config = await this.config();
-    const desc = effects.map((e) => {
-      const effector = getEffector(e.effect);
-      return (
-        (e.origin ? cyan(e.origin.resourceId) + " " : "") +
-        effector.describe(e, { config })
-      );
-    });
-    return desc;
+    const indent = "  ";
+    const visibleEffects = effects.filter(isEffectVisible(plan, config));
+    const desc = visibleEffects
+      .map((e) => indent + printEffect(e, config))
+      .join(os.EOL);
+    return `plan ${
+      description
+        ? description + ` (${visibleEffects.length} tasks):`
+        : `plan with ${visibleEffects.length} tasks:`
+    }\n${desc}`;
   }
-  async executePlan(effects: Plan) {
+  async executePlan(plan: Plan) {
     const config = await this.config();
+    const { effects } = plan;
     const createdResources = [];
+    const isVisible = isEffectVisible(plan, config);
     for (let i in effects) {
       const effect = effects[i];
+      
       const effector = getEffector(effect.effect);
-      console.log("applying", effector.describe(effect, { config }));
+      if (isVisible(effect)) {
+        console.log("applying " + printEffect(effect, config));
+      }
       const result = await effector.apply(effect, { config });
       if (
         config &&
@@ -108,12 +148,12 @@ export class Fx {
     }
     return { created: createdResources };
   }
-  public async planInit(options?: { selector?: string }): Promise<Plan> {
+  public async planInit(options?: { selector?: string }): Promise<Plan | null> {
     const { selector } = { ...options };
     if (selector) {
       // init resource
       // const config = await this.requireConfig();
-      return [];
+      return null;
     } else {
       // init project
       const config = await this.config();
@@ -125,22 +165,25 @@ export class Fx {
         outputDirectory: cwd,
       });
       if (files?.length) {
-        const filesPlan: Plan = files.map((file) => ({
+        const filesPlan: ResourceEffect[] = files.map((file) => ({
           effect: {
             $effect: "file",
             file,
           },
         }));
-        return [
-          ...filesPlan,
-          {
-            effect: {
-              description: "add @fx/core to dev dependencies",
-              $effect: "shell",
-              command: "npm i -D @fx/core",
+        const plan: Plan = {
+          effects: [
+            ...filesPlan,
+            {
+              effect: {
+                description: "add @fx/core to dev dependencies",
+                $effect: "shell",
+                command: "npm i -D @fx/core",
+              },
             },
-          },
-        ];
+          ],
+        };
+        return plan;
       } else {
         throw new Error("failed to create fx project");
       }
@@ -149,32 +192,36 @@ export class Fx {
   async planCreateResource<TInput extends object>(
     type: string,
     options?: { input?: TInput; config?: LoadedConfiguration }
-  ): Promise<ResourcePlan<TInput>> {
-    const conf = options?.config ?? (await this.requireConfig());
+  ): Promise<Plan> {
+    const conf = options?.config ?? (await this.requireConfig()).clone();
     const definition = conf.getResourceDefinition(type);
     if (!definition) throw new Error(`resource of type '${type}' not found`);
     const instance: ResourceInstance = {
       id: randomString(),
       type,
     };
-    return [
-      {
-        effect: {
-          $effect: "resource",
-          instance,
-          description: `create ${resourceId(instance)}`,
-        },
-        origin: {
-          resourceId: resourceId(instance),
-          method: "create",
-        },
+    const createResourceEffect: ResourceEffect<Effect.Resource> = {
+      effect: {
+        $effect: "resource",
+        instance: clone(instance),
+        description: `create ${resourceId(instance)}`,
       },
-      ...(await this.planMethod("create", {
-        resource: { instance, definition },
-        input: options?.input,
-        config: conf,
-      })),
-    ] as ResourcePlan<TInput>;
+      origin: {
+        resourceId: resourceId(instance),
+        method: "create",
+      },
+    };
+    conf.setResource(instance);
+    const createplan = await this.planMethod("create", {
+      resource: { instance, definition },
+      input: options?.input,
+      config: conf,
+    });
+    return {
+      description: `create ${type}`,
+      finalConfig: createplan?.finalConfig,
+      effects: [createResourceEffect, ...(createplan?.effects ?? [])],
+    };
   }
   async planMethod(
     methodName: string,
@@ -183,12 +230,12 @@ export class Fx {
       input?: { [k: string]: any };
       config?: LoadedConfiguration;
     }
-  ): Promise<Plan> {
+  ): Promise<Plan | null> {
     const { resource, input: defaults } = { ...options };
     const resources: LoadedResource[] = resource
       ? [resource]
       : await this.getResourcesWithMethod(methodName);
-    if (!resources?.length) return [];
+    if (!resources?.length) return null;
 
     const results: ResourceEffect<Effect.Any>[] = [];
     const config = options?.config ?? (await this.requireConfig()).clone();
@@ -223,14 +270,14 @@ export class Fx {
         !existing?.instance?.[sectionKey]?.[methodName] ||
         s(existing.instance[sectionKey]?.[methodName]) != s(value)
       ) {
-        const instanceClone = clone(instance);
-        const section = (instanceClone[sectionKey] =
-          instanceClone[sectionKey] || {});
+        // const instanceClone = clone(instance);
+        const section = (instance[sectionKey] =
+          instance[sectionKey] || {});
         section[methodName] = value;
         const resourceEffect: ResourceEffect = {
           effect: {
             $effect: "resource",
-            instance: instanceClone,
+            instance: clone(instance),
           },
           origin: {
             method: methodName,
@@ -238,7 +285,7 @@ export class Fx {
           },
         };
         results.push(resourceEffect);
-        config.setResource(instanceClone);
+        // config.setResource(instanceClone);
       }
     }
 
@@ -254,7 +301,7 @@ export class Fx {
             resource,
             config,
           });
-          results.push(...plan);
+          results.push(...(plan?.effects ?? []));
         }
       }
 
@@ -282,9 +329,10 @@ export class Fx {
             ref.entity.$resource,
             { config }
           );
-          const [newInstance, ...restOfNewPlan] = newResourcePlan;
+          const [newInstance, ...restOfNewPlan] = newResourcePlan.effects;
           if (newInstance) {
-            ref.entity.$resource = resourceId(newInstance.effect.instance);
+            const n = newInstance as ResourceEffect<Effect.Resource>;
+            ref.entity.$resource = resourceId(n.effect.instance);
             results.push(newInstance);
           }
           results.push(...restOfNewPlan);
@@ -301,6 +349,7 @@ export class Fx {
       );
 
       if (typeof methodResult != "undefined") {
+        // config.getResource(resourceId(instance))?.instance!,
         writeResourceMethodValue(
           "outputs",
           instance,
@@ -324,6 +373,10 @@ export class Fx {
       }
     }
 
-    return results;
+    return {
+      description: `invoke ${methodName} on ${resources?.length} resources`,
+      effects: results,
+      finalConfig: config,
+    };
   }
 }

@@ -57,7 +57,7 @@ export function tunnel(): TunnelResourceDefinition {
 export function tunnelPlugin(): Plugin {
   return {
     name: "tunneling",
-    resources() {
+    resourceDefinitions() {
       return [tunnel()];
     },
   };

@@ -26,7 +26,7 @@ export function botService(): ResourceDefinition {
 export function bots(): Plugin {
   return {
     name: "Azure Bot Service bots",
-    resources() {
+    resourceDefinitions() {
       return [botService()];
     },
   };

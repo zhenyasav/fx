@@ -2,7 +2,7 @@ import path from "path";
 import { z } from "zod";
 import { inquire, QuestionGenerator } from "@fx/zod-inquirer";
 import { MaybePromise } from "./promise";
-import { JSONFile } from "@nice/file";
+import { JSONFile, FileOptions } from "@nice/file";
 import { ResourceInstance } from "./resource";
 import { getPatternLocations, Location } from "./locations";
 
@@ -16,6 +16,7 @@ export type Plugin = {
 
 export type Config = {
   resourceDefinitions?: ResourceDefinition[];
+  resources?: ResourceInstance[];
   plugins?: Plugin[];
 };
 
@@ -35,14 +36,14 @@ export type LoadedResource<TCreateInput = any> = {
 };
 
 export type ProjectLoadOptions =
-  | {
+  (| {
       projectFile: string;
     }
-  | { projectFolder: string };
+  | { projectFolder: string }) & Partial<FileOptions<Project>>;
 
 export class ProjectFile extends JSONFile<Project> {
   constructor(options: ProjectLoadOptions) {
-    const { projectFile, projectFolder } = {
+    const { projectFile, projectFolder, path: p, ...rest } = {
       projectFolder: process.cwd(),
       projectFile: null,
       ...options,
@@ -50,7 +51,7 @@ export class ProjectFile extends JSONFile<Project> {
     const resolvedProjectFileName =
       projectFile ??
       path.resolve(projectFolder, FRAMEWORK_FOLDER, PROJECT_FILE_NAME);
-    super({ path: resolvedProjectFileName });
+    super({ path: p ?? resolvedProjectFileName, ...rest });
   }
 }
 

@@ -9,8 +9,8 @@ const inputShape = z.object({
 type CowsayInput = z.infer<typeof inputShape>;
 
 const cowsay: ResourceDefinition<CowsayInput> = {
-  type: "cowsay",
-  description: "a cow that says",
+  type: "cow",
+  description: "a cow that says stuff",
   methods: {
     create: method({
       inputShape,
@@ -60,15 +60,9 @@ const npmStart: ResourceDefinition = {
   },
 };
 
-const config: Config & any = {
+const config: Config = {
   plugins: [teams()],
-  resources: [packageTemplate(), cowsay, npmStart],
-  instances: [
-    {
-      id: "main-start",
-      type: "npm-start",
-    },
-  ],
+  resourceDefinitions: [packageTemplate(), cowsay, npmStart]
 };
 
 export default config;

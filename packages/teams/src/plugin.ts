@@ -11,7 +11,7 @@ import { tunnel } from "@fx/tunnel";
 export function teams(): Plugin {
   return {
     name: "teams",
-    resources() {
+    resourceDefinitions() {
       return [
         manifest(),
         tab(),

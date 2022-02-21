@@ -29,7 +29,7 @@ export function aadAppRegistration(): ResourceDefinition {
 export function aad(): Plugin {
   return {
     name: "Azure Active Directory",
-    async resources() {
+    async resourceDefinitions() {
       return [aadAppRegistration()];
     },
   };

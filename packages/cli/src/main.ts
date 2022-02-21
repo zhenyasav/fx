@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import os from "os";
 import yargs from "yargs";
 import { Fx, resourceId } from "@fx/core";
 import {
@@ -16,10 +15,8 @@ import inquirer from "inquirer";
 const fx = new Fx();
 
 async function executePlan(dry: boolean, plan: Plan) {
-  console.log(`plan with ${plan?.length} tasks:`);
-  console.group();
-  console.log((await fx.printPlan(plan)).join(os.EOL));
-  console.groupEnd();
+  console.log("");
+  console.log(await fx.printPlan(plan));
   console.log("");
 
   if (!dry) {
@@ -27,16 +24,18 @@ async function executePlan(dry: boolean, plan: Plan) {
       {
         type: "confirm",
         default: true,
-        message: `execute ${plan.length} tasks?`,
+        message: `continue?`,
         name: "confirmed",
       },
     ]);
     if (confirmed) {
-      console.log(`\nexecuting ${plan.length} tasks ...`);
+      console.log(`\nexecuting ${plan?.description ?? ""}...`);
       console.group();
       const { created } = await fx.executePlan(plan);
       console.groupEnd();
-      console.log(green(`\n${plan.length} tasks done.\n`));
+      console.log(
+        green(`\n${plan?.description ? plan.description + " " : ""}done.\n`)
+      );
       if (created.length) {
         console.log("new resources:");
         const config = await fx.requireConfig();
@@ -82,7 +81,7 @@ const parser = yargs(process.argv.slice(2))
     async ({ dry }) => {
       try {
         const plan = await fx.planInit();
-        await executePlan(dry, plan);
+        if (plan) await executePlan(dry, plan);
       } catch (err) {
         error(err);
         process.exit(1);
@@ -130,14 +129,12 @@ const parser = yargs(process.argv.slice(2))
       if (!type) throw new Error("type is required");
       try {
         console.log(gray("cwd: " + process.cwd()));
-
         console.log("");
-        console.log(yellow(`Creating '${type}':`));
+        console.log(yellow(`create ${type}:`));
         const plan = await withLoader("planning", () =>
           fx.planCreateResource(type, { input: { ...rest, name } })
         );
         if (!plan) return;
-        console.log("");
         await executePlan(dry, plan);
       } catch (err: any) {
         console.error(red("problem while executing plan:"));
@@ -199,14 +196,14 @@ const parser = yargs(process.argv.slice(2))
             )} and can be created with 'fx add <resource-type>':`
           );
           printResources(defs, { methods: true });
-          info('');
+          info("");
         }
         process.exit(1);
       }
       const plan = await fx.planMethod(methodName);
       info(`invoking ${yellow(`[${methodName}]`)}:`);
       info("");
-      await executePlan(dry, plan);
+      if (plan) await executePlan(dry, plan);
     }
   )
   .showHelpOnFail(false);

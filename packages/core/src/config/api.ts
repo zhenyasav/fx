@@ -19,7 +19,7 @@ export async function createLoadedConfiguration(options: {
   configFilePath: string;
 }): Promise<LoadedConfiguration> {
   const { configFilePath, config } = options;
-  const { plugins, resources } = config;
+  const { plugins, resourceDefinitions } = config;
   const allDefs: ResourceDefinition[] = [];
   const defsByPlugin = new Map<Plugin, ResourceDefinition[]>();
   const defsByType = new Map<
@@ -28,16 +28,16 @@ export async function createLoadedConfiguration(options: {
   >();
   const localPlugin: Plugin = {
     name: "local-resources",
-    resources() {
-      return resources ?? [];
+    resourceDefinitions() {
+      return resourceDefinitions ?? [];
     },
   };
   const allPlugins = [
-    ...(resources?.length ? [localPlugin] : []),
+    ...(resourceDefinitions?.length ? [localPlugin] : []),
     ...(plugins ?? []),
   ];
   for (let plugin of allPlugins) {
-    const defs = await plugin.resources();
+    const defs = await plugin.resourceDefinitions();
     defsByPlugin.set(plugin, defs);
     for (let def of defs) {
       defsByType.set(def.type, { definition: def, plugin });
@@ -106,9 +106,15 @@ export async function createLoadedConfiguration(options: {
       return res.instance;
     },
     clone(): LoadedConfiguration {
-      const { projectFile, ...rest } = this;
+      const { projectFile, project, ...rest } = this;
       const clone = projectFile.clone() as ProjectFile;
-      return { ...rest, projectFile: clone };
+      return {
+        ...rest,
+        projectFile: clone,
+        get project(): Project {
+          return this.projectFile.content!;
+        },
+      };
     },
   };
   return api;

@@ -6,10 +6,12 @@
   "scripts": {
     "build": "pnpm run build -r --if-present",
     "clean": "pnpm run clean -r --if-present",
+    "check": "pnpm run check -r --if-present",
     "fx": "fx",
     "dfx": "node --inspect node_modules/@fx/cli/build/main.js",
     "test": "fx test",
-    "dev": "fx dev"
+    "dev": "fx dev",
+    "start": "fx moo"
   },
   "engines": {
     "node": "=16",

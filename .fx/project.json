@@ -1,80 +1,26 @@
 {
   "resources": [
     {
-      "id": "4b50",
-      "type": "teams-manifest",
+      "id": "ce8f",
+      "type": "cow",
       "inputs": {
         "create": {
-          "directory": "teams-manifest",
-          "buildDirectory": "teams-manifest/build",
-          "name": "",
-          "description": "An app built with Teams Toolkit",
-          "packageName": "com.zhenya.app",
-          "developerName": "zhenya"
+          "what": "moo"
         }
       },
       "outputs": {
         "create": {
-          "files": [
-            "teams-manifest/resources/color.png",
-            "teams-manifest/resources/outline.png",
-            "teams-manifest/manifest.json"
-          ]
-        }
-      }
-    },
-    {
-      "id": "cf4a",
-      "type": "tunnel",
-      "inputs": {
-        "create": {
-          "port": 3000
-        }
-      }
-    },
-    {
-      "id": "dbe3",
-      "type": "teams-tab",
-      "inputs": {
-        "create": {
-          "name": "",
-          "manifest": {
-            "$resource": "teams-manifest:4b50",
-            "before": true
-          },
-          "id": "",
-          "url-type": "tunnel",
-          "url": {
-            "$resource": "tunnel:cf4a"
-          }
-        }
-      },
-      "outputs": {
-        "create": {
-          "manifest": "/Users/zhenya/exp/localregistry/fx/teams-manifest/manifest.json"
-        }
-      }
-    },
-    {
-      "id": "fd61",
-      "type": "cowsay",
-      "inputs": {
-        "create": {
-          "what": "i moo"
-        }
-      },
-      "outputs": {
-        "create": {
-          "stdout": {
-            "stdout": " _______\n< i moo >\n -------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
+          "say": "moo",
+          "shell": {
+            "stdout": " _____\n< moo >\n -----\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
             "stderr": "",
             "code": 0
           }
         },
         "moo": {
-          "say": "i moo",
+          "say": "moo",
           "shell": {
-            "stdout": " _______\n< i moo >\n -------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
+            "stdout": " _____\n< moo >\n -----\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
             "stderr": "",
             "code": 0
           }
@@ -82,8 +28,45 @@
       }
     },
     {
-      "id": "97ff",
-      "type": "npm-start"
+      "id": "9ccf",
+      "type": "cow",
+      "inputs": {
+        "create": {
+          "what": "moo"
+        }
+      },
+      "outputs": {
+        "create": {
+          "say": "moo",
+          "shell": {
+            "stdout": " _____\n< moo >\n -----\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
+            "stderr": "",
+            "code": 0
+          }
+        },
+        "moo": {
+          "say": "moo",
+          "shell": {
+            "stdout": " _____\n< moo >\n -----\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
+            "stderr": "",
+            "code": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "6505",
+      "type": "npm-start",
+      "outputs": {
+        "dev": {
+          "result": {
+            "$effect": "shell",
+            "command": "npm start",
+            "description": "runs npm start",
+            "async": true
+          }
+        }
+      }
     }
   ]
 }

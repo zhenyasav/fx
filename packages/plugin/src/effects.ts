@@ -2,6 +2,7 @@ import { File as NiceFile } from "@nice/file";
 import { MaybePromise } from "./promise";
 import { ResourceInstance } from "./resource";
 import { Location, getPatternLocations } from "./locations";
+import { LoadedConfiguration } from ".";
 
 export namespace Effect {
   export type Base = { $effect: any };
@@ -115,12 +116,11 @@ export type ResourceEffect<T extends Effect.Base = Effect.Any> = {
   };
 };
 
-export type Plan<E extends Effect.Base = Effect.Any> = ResourceEffect<E>[] | [];
-
-export type ResourcePlan<TInput extends object = any> = [
-  ResourceEffect<Effect.Resource<TInput>>,
-  ...ResourceEffect<Effect.Any>[]
-];
+export type Plan<E extends Effect.Base = Effect.Any> = {
+  description?: string;
+  effects: ResourceEffect<E>[] | [];
+  finalConfig?: LoadedConfiguration;
+};
 
 export type Effector<T extends Effect.Base = Effect.Any, C = any> = {
   describe(effect: ResourceEffect<T>, context: C): string;
