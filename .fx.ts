@@ -1,10 +1,4 @@
-import {
-  z,
-  Config,
-  effect,
-  method,
-  ResourceDefinition,
-} from "@fx/core";
+import { z, Config, effect, method, ResourceDefinition } from "@fx/core";
 import { packageTemplate } from "./templates/package/template.t";
 import { teams } from "@fx/teams";
 
@@ -39,7 +33,7 @@ const cowsay: ResourceDefinition<CowsayInput> = {
           shell: effect({
             $effect: "shell",
             description: "say the thing",
-            command: `npx cowsay ${what}`
+            command: `npx cowsay ${what}`,
           }),
         };
       },
@@ -47,9 +41,34 @@ const cowsay: ResourceDefinition<CowsayInput> = {
   },
 };
 
-const config: Config = {
+const npmStart: ResourceDefinition = {
+  type: "npm-start",
+  description: "runs npm start",
+  methods: {
+    dev: method({
+      body() {
+        return {
+          result: effect({
+            $effect: "shell",
+            command: "npm start",
+            description: "runs npm start",
+            async: true,
+          }),
+        };
+      },
+    }),
+  },
+};
+
+const config: Config & any = {
   plugins: [teams()],
-  resources: [packageTemplate(), cowsay],
+  resources: [packageTemplate(), cowsay, npmStart],
+  instances: [
+    {
+      id: "main-start",
+      type: "npm-start",
+    },
+  ],
 };
 
 export default config;

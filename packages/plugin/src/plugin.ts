@@ -11,11 +11,11 @@ export const PROJECT_FILE_NAME = "project.json";
 
 export type Plugin = {
   readonly name: string;
-  resources(): MaybePromise<ResourceDefinition[]>;
+  resourceDefinitions(): MaybePromise<ResourceDefinition[]>;
 };
 
 export type Config = {
-  resources?: ResourceDefinition[];
+  resourceDefinitions?: ResourceDefinition[];
   plugins?: Plugin[];
 };
 

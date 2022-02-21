@@ -157,11 +157,24 @@ export class Fx {
       id: randomString(),
       type,
     };
-    return this.planMethod("create", {
-      resource: { instance, definition },
-      input: options?.input,
-      config: conf,
-    }) as Promise<ResourcePlan<TInput>>;
+    return [
+      {
+        effect: {
+          $effect: "resource",
+          instance,
+          description: `create ${resourceId(instance)}`,
+        },
+        origin: {
+          resourceId: resourceId(instance),
+          method: "create",
+        },
+      },
+      ...(await this.planMethod("create", {
+        resource: { instance, definition },
+        input: options?.input,
+        config: conf,
+      })),
+    ] as ResourcePlan<TInput>;
   }
   async planMethod(
     methodName: string,
