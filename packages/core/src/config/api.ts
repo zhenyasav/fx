@@ -3,6 +3,7 @@ import {
   Config,
   LoadedConfiguration,
   Plugin,
+  ResourceReference,
   ResourceDefinition,
   ProjectFile,
   resourceId,
@@ -78,10 +79,11 @@ export async function createLoadedConfiguration(options: {
         }) ?? []
       );
     },
-    getResource({ $resource }): LoadedResource | undefined {
-      return this.getResources()?.find(
-        (lr) => resourceId(lr.instance) == $resource
-      );
+    getResource(
+      refOrId: string | ResourceReference
+    ): LoadedResource | undefined {
+      const id = typeof refOrId == "string" ? refOrId : refOrId.$resource;
+      return this.getResources()?.find((lr) => resourceId(lr.instance) == id);
     },
     setResource(instance): ResourceInstance {
       const { resources } = this.project;
@@ -95,11 +97,13 @@ export async function createLoadedConfiguration(options: {
       }
       return instance;
     },
-    setMethodResult(instance, method, path, result) {
-      const v = ensurePath(instance, ["outputs", method, ...path]);
+    setMethodResult(resourceId, method, path, result) {
+      const res = this.getResource(resourceId);
+      if (!res) return;
+      const v = ensurePath(res.instance, ["outputs", method, ...path]);
       const lastKey = path[path.length - 1];
       v[lastKey] = scrubEffects(result);
-      return instance;
+      return res.instance;
     },
     clone(): LoadedConfiguration {
       const { projectFile, ...rest } = this;

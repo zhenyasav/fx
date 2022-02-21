@@ -11,6 +11,7 @@ import {
   ResourceEffect,
   Plan,
   LoadedConfiguration,
+  scrubEffects,
 } from "@fx/plugin";
 import { executeDirectoryTemplate } from "@nice/plate";
 import { randomString } from "./util/random";
@@ -25,6 +26,9 @@ import { solve } from "dependency-solver";
 import { yellow } from "chalk";
 import { patchTsConfigForTsNode } from "./util/tsconfig";
 import { uniq } from "./util/collections";
+import { cyan } from "chalk";
+
+const clone = (o: any) => JSON.parse(JSON.stringify(o));
 
 function isResourceEffect(
   o: ResourceEffect<Effect.Any>
@@ -74,7 +78,10 @@ export class Fx {
     const config = await this.config();
     const desc = effects.map((e) => {
       const effector = getEffector(e.effect);
-      return effector.describe(e, { config });
+      return (
+        (e.origin ? cyan(e.origin.resourceId) + " " : "") +
+        effector.describe(e, { config })
+      );
     });
     return desc;
   }
@@ -90,8 +97,8 @@ export class Fx {
         createdResources.push(effect);
       }
       if (typeof result != "undefined" && effect.origin && config) {
-        const { resource, method, path } = effect.origin;
-        config.setMethodResult(resource, method, path ?? [], result);
+        const { resourceId, method, path } = effect.origin;
+        config.setMethodResult(resourceId, method, path ?? [], result);
         await config.projectFile.save();
       }
     }
@@ -160,7 +167,7 @@ export class Fx {
       config?: LoadedConfiguration;
     }
   ): Promise<Plan> {
-    const { resource, input: args } = { ...options };
+    const { resource, input: defaults } = { ...options };
     const resources: LoadedResource[] = resource
       ? [resource]
       : await this.getResourcesWithMethod(methodName);
@@ -188,6 +195,36 @@ export class Fx {
     const ordered =
       resources?.length > 1 ? orderResources(resources) : resources;
 
+    function writeResourceMethodValue(
+      sectionKey: "inputs" | "outputs",
+      instance: ResourceInstance,
+      value: any
+    ) {
+      const existing = config.getResource(resourceId(instance));
+      const s = (x: any) => JSON.stringify(x);
+      if (
+        !existing?.instance?.[sectionKey]?.[methodName] ||
+        s(existing.instance[sectionKey]?.[methodName]) != s(value)
+      ) {
+        const instanceClone = clone(instance);
+        const section = (instanceClone[sectionKey] =
+          instanceClone[sectionKey] || {});
+        section[methodName] = value;
+        const resourceEffect: ResourceEffect = {
+          effect: {
+            $effect: "resource",
+            instance: instanceClone,
+          },
+          origin: {
+            method: methodName,
+            resourceId: resourceId(instance),
+          },
+        };
+        results.push(resourceEffect);
+        config.setResource(instanceClone);
+      }
+    }
+
     for (let resource of ordered) {
       const { definition, instance } = resource;
 
@@ -195,20 +232,18 @@ export class Fx {
       if (!method) continue;
 
       if (method.implies?.length) {
-        const impliedMethodPlans = [];
         for (let implied of method.implies) {
           const plan = await this.planMethod(implied, {
             resource,
             config,
           });
-          impliedMethodPlans.push(...plan);
+          results.push(...plan);
         }
-        results.push(...impliedMethodPlans);
       }
 
       const input = await promise(
         method.inputs?.({
-          defaults: args,
+          defaults,
           questionGenerator: getResourceQuestionGenerator(config),
           resource,
           config,
@@ -237,28 +272,7 @@ export class Fx {
           }
           results.push(...restOfNewPlan);
         }
-        instance.inputs = instance.inputs || {};
-        instance.inputs[methodName] = input;
-      }
-
-      const existing = config.getResource({ $resource: resourceId(instance) });
-      if (
-        !existing ||
-        JSON.stringify(existing.instance.inputs?.[methodName]) !=
-          JSON.stringify(instance.inputs?.[methodName])
-      ) {
-        const resourceEffect: ResourceEffect = {
-          effect: {
-            $effect: "resource",
-            instance,
-          },
-          origin: {
-            method: methodName,
-            resource: resource.instance,
-          },
-        };
-        results.push(resourceEffect);
-        config.setResource(instance);
+        writeResourceMethodValue("inputs", instance, input);
       }
 
       const methodResult = await promise<MethodResult>(
@@ -269,7 +283,12 @@ export class Fx {
         })
       );
 
-      if (methodResult) {
+      if (typeof methodResult != "undefined") {
+        writeResourceMethodValue(
+          "outputs",
+          instance,
+          scrubEffects(methodResult)
+        );
         const effectLocations = getEffectLocations(methodResult);
         results.push(
           ...effectLocations.map((loc) => {
@@ -277,8 +296,8 @@ export class Fx {
             const r: ResourceEffect = {
               effect: entity,
               origin: {
+                resourceId: resourceId(resource.instance),
                 method: methodName,
-                resource: resource.instance,
                 path,
               },
             };
@@ -287,6 +306,7 @@ export class Fx {
         );
       }
     }
+
     return results;
   }
 }

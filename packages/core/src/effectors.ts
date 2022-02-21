@@ -1,6 +1,6 @@
 import os from "os";
 import path from "path";
-import { exec } from "child_process";
+import { spawn } from "child_process";
 import { ellipsis } from "./util/ellipsis";
 import { relative } from "./util/files";
 import prettyjson from "prettyjson";
@@ -42,10 +42,10 @@ const Function: Effector<Effect.Function, EffectorContext> = {
       effect: { description },
       origin,
     } = e;
-    const { resource, method, path } = origin ?? {};
+    const { resourceId, method, path } = origin ?? {};
     return `${
-      resource
-        ? resourceId(resource) +
+      resourceId
+        ? resourceId +
           "/" +
           method +
           (path?.length ? "." + path.join(".") : "") +
@@ -58,6 +58,12 @@ const Function: Effector<Effect.Function, EffectorContext> = {
   },
 };
 
+export type ProcessResult = {
+  code: number | null;
+  stdout: string;
+  stderr: string;
+};
+
 const Shell: Effector<Effect.Shell, EffectorContext> = {
   describe(e) {
     const { command, cwd, description } = e.effect;
@@ -66,20 +72,41 @@ const Shell: Effector<Effect.Shell, EffectorContext> = {
     return [`shell: '${command}'`, cwds, desc].join(" ");
   },
   async apply(e) {
-    const { command, cwd } = e.effect;
+    const { command, cwd, async } = e.effect;
+    const onComplete = e.origin?.onMethodResultAsync;
     if (!command) return;
-    return new Promise((resolve, reject) => {
-      exec(
-        command,
-        { cwd: cwd ? cwd : process.cwd() },
-        (err, stdout, stderr) => {
-          if (err || stderr) {
-            return reject(err || stderr);
-          }
-          console.log(stdout);
-          resolve(stdout);
+    return new Promise<ProcessResult | void>((resolve, reject) => {
+      const [cmd, ...args] = command.split(" ");
+      const proc = spawn(cmd, args, {
+        cwd,
+        shell: true,
+        stdio: ["inherit", "pipe", "pipe"],
+      });
+      const result: ProcessResult = {
+        stdout: "",
+        stderr: "",
+        code: null,
+      };
+      proc.on("error", (err) => {
+        reject(err);
+      });
+      proc.stdout.on("data", (d) => {
+        result.stdout += d;
+        process.stdout.write(d);
+      });
+      proc.stderr.on("data", (d) => {
+        result.stderr += d;
+        process.stderr.write(d);
+      });
+      proc.on("close", (code) => {
+        result.code = code;
+        if (async) {
+          onComplete?.(result);
+        } else {
+          resolve(result);
         }
-      );
+      });
+      if (async) resolve();
     });
   },
 };
@@ -105,7 +132,7 @@ const Resource: Effector<Effect.Resource<any>, EffectorContext> = {
         : "";
     return `${!!existing ? "update" : "create"} resource ${resourceId(
       instance
-    )}${detailString}`;
+    )}${detailString} ${JSON.stringify(instance)}}`;
   },
   async apply(e, c) {
     const {

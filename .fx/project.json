@@ -54,6 +54,33 @@
           "manifest": "/Users/zhenya/exp/localregistry/fx/teams-manifest/manifest.json"
         }
       }
+    },
+    {
+      "id": "fd61",
+      "type": "cowsay",
+      "inputs": {
+        "create": {
+          "what": "i moo"
+        }
+      },
+      "outputs": {
+        "create": {
+          "stdout": {
+            "stdout": " _______\n< i moo >\n -------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
+            "stderr": "",
+            "code": 0
+          }
+        },
+        "moo": {
+          "say": "i moo",
+          "shell": {
+            "$effect": "shell",
+            "description": "say the thing",
+            "command": "npx cowsay i moo",
+            "async": true
+          }
+        }
+      }
     }
   ]
 }

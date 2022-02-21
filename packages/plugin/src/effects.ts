@@ -23,6 +23,7 @@ export namespace Effect {
     description?: string;
     command: string;
     cwd?: string;
+    async?: boolean;
   };
 
   export type Resource<TArgs extends object = any> = {
@@ -107,9 +108,10 @@ export function getEffectLocations<T extends Effect.Base = Effect.Any>(
 export type ResourceEffect<T extends Effect.Base = Effect.Any> = {
   effect: T;
   origin?: {
-    resource: ResourceInstance;
+    resourceId: string;
     method: string;
     path?: (string | number)[];
+    onMethodResultAsync?: (result: any) => Promise<any>;
   };
 };
 

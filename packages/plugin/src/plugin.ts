@@ -65,15 +65,15 @@ export type LoadedConfiguration = {
   ): ResourceDefinition<TInput> | undefined;
   getResources(): LoadedResource[];
   getResource<TInput = any>(
-    ref: ResourceReference
+    refOrId: string | ResourceReference
   ): LoadedResource<TInput> | undefined;
   setResource(instance: ResourceInstance): ResourceInstance;
   setMethodResult(
-    instance: ResourceInstance,
+    resoureId: string,
     method: string,
     path: (string | number)[],
     result: any
-  ): ResourceInstance;
+  ): ResourceInstance | undefined;
   clone(): LoadedConfiguration;
 };
 

@@ -23,7 +23,7 @@ const cowsay: ResourceDefinition<CowsayInput> = {
       body({ input }) {
         return {
           say: input.what,
-          stdout: effect({
+          shell: effect({
             $effect: "shell",
             command: `npx cowsay "${input.what}"`,
             description: `cowsay ${input.what}`,
@@ -32,14 +32,15 @@ const cowsay: ResourceDefinition<CowsayInput> = {
       },
     }),
     moo: method({
-      // implies: ["build"],
       body({ resource }) {
         const what = resource.instance.inputs?.create?.what;
         return {
-          stdout: effect({
+          say: what,
+          shell: effect({
             $effect: "shell",
             description: "say the thing",
             command: `npx cowsay ${what}`,
+            async: true
           }),
         };
       },
