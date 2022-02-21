@@ -207,12 +207,20 @@ const parser = yargs(process.argv.slice(2))
     }
   )
   .command(
-    "$0",
-    false,
-    () => {},
+    "$0 [method] [selector]",
+    "runs an arbitrary method on the resources of the project",
+    (yargs) =>
+      yargs
+        .positional("method", {
+          type: "string",
+          describe: "the name of the method to run",
+        })
+        .positional("selector", {
+          type: "string",
+          descript: "a resource selector to limit the scope",
+        }),
     async (argv) => {
-      const [method] = argv._;
-      const { dry } = argv;
+      const { dry, selector, method } = argv;
       if (!method) {
         info(await parser.getHelp());
         error("error: at least one argument is required");
@@ -220,11 +228,11 @@ const parser = yargs(process.argv.slice(2))
       }
       const methodName = method.toString();
       const resources = await fx.getResourcesWithMethod(methodName);
+      const config = await fx.requireConfig();
       if (!resources.length) {
         error(
           "there are no configured resources in the project supporting this method"
         );
-        const config = await fx.requireConfig();
         const defs = config.getResourceDefinitions().filter((res) => {
           return res.methods && methodName in res.methods;
         });
@@ -242,9 +250,16 @@ const parser = yargs(process.argv.slice(2))
         }
         process.exit(1);
       }
-      const plan = await fx.planMethod(methodName);
+      const selectedResources = selector ? config.getResources(selector) : null;
+      if (selector)
+        info(
+          `${selectedResources?.length} resources match selector ${selector}`
+        );
+      const plan = await fx.planMethod(
+        methodName,
+        selectedResources ? { resources: selectedResources } : {}
+      );
       info(`invoking ${yellow(`[${methodName}]`)}:`);
-      info("");
       if (plan) await executePlan(dry, plan);
     }
   )

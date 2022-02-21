@@ -257,7 +257,7 @@ export class Fx {
     };
     conf.setResource(instance);
     const createplan = await this.planMethod("create", {
-      resource: { instance, definition },
+      resources: [{ instance, definition }],
       input: options?.input,
       config: conf,
     });
@@ -291,14 +291,14 @@ export class Fx {
   async planMethod(
     methodName: string,
     options?: {
-      resource?: LoadedResource;
+      resources?: LoadedResource[];
       input?: { [k: string]: any };
       config?: LoadedConfiguration;
     }
   ): Promise<Plan | null> {
-    const { resource, input: defaults } = { ...options };
-    const resources: LoadedResource[] = resource
-      ? [resource]
+    const { resources: rs, input: defaults } = { ...options };
+    const resources: LoadedResource[] = rs?.length
+      ? rs
       : await this.getResourcesWithMethod(methodName);
     if (!resources?.length) return null;
 
@@ -362,7 +362,7 @@ export class Fx {
       if (method.implies?.length) {
         for (let implied of method.implies) {
           const plan = await this.planMethod(implied, {
-            resource,
+            resources: [resource],
             config,
           });
           results.push(...(plan?.effects ?? []));

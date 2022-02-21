@@ -10,29 +10,41 @@
       },
       "outputs": {
         "dev": {
-          "port": 3000,
-          "url": "https://2a9e-174-127-243-36.ngrok.io"
+          "port": 4000,
+          "url": "https://05a2-174-127-243-36.ngrok.io"
         }
       }
     },
     {
-      "id": "7011",
-      "type": "npm-start",
+      "id": "5aaa",
+      "type": "tunnel",
       "inputs": {
         "create": {
-          "tunnel": {
-            "$resource": "tunnel:1b7f",
-            "before": true
-          }
+          "port": 3000
         }
       },
       "outputs": {
         "dev": {
-          "result": {
-            "$effect": "shell",
-            "command": "PORT=3000 npm start",
-            "description": "runs npm start",
-            "async": true
+          "port": 3000,
+          "url": "https://9901-174-127-243-36.ngrok.io"
+        }
+      }
+    },
+    {
+      "id": "ce0f",
+      "type": "cow",
+      "inputs": {
+        "create": {
+          "what": "moo"
+        }
+      },
+      "outputs": {
+        "create": {
+          "say": "moo",
+          "shell": {
+            "stdout": " _____\n< moo >\n -----\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
+            "stderr": "",
+            "code": 0
           }
         }
       }
