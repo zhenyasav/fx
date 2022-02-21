@@ -4,6 +4,7 @@ import { spawn } from "child_process";
 import { ellipsis } from "./util/ellipsis";
 import { relative } from "./util/files";
 import prettyjson from "prettyjson";
+import { green } from "chalk";
 import {
   Effect,
   Effector,
@@ -20,7 +21,7 @@ export type EffectorContext = {
   planMethod?(
     methodName: string,
     options?: {
-      resource?: LoadedResource;
+      resources?: LoadedResource[];
       input?: object;
       config?: LoadedConfiguration;
     }
@@ -77,9 +78,11 @@ export type ProcessResult = {
 const Shell: Effector<Effect.Shell, EffectorContext> = {
   describe(e) {
     const { command, cwd, description } = e.effect;
-    const desc = description ? `[${description}]` : "";
-    const cwds = cwd ? `in directory ${ellipsis(cwd)}` : ``;
-    return [`shell: '${command}'`, cwds, desc].join(" ");
+    const desc = description ? `# ${description}` : "";
+    const cwds = cwd
+      ? ` in ${ellipsis(path.relative(process.cwd(), cwd))}`
+      : ``;
+    return `shell${cwds}: ${[green(command), gray(desc)].join(" ")}`;
   },
   async apply(e) {
     const { command, cwd, async } = e.effect;
@@ -163,7 +166,10 @@ const Resource: Effector<Effect.Resource<any>, EffectorContext> = {
         : "";
     return `${!!existing ? "update" : "create"} resource ${
       resourceId(instance) != origin?.resourceId ? resourceId(instance) : ""
-    }${detailString}`;
+    }${gray("in")} ${path.relative(
+      process.cwd(),
+      config.projectFile.path
+    )}${detailString}`;
   },
   async apply(e, c) {
     const {
@@ -197,9 +203,9 @@ const ResourceMethod: Effector<Effect.ResourceMethod<any>, EffectorContext> = {
       throw new Error(
         "a valid fx project configuration is required to work with resources"
       );
-    console.log('');
+    console.log("");
     return c.planMethod?.(method, {
-      resource: config.getResource(resourceId),
+      resources: [config.getResource(resourceId)!],
       input,
       config,
     });

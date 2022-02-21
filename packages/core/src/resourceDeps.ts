@@ -18,12 +18,26 @@ export type Graph = {
   [id: string]: string[];
 };
 
+export function getDependents(resourceId: string, graph: Graph): string[] {
+  const results = [];
+  if (!graph) return [];
+  for (let source in graph) {
+    const dependencies = graph[source];
+    if (dependencies?.indexOf(resourceId) >= 0) {
+      results.push(source, ...getDependents(source, graph));
+    }
+  }
+  return results;
+}
+
 export function getDependencyGraph({
   resources,
-  methodName
+  methodName,
+  allowReverseDeps = true
 }: {
   resources: LoadedResource[];
   methodName: string;
+  allowReverseDeps?: boolean;
 }): {
   graph: Graph;
   independents: string[];
@@ -41,10 +55,10 @@ export function getDependencyGraph({
     const { instance } = resource;
     if (dependencies?.length) {
       const forward = dependencies
-        .filter((d) => !d.before)
+        .filter((d) => !allowReverseDeps || !d.before)
         .map((f) => f.$resource);
       const reverse = dependencies
-        .filter((d) => d.before)
+        .filter((d) => allowReverseDeps && d.before)
         .map((f) => f.$resource);
       const rid = resourceId(instance);
       if (forward.length) {

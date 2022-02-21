@@ -2,18 +2,19 @@
   "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.11/MicrosoftTeams.schema.json",
   "manifestVersion": "1.11",
   "version": "1.0.0",
-  "id": "b4b6096d-d396-496b-9700-065bd6fa2739",
+  "id": "cc6225cf-84be-4428-bd70-c13f21ada125",
   "packageName": "com.zhenya.app",
   "developer": {
     "name": "zhenya",
-    "privacyUrl": "",
-    "termsOfUseUrl": "",
-    "websiteUrl": "",
+    "privacyUrl": "https://privacy.microsoft.com/en-us/privacystatement",
+    "termsOfUseUrl": "https://www.microsoft.com/en-us/legal/terms-of-use",
+    "websiteUrl": "https://microsoft.com",
     "mpnId": ""
   },
+  "accentColor": "#7B83EB",
   "name": {
-    "short": "",
-    "full": ""
+    "short": "foobar",
+    "full": "foobar"
   },
   "description": {
     "short": "An app built with Teams Toolkit",
@@ -25,11 +26,32 @@
   },
   "staticTabs": [
     {
+      "name": "friendlyname",
+      "scopes": [
+        "personal"
+      ],
+      "entityId": "com.foobar.short"
+    },
+    {
       "name": "",
       "scopes": [
         "personal"
       ],
       "entityId": ""
+    },
+    {
+      "name": "tab1",
+      "scopes": [
+        "personal"
+      ],
+      "entityId": "tab1"
+    },
+    {
+      "name": "tab2",
+      "scopes": [
+        "personal"
+      ],
+      "entityId": "tab2"
     }
   ]
 }

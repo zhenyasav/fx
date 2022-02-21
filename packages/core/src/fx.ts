@@ -27,6 +27,7 @@ import { solve } from "dependency-solver";
 import { patchTsConfigForTsNode } from "./util/tsconfig";
 import { uniq } from "./util/collections";
 import { cyan, yellow } from "chalk";
+import { getDependents } from ".";
 
 const clone = (o: any) => JSON.parse(JSON.stringify(o));
 
@@ -109,7 +110,6 @@ export class Fx {
       (r) => r.definition?.methods && methodName in r.definition.methods
     );
   }
-
   async printPlan(
     plan: Plan,
     options?: { showHiddenEffects?: boolean }
@@ -180,22 +180,43 @@ export class Fx {
         finalConfig: config,
       };
       for (let rr of resources) {
-        plan.effects.push({
-          effect: {
-            $effect: "resource-method",
-            method: "create",
-            resourceId: resourceId(rr.instance),
-          },
-          origin: {
-            resourceId: resourceId(rr.instance),
-            method: "create",
-          },
+        const allresources = config.getResources();
+        const { graph } = getDependencyGraph({
+          resources: allresources,
+          methodName: "create",
+          allowReverseDeps: false,
         });
-        // const initPlan = await this.planMethod("create", {
-        //   config,
-        //   resource: rr,
-        // });
-        // if (initPlan?.effects?.length) plan.effects.push(...initPlan.effects);
+        const dependentIds = getDependents(resourceId(rr.instance), graph);
+        const dependentIdsAndSelf = [...dependentIds, resourceId(rr.instance)];
+        const dependents = dependentIds.map((id) => config.getResource(id)!);
+        const onlyDepResources = [...dependents, rr];
+        const { graph: graph2 } = getDependencyGraph({
+          resources: onlyDepResources,
+          methodName: "create",
+          allowReverseDeps: false,
+        });
+        const sequence = solve(graph2);
+        const finalSequenceIds = uniq(
+          [...sequence].filter((id) => dependentIdsAndSelf.indexOf(id) >= 0)
+        );
+        const finalSequence = finalSequenceIds.map(
+          (id) => config.getResource(id)!
+        );
+        plan.effects.push(
+          ...finalSequence.map((res) => {
+            return {
+              effect: {
+                $effect: "resource-method" as "resource-method",
+                method: "create",
+                resourceId: resourceId(res.instance),
+              },
+              origin: {
+                resourceId: resourceId(res.instance),
+                method: "create",
+              },
+            };
+          })
+        );
       }
       return plan;
     } else {
@@ -235,7 +256,11 @@ export class Fx {
   }
   async planCreateResource<TInput extends object>(
     type: string,
-    options?: { input?: TInput; config?: LoadedConfiguration }
+    options?: {
+      input?: TInput;
+      config?: LoadedConfiguration;
+      description?: string;
+    }
   ): Promise<Plan> {
     const conf = options?.config ?? (await this.requireConfig()).clone();
     const definition = conf.getResourceDefinition(type);
@@ -260,6 +285,7 @@ export class Fx {
       resources: [{ instance, definition }],
       input: options?.input,
       config: conf,
+      description: options?.description,
     });
     return {
       description: `create ${type}`,
@@ -294,6 +320,7 @@ export class Fx {
       resources?: LoadedResource[];
       input?: { [k: string]: any };
       config?: LoadedConfiguration;
+      description?: string;
     }
   ): Promise<Plan | null> {
     const { resources: rs, input: defaults } = { ...options };
@@ -368,7 +395,11 @@ export class Fx {
           results.push(...(plan?.effects ?? []));
         }
       }
-
+      console.log(
+        `planning ${yellow(`[${methodName}]`)} on ${resourceId(instance)}${
+          options?.description ? ' ' + options.description : ""
+        }:`
+      );
       const input = await promise(
         method.inputs?.({
           defaults,
@@ -382,16 +413,12 @@ export class Fx {
         const pendingResourceRefs = getPendingResourceReferences(input) ?? [];
         for (let ref of pendingResourceRefs) {
           console.log("");
-          console.log(
-            yellow(
-              `Creating '${ref.entity.$resource}' for ${resourceId(
-                instance
-              )}.${ref.path.join(".")}:`
-            )
-          );
           const newResourcePlan = await this.planCreateResource(
             ref.entity.$resource,
-            { config }
+            {
+              config,
+              description: `for ${resourceId(instance)}.${ref.path.join(".")}`,
+            }
           );
           const [newInstance, ...restOfNewPlan] = newResourcePlan.effects;
           if (newInstance) {

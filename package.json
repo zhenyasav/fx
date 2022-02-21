@@ -8,7 +8,7 @@
     "clean": "pnpm run clean -r --if-present",
     "check": "pnpm run check -r --if-present",
     "fx": "fx",
-    "dfx": "node --inspect node_modules/@fx/cli/build/main.js",
+    "dfx": "node --inspect-brk node_modules/@fx/cli/build/main.js",
     "test": "fx test",
     "dev": "fx dev",
     "start": "fx moo"

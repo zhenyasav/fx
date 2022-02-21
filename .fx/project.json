@@ -1,51 +1,80 @@
 {
   "resources": [
     {
-      "id": "1b7f",
-      "type": "tunnel",
+      "id": "12e3",
+      "type": "teams-tab",
       "inputs": {
         "create": {
-          "port": 4000
+          "manifest": {
+            "$resource": "teams-manifest:c296",
+            "before": true
+          },
+          "id": "tab1",
+          "name": "tab1",
+          "url-type": "tunnel",
+          "url": {
+            "$resource": "tunnel:e2e5"
+          }
         }
       },
       "outputs": {
-        "dev": {
-          "port": 4000,
-          "url": "https://09ef-174-127-243-36.ngrok.io"
+        "create": {
+          "manifest": "/Users/zhenya/exp/localregistry/fx/teams-manifest/manifest.json"
         }
       }
     },
     {
-      "id": "5aaa",
+      "id": "c296",
+      "type": "teams-manifest",
+      "inputs": {
+        "create": {
+          "directory": "teams-manifest",
+          "buildDirectory": "teams-manifest/build",
+          "name": "foobar",
+          "description": "An app built with Teams Toolkit",
+          "packageName": "com.zhenya.app",
+          "developerName": "zhenya"
+        }
+      },
+      "outputs": {
+        "create": {
+          "files": [
+            "teams-manifest/resources/color.png",
+            "teams-manifest/resources/outline.png",
+            "teams-manifest/manifest.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "e2e5",
       "type": "tunnel",
       "inputs": {
         "create": {
           "port": 3000
         }
-      },
-      "outputs": {
-        "dev": {
-          "port": 3000,
-          "url": "https://9493-174-127-243-36.ngrok.io"
-        }
       }
     },
     {
-      "id": "ce0f",
-      "type": "cow",
+      "id": "a4f8",
+      "type": "teams-tab",
       "inputs": {
         "create": {
-          "what": "moo"
+          "manifest": {
+            "$resource": "teams-manifest:c296",
+            "before": true
+          },
+          "id": "tab2",
+          "name": "tab2",
+          "url-type": "tunnel",
+          "url": {
+            "$resource": "tunnel:e2e5"
+          }
         }
       },
       "outputs": {
         "create": {
-          "say": "moo",
-          "shell": {
-            "stdout": " _____\n< moo >\n -----\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
-            "stderr": "",
-            "code": 0
-          }
+          "manifest": "/Users/zhenya/exp/localregistry/fx/teams-manifest/manifest.json"
         }
       }
     }

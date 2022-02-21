@@ -20,7 +20,7 @@ const cowsay: ResourceDefinition<CowsayInput> = {
           shell: effect({
             $effect: "shell",
             command: `npx cowsay "${input.what}"`,
-            description: `cowsay ${input.what}`,
+            description: `the friendly cow will say: ${input.what}`,
           }),
         };
       },

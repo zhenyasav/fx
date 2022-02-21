@@ -148,7 +148,6 @@ const parser = yargs(process.argv.slice(2))
       try {
         console.log(gray("cwd: " + process.cwd()));
         console.log("");
-        console.log(yellow(`create ${type}:`));
         const plan = await withLoader("planning", () =>
           fx.planCreateResource(type, { input: { ...rest, name } })
         );
