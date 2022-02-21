@@ -111,6 +111,27 @@ const Shell: Effector<Effect.Shell, EffectorContext> = {
   },
 };
 
+const RemoveResource: Effector<Effect.RemoveResource, EffectorContext> = {
+  describe(e, c) {
+    const {
+      effect: { resourceId },
+    } = e;
+    return `delete resource ${resourceId}`;
+  },
+  async apply(e, c) {
+    const {
+      effect: { resourceId }
+    } = e;
+    const { config } = c;
+    if (!config)
+      throw new Error(
+        "a valid fx project configuration is required to work with resources"
+      );
+    config?.removeResource(resourceId);
+    await config.projectFile.save();
+  },
+};
+
 const Resource: Effector<Effect.Resource<any>, EffectorContext> = {
   describe(e, c) {
     const {
@@ -164,6 +185,7 @@ const Effectors: EffectorSet<Effect.Any, EffectorContext> = {
   shell: Shell,
   resource: Resource,
   "resource-method": ResourceMethod,
+  "remove-resource": RemoveResource
 };
 
 export function getEffector<T extends Effect.Any = Effect.Any>(

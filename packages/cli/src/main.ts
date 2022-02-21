@@ -15,43 +15,51 @@ import inquirer from "inquirer";
 const fx = new Fx();
 
 async function executePlan(dry: boolean, plan: Plan) {
-  console.log("");
-  console.log(await fx.printPlan(plan));
-  console.log("");
+  try {
+    info();
+    info(await fx.printPlan(plan));
+    info();
 
-  if (!dry) {
-    const { confirmed } = await inquirer.prompt([
-      {
-        type: "confirm",
-        default: true,
-        message: `continue?`,
-        name: "confirmed",
-      },
-    ]);
-    if (confirmed) {
-      console.log(`\nexecuting ${plan?.description ?? ""}...`);
-      console.group();
-      const { created } = await fx.executePlan(plan);
-      console.groupEnd();
-      console.log(
-        green(`\n${plan?.description ? plan.description + " " : ""}done.\n`)
-      );
-      if (created.length) {
-        console.log("new resources:");
-        const config = await fx.requireConfig();
-        const newResources = created.map(
-          (c) =>
-            config.getResource({ $resource: resourceId(c.effect.instance) })
-              ?.definition!
-        );
+    if (!dry) {
+      const { confirmed } = await inquirer.prompt([
+        {
+          type: "confirm",
+          default: true,
+          message: `continue?`,
+          name: "confirmed",
+        },
+      ]);
+      if (confirmed) {
+        info(`\nexecuting ${plan?.description ?? ""}...`);
         console.group();
-        printResources(newResources, { methods: true });
+        const { created } = await fx.executePlan(plan);
         console.groupEnd();
-        console.log("");
+        info(
+          green(`\n${plan?.description ? plan.description + " " : ""}done.\n`)
+        );
+        if (created.length) {
+          info("new resources:");
+          const config = await fx.requireConfig();
+          const newResources = created.map(
+            (c) =>
+              config.getResource({ $resource: resourceId(c.effect.instance) })
+                ?.definition!
+          );
+          console.group();
+          printResources(newResources, { methods: true });
+          console.groupEnd();
+          info("");
+        }
+      } else {
+        info(`aborted ${plan.description}`);
       }
+    } else {
+      info("dry run, no changes made.");
     }
-  } else {
-    console.log("dry run, no changes made.");
+  } catch (err: any) {
+    error(red("problem while executing plan"));
+    error(err);
+    process.exit(1);
   }
 }
 
@@ -138,7 +146,28 @@ const parser = yargs(process.argv.slice(2))
         await executePlan(dry, plan);
       } catch (err: any) {
         console.error(red("problem while executing plan:"));
-        console.error(err.message);
+        console.error(err);
+        process.exit(1);
+      }
+    }
+  )
+  .command(
+    ["remove <resourceId>", "rm"],
+    "remove a resource",
+    (yargs) =>
+      yargs.positional("resourceId", {
+        type: "string",
+        describe: "the resource id to delete",
+      }),
+    async (argv) => {
+      const { resourceId, dry } = argv;
+      try {
+        const plan = await fx.planRemoveResource(resourceId!);
+        if (plan) await executePlan(dry, plan);
+      } catch (err: any) {
+        error("problem while trying to remove resource");
+        error(err);
+        process.exit(1);
       }
     }
   )

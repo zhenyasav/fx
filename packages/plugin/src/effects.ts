@@ -33,6 +33,11 @@ export namespace Effect {
     instance: ResourceInstance<TArgs>;
   };
 
+  export type RemoveResource = {
+    $effect: "remove-resource";
+    resourceId: string;
+  };
+
   export type ResourceMethod<TInput extends object = any> = {
     $effect: "resource-method";
     description?: string;
@@ -41,7 +46,13 @@ export namespace Effect {
     input: TInput;
   };
 
-  export type Any = File | Function | Shell | Resource | ResourceMethod;
+  export type Any =
+    | File
+    | Function
+    | Shell
+    | Resource
+    | ResourceMethod
+    | RemoveResource;
 }
 
 export function isEffect(o: any): o is Effect.Base {

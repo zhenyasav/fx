@@ -223,6 +223,30 @@ export class Fx {
       effects: [createResourceEffect, ...(createplan?.effects ?? [])],
     };
   }
+  async planRemoveResource(identifier: string): Promise<Plan> {
+    const config = (await this.requireConfig()).clone();
+    const resource = config.getResource(identifier);
+    if (!resource) {
+      throw new Error(`resource ${resourceId} not found`);
+    }
+    config.removeResource(identifier);
+    return {
+      description: `remove resource ${identifier}`,
+      finalConfig: config,
+      effects: [
+        {
+          effect: {
+            $effect: 'remove-resource',
+            resourceId: identifier
+          },
+          origin: {
+            resourceId: resourceId(resource.instance),
+            method: 'remove'
+          }
+        }
+      ]
+    }
+  }
   async planMethod(
     methodName: string,
     options?: {

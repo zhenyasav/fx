@@ -35,15 +35,22 @@ export type LoadedResource<TCreateInput = any> = {
   definition?: ResourceDefinition<TCreateInput>;
 };
 
-export type ProjectLoadOptions =
-  (| {
+export type ProjectLoadOptions = (
+  | {
       projectFile: string;
     }
-  | { projectFolder: string }) & Partial<FileOptions<Project>>;
+  | { projectFolder: string }
+) &
+  Partial<FileOptions<Project>>;
 
 export class ProjectFile extends JSONFile<Project> {
   constructor(options: ProjectLoadOptions) {
-    const { projectFile, projectFolder, path: p, ...rest } = {
+    const {
+      projectFile,
+      projectFolder,
+      path: p,
+      ...rest
+    } = {
       projectFolder: process.cwd(),
       projectFile: null,
       ...options,
@@ -75,6 +82,7 @@ export type LoadedConfiguration = {
     path: (string | number)[],
     result: any
   ): ResourceInstance | undefined;
+  removeResource(instanceId: string): boolean;
   clone(): LoadedConfiguration;
 };
 

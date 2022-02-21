@@ -41,16 +41,30 @@ const cowsay: ResourceDefinition<CowsayInput> = {
   },
 };
 
-const npmStart: ResourceDefinition = {
+const npmStartInput = z.object({
+  tunnel: z
+    .literal("before:tunnel")
+    .describe("the tunnel resource for the port number to npm start with"),
+});
+
+type NpmStartInput = z.infer<typeof npmStartInput>;
+
+const npmStart: ResourceDefinition<NpmStartInput> = {
   type: "npm-start",
   description: "runs npm start",
   methods: {
+    create: method({
+      inputShape: npmStartInput,
+    }),
     dev: method({
-      body() {
+      body({ resource, config }) {
+        const tunnelRef = resource.instance.inputs?.create?.tunnel as any;
+        const tunnel = config.getResource(tunnelRef);
+        const port: number = tunnel?.instance.inputs?.create.port;
         return {
           result: effect({
             $effect: "shell",
-            command: "npm start",
+            command: `PORT=${port} npm start`,
             description: "runs npm start",
             async: true,
           }),
@@ -62,7 +76,7 @@ const npmStart: ResourceDefinition = {
 
 const config: Config = {
   plugins: [teams()],
-  resourceDefinitions: [packageTemplate(), cowsay, npmStart]
+  resourceDefinitions: [packageTemplate(), cowsay, npmStart],
 };
 
 export default config;

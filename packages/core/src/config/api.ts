@@ -83,7 +83,10 @@ export async function createLoadedConfiguration(options: {
       refOrId: string | ResourceReference
     ): LoadedResource | undefined {
       const id = typeof refOrId == "string" ? refOrId : refOrId.$resource;
-      return this.getResources()?.find((lr) => resourceId(lr.instance) == id);
+      return this.getResources()?.find((lr) => {
+        const instId = resourceId(lr.instance);
+        return instId == id || instId.includes(id);
+      });
     },
     setResource(instance): ResourceInstance {
       const { resources } = this.project;
@@ -104,6 +107,16 @@ export async function createLoadedConfiguration(options: {
       const lastKey = path[path.length - 1];
       v[lastKey] = scrubEffects(result);
       return res.instance;
+    },
+    removeResource(resourceId) {
+      const res = this.getResource(resourceId);
+      if (!res) return false;
+      const index = this.project.resources.indexOf(res.instance);
+      if (index >= 0) {
+        this.project.resources.splice(index, 1);
+        return true;
+      }
+      return false;
     },
     clone(): LoadedConfiguration {
       const { projectFile, project, ...rest } = this;

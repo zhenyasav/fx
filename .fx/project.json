@@ -1,69 +1,65 @@
 {
   "resources": [
     {
-      "id": "ce8f",
-      "type": "cow",
+      "id": "1b7f",
+      "type": "tunnel",
       "inputs": {
         "create": {
-          "what": "moo"
+          "port": 3000
         }
       },
       "outputs": {
-        "create": {
-          "say": "moo",
-          "shell": {
-            "stdout": " _____\n< moo >\n -----\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
-            "stderr": "",
-            "code": 0
-          }
-        },
-        "moo": {
-          "say": "moo",
-          "shell": {
-            "stdout": " _____\n< moo >\n -----\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
-            "stderr": "",
-            "code": 0
-          }
+        "dev": {
+          "port": 3000,
+          "url": "https://2a9e-174-127-243-36.ngrok.io"
         }
       }
     },
     {
-      "id": "9ccf",
-      "type": "cow",
-      "inputs": {
-        "create": {
-          "what": "moo"
-        }
-      },
-      "outputs": {
-        "create": {
-          "say": "moo",
-          "shell": {
-            "stdout": " _____\n< moo >\n -----\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
-            "stderr": "",
-            "code": 0
-          }
-        },
-        "moo": {
-          "say": "moo",
-          "shell": {
-            "stdout": " _____\n< moo >\n -----\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
-            "stderr": "",
-            "code": 0
-          }
-        }
-      }
-    },
-    {
-      "id": "6505",
+      "id": "7011",
       "type": "npm-start",
+      "inputs": {
+        "create": {
+          "tunnel": {
+            "$resource": "tunnel:1b7f",
+            "before": true
+          }
+        }
+      },
       "outputs": {
         "dev": {
           "result": {
             "$effect": "shell",
-            "command": "npm start",
+            "command": "PORT=3000 npm start",
             "description": "runs npm start",
             "async": true
+          }
+        }
+      }
+    },
+    {
+      "id": "754f",
+      "type": "cow",
+      "inputs": {
+        "create": {
+          "what": "moo $PORT"
+        }
+      },
+      "outputs": {
+        "create": {
+          "say": "moo $PORT",
+          "shell": {
+            "stdout": " ______\n< moo  >\n ------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
+            "stderr": "",
+            "code": 0
+          }
+        },
+        "moo": {
+          "say": "moo $PORT",
+          "shell": {
+            "stdout": " __________\n< moo 3000 >\n ----------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
+            "stderr": "",
+            "code": 0
           }
         }
       }
