@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.11/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.11",
+  "version": "1.0.0",
+  "id": "f1c8aa28-39a8-47f0-9c7c-e25afac748c8",
+  "packageName": "com.zhenya.fxx",
+  "developer": {
+    "name": "zhenya",
+    "privacyUrl": "https://privacy.microsoft.com/en-us/privacystatement",
+    "termsOfUseUrl": "https://www.microsoft.com/en-us/legal/terms-of-use",
+    "websiteUrl": "https://microsoft.com",
+    "mpnId": ""
+  },
+  "accentColor": "#7B83EB",
+  "name": {
+    "short": "fx",
+    "full": "fx"
+  },
+  "description": {
+    "short": "fx",
+    "full": "fx"
+  },
+  "icons": {
+    "outline": "resources/color.png",
+    "color": "resources/color.png"
+  },
+  "staticTabs": [
+    {
+      "name": "Tab X",
+      "scopes": [
+        "personal"
+      ],
+      "entityId": "tab-x",
+      "contentUrl": "https://88cf-174-127-243-36.ngrok.io/"
+    }
+  ]
+}

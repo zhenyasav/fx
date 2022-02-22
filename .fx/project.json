@@ -1,3 +1,180 @@
 {
-  "resources": []
+  "resources": [
+    {
+      "id": "2126",
+      "type": "teams-tab",
+      "inputs": {
+        "create": {
+          "manifest": {
+            "$resource": "teams-manifest:5f1d",
+            "before": true
+          },
+          "name": "Tab X",
+          "id": "tab-x",
+          "hostname-type": "tunnel",
+          "hostname": {
+            "$resource": "tunnel:7a4e"
+          },
+          "path": ""
+        }
+      },
+      "outputs": {
+        "create": {
+          "manifest": "/Users/zhenya/dev/fx/teams-manifest/manifest.json"
+        },
+        "dev": {
+          "contentUrl": "teams-manifest/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "5f1d",
+      "type": "teams-manifest",
+      "inputs": {
+        "create": {
+          "directory": "teams-manifest",
+          "buildDirectory": "teams-manifest/build",
+          "name": "fx",
+          "description": "fx",
+          "packageName": "com.zhenya.fxx",
+          "developerName": "zhenya"
+        }
+      },
+      "outputs": {
+        "create": {
+          "files": [
+            "teams-manifest/resources/color.png",
+            "teams-manifest/resources/outline.png",
+            "teams-manifest/manifest.json"
+          ]
+        },
+        "build": {
+          "output": {
+            "$effect": "function",
+            "description": "zip manifest bundle",
+            "body": null
+          }
+        },
+        "dev": {
+          "devPortal": {
+            "app": {
+              "teamsAppId": "f1c8aa28-39a8-47f0-9c7c-e25afac748c8",
+              "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+              "ownerAadId": "36ff5f38-6aef-4a01-940e-be3807b1466c",
+              "userList": [
+                {
+                  "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+                  "aadId": "36ff5f38-6aef-4a01-940e-be3807b1466c",
+                  "displayName": "Zhenya Savchenko",
+                  "userPrincipalName": "zhenyasa@microsoft.com",
+                  "isAdministrator": true
+                }
+              ],
+              "userAppSettings": null,
+              "environments": null,
+              "globalEnvironmentProperties": null,
+              "createdAt": "2022-02-22T15:04:47.4045604+00:00",
+              "updatedAt": "2022-02-22T15:04:47.8453206+00:00",
+              "appId": "f1c8aa28-39a8-47f0-9c7c-e25afac748c8",
+              "appName": "fx",
+              "appStudioVersion": "",
+              "version": "1.0.0",
+              "manifestVersion": "1.11",
+              "packageName": "com.zhenya.fxx",
+              "shortName": "fx",
+              "longName": "fx",
+              "developerName": "zhenya",
+              "websiteUrl": "https://microsoft.com",
+              "privacyUrl": "https://privacy.microsoft.com/en-us/privacystatement",
+              "termsOfUseUrl": "https://www.microsoft.com/en-us/legal/terms-of-use",
+              "mpnId": "",
+              "shortDescription": "fx",
+              "longDescription": "fx",
+              "colorIcon": "https://devappglobal.blob.core.windows.net/images/f1c8aa28-39a8-47f0-9c7c-e25afac748c8/color/5bd88832-949f-4907-956f-82190416645a",
+              "outlineIcon": "https://devappglobal.blob.core.windows.net/images/f1c8aa28-39a8-47f0-9c7c-e25afac748c8/outline/7383c5e2-6ef6-4ba3-b513-fd3c216cd88a",
+              "accentColor": "#7B83EB",
+              "configurableTabs": [],
+              "staticTabs": [
+                {
+                  "objectId": "a78cda2a-eb24-41e8-9a2d-4b68d2573b81",
+                  "entityId": "tab-x",
+                  "name": "Tab X",
+                  "contentUrl": "https://88cf-174-127-243-36.ngrok.io/",
+                  "websiteUrl": null,
+                  "scopes": [
+                    "personal"
+                  ],
+                  "context": []
+                }
+              ],
+              "bots": [],
+              "connectors": [],
+              "subscriptionOffer": null,
+              "graphConnector": null,
+              "messagingExtensions": [],
+              "validDomains": [],
+              "appStudioChecklistChecked": [],
+              "webApplicationInfoId": null,
+              "webApplicationInfoResource": null,
+              "devicePermissions": [],
+              "applicationPermissions": [],
+              "showLoadingIndicator": false,
+              "isFullScreen": false,
+              "isPublic": false,
+              "defaultInstallScope": null,
+              "defaultGroupCapability": null,
+              "configurableProperties": [],
+              "meetingExtensionDefinition": null,
+              "isTeamsOwned": null,
+              "isBlockable": null,
+              "isCoreApp": null,
+              "isPinnable": null,
+              "isFullTrust": null,
+              "isTenantConfigurable": null,
+              "supportedTenantRegions": null,
+              "applicableLicenseCategories": null,
+              "restrictedTenantTypes": null,
+              "screenshotUrls": null,
+              "keywords": null,
+              "videoUrl": null,
+              "categories": null,
+              "disabledScopes": null,
+              "thirdPartyNoticesUrl": null,
+              "mobileModules": null,
+              "isPreinstallable": null,
+              "activities": null,
+              "hostedCapabilities": null,
+              "validTrouterPaths": null,
+              "industries": null,
+              "appCatalogExtension": null,
+              "authorization": null,
+              "defaultBlockUntilAdminAction": null,
+              "publisherDocsUrl": null,
+              "hasPreviewFeature": false,
+              "localizationInfo": {
+                "defaultLanguageTag": "en-us",
+                "languages": null
+              }
+            }
+          },
+          "browser": "https://teams.microsoft.com/l/app/f1c8aa28-39a8-47f0-9c7c-e25afac748c8?installAppPackage=true&webjoin=true&login_hint=zhenyasa@microsoft.com"
+        }
+      }
+    },
+    {
+      "id": "7a4e",
+      "type": "tunnel",
+      "inputs": {
+        "create": {
+          "port": 3007
+        }
+      },
+      "outputs": {
+        "dev": {
+          "port": 3007,
+          "url": "https://88cf-174-127-243-36.ngrok.io"
+        }
+      }
+    }
+  ]
 }
