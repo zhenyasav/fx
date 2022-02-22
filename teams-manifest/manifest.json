@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.11/MicrosoftTeams.schema.json",
   "manifestVersion": "1.11",
   "version": "1.0.0",
-  "id": "f1c8aa28-39a8-47f0-9c7c-e25afac748c8",
-  "packageName": "com.zhenya.fxx",
+  "id": "da45fe20-141e-4d21-86f8-50aa842bea26",
+  "packageName": "com.zhenya.fxtwo",
   "developer": {
     "name": "zhenya",
     "privacyUrl": "https://privacy.microsoft.com/en-us/privacystatement",
@@ -13,12 +13,12 @@
   },
   "accentColor": "#7B83EB",
   "name": {
-    "short": "fx",
-    "full": "fx"
+    "short": "fxtwo",
+    "full": "fxtwo"
   },
   "description": {
-    "short": "fx",
-    "full": "fx"
+    "short": "fxtwo",
+    "full": "fxtwo"
   },
   "icons": {
     "outline": "resources/color.png",
@@ -26,12 +26,11 @@
   },
   "staticTabs": [
     {
-      "name": "Tab X",
+      "name": "tab-two",
       "scopes": [
         "personal"
       ],
-      "entityId": "tab-x",
-      "contentUrl": "https://88cf-174-127-243-36.ngrok.io/"
+      "entityId": "tab-two"
     }
   ]
 }

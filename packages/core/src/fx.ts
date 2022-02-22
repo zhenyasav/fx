@@ -13,14 +13,12 @@ import {
   Plan,
   LoadedConfiguration,
   scrubEffects,
-  isResourceInputEffect,
-  isResourceOutputEffect,
-  isResourceCreateEffect,
   PropertyPath,
+  isResourceCreateEffect
 } from "@fx/plugin";
 import { executeDirectoryTemplate } from "@nice/plate";
 import { randomString } from "./util/random";
-import { getEffector } from "./effectors";
+import { getEffector, getResourceEffector } from "./effectors";
 import { ConfigLoaderOptions, ConfigLoader } from "./config";
 import {
   getResourceQuestionGenerator,
@@ -38,39 +36,21 @@ const clone = (o: any) => JSON.parse(JSON.stringify(o));
 export type FxOptions = ConfigLoaderOptions;
 
 function printEffect(
-  e: ResourceEffect<Effect.Any>,
+  e: ResourceEffect.Any,
   config?: LoadedConfiguration
 ): string {
-  const effector = getEffector(e.effect);
-  return (
-    (e.origin ? cyan(e.origin.resourceId) + " " : "") +
-    effector.describe(e, { config })
-  );
+  const effector = getResourceEffector(e);
+  const { resourceId } = e;
+  return [cyan(resourceId), effector.describe(e, { config })].join(" ");
 }
 
 function isEffectVisible() {
-  // // args: plan: Plan, config?: LoadedConfiguration
-  // const { effects } = plan;
-  return (e: ResourceEffect) => {
-    return !(isResourceInputEffect(e) || isResourceOutputEffect(e));
-    // if (isResourceEffect(e)) {
-    //   // const exists = config?.getResource(resourceId(e.effect.instance));
-    //   const firstResourceEffectForInstance = effects.find(
-    //     (ex) =>
-    //       isResourceEffect(ex) &&
-    //       resourceId(ex.effect.instance) == resourceId(e.effect.instance)
-    //   );
-    //   return firstResourceEffectForInstance == e;
-    //   // if (!exists) {
-    //   //   if (firstResourceEffectForInstance == e) {
-    //   //     return true;
-    //   //   } else return false;
-    //   // } else {
-    //   //   return true;
-    //   // }
-    // } else {
-    //   return true;
-    // }
+  return (e: ResourceEffect.Any) => {
+    return (
+      e.$effect == "resource-create" ||
+      e.$effect == "resource-effect" ||
+      e.$effect == "resource-remove"
+    );
   };
 }
 
@@ -138,7 +118,7 @@ export class Fx {
     const nextPlan: Plan = { effects: [] };
     for (let i in effects) {
       const effect = effects[i];
-      const effector = getEffector(effect.effect);
+      const effector = getResourceEffector(effect);
       if (isVisible(effect)) {
         console.log("applying " + printEffect(effect, config));
       }
@@ -149,7 +129,12 @@ export class Fx {
         config,
         planMethod: (method, options) => this.planMethod(method, options),
       });
-      if (typeof result != "undefined") {
+      if (
+        !isResourceInputEffect(effect) &&
+        !isResourceOutputEffect(effect) &&
+        !isResourceCreateEffect(effect) &&
+        typeof result != "undefined"
+      ) {
         if (isPlan(result)) {
           nextPlan.effects.push(...result.effects);
         } else if (effect.origin && config) {
