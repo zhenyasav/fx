@@ -87,13 +87,20 @@ const parser = yargs(process.argv.slice(2))
     "init [selector]",
     "initialize a project or resource",
     (yargs) =>
-      yargs.positional("selector", {
-        type: "string",
-        describe: "a resource selector",
-      }),
-    async ({ dry, selector }) => {
+      yargs
+        .positional("selector", {
+          type: "string",
+          describe: "a resource selector",
+        })
+        .option("recursive", {
+          alias: "r",
+          type: "boolean",
+          default: false,
+          description: "apply init to any dependent resources recursively",
+        }),
+    async ({ dry, selector, recursive }) => {
       try {
-        const plan = await fx.planInit({ selector });
+        const plan = await fx.planInit({ selector, recursive });
         if (plan) await executePlan(dry, plan);
       } catch (err) {
         error(err);

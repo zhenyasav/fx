@@ -133,7 +133,7 @@ export class Fx {
   async executePlan(plan: Plan) {
     // const config = await this.config();
     const { effects, finalConfig } = plan;
-    const config = finalConfig ?? await this.config();
+    const config = finalConfig ?? (await this.config());
     const createdResources = [];
     const isVisible = isEffectVisible(plan, config);
     const nextPlan: Plan = { effects: [] };
@@ -169,8 +169,40 @@ export class Fx {
       ...(nextPlan.effects.length ? { nextPlan } : {}),
     };
   }
-  public async planInit(options?: { selector?: string }): Promise<Plan | null> {
-    const { selector } = { ...options };
+  public async planInit(options?: {
+    selector?: string;
+    recursive?: boolean;
+  }): Promise<Plan | null> {
+    const { selector, recursive } = { recursive: false, ...options };
+    function getDependentResourceSequence(
+      rr: LoadedResource,
+      config: LoadedConfiguration
+    ) {
+      const allresources = config.getResources();
+      const { graph } = getDependencyGraph({
+        resources: allresources,
+        methodName: "create",
+        allowReverseDeps: false,
+      });
+      const dependentIds = getDependents(resourceId(rr.instance), graph);
+      const dependentIdsAndSelf = [...dependentIds, resourceId(rr.instance)];
+      const dependents = dependentIds.map((id) => config.getResource(id)!);
+      const onlyDepResources = [...dependents, rr];
+      const { graph: graph2 } = getDependencyGraph({
+        resources: onlyDepResources,
+        methodName: "create",
+        allowReverseDeps: false,
+      });
+      const sequence = solve(graph2);
+      const finalSequenceIds = uniq(
+        [...sequence].filter((id) => dependentIdsAndSelf.indexOf(id) >= 0)
+      );
+      const finalSequence = finalSequenceIds.map(
+        (id) => config.getResource(id)!
+      );
+      return finalSequence;
+    }
+
     if (selector) {
       // init resource
       const config = (await this.requireConfig()).clone();
@@ -180,31 +212,13 @@ export class Fx {
         effects: [],
         finalConfig: config,
       };
+
       for (let rr of resources) {
-        const allresources = config.getResources();
-        const { graph } = getDependencyGraph({
-          resources: allresources,
-          methodName: "create",
-          allowReverseDeps: false,
-        });
-        const dependentIds = getDependents(resourceId(rr.instance), graph);
-        const dependentIdsAndSelf = [...dependentIds, resourceId(rr.instance)];
-        const dependents = dependentIds.map((id) => config.getResource(id)!);
-        const onlyDepResources = [...dependents, rr];
-        const { graph: graph2 } = getDependencyGraph({
-          resources: onlyDepResources,
-          methodName: "create",
-          allowReverseDeps: false,
-        });
-        const sequence = solve(graph2);
-        const finalSequenceIds = uniq(
-          [...sequence].filter((id) => dependentIdsAndSelf.indexOf(id) >= 0)
-        );
-        const finalSequence = finalSequenceIds.map(
-          (id) => config.getResource(id)!
-        );
+        const sequence = !recursive
+          ? [rr]
+          : getDependentResourceSequence(rr, config);
         plan.effects.push(
-          ...finalSequence.map((res) => {
+          ...sequence.map((res) => {
             return {
               effect: {
                 $effect: "resource-method" as "resource-method",

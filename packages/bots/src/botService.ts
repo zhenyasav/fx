@@ -21,7 +21,8 @@ const exec = promisify(execCallback);
 export const botServiceInput = z.object({
   botDisplayName: z.string().describe("bot display name"),
   botServiceName: z.string().describe("azure bot service name"),
-  resourceGroup: z.string().describe("resource group"),
+  subscriptionId: z.string().describe("azure subscription id"),
+  resourceGroup: z.string().describe("resource group name"),
   bicepTemplateFolder: z
     .string()
     .describe("folder where to place bicep files")
@@ -141,8 +142,12 @@ export function botService(): ResourceDefinition<BotServiceInput> {
       }),
       dev: method({
         body({ config, resource }) {
-          const { resourceGroup, bicepTemplateFolder, messagingEndpoint } =
-            resource.instance.inputs?.create ?? {};
+          const {
+            resourceGroup,
+            bicepTemplateFolder,
+            messagingEndpoint,
+            subscriptionId,
+          } = resource.instance.inputs?.create ?? {};
           let urlIsDynamic: boolean = isResourceReference(messagingEndpoint);
           const cwd = process.cwd();
           const destinationFolder = path.resolve(cwd, bicepTemplateFolder!);
@@ -188,7 +193,7 @@ export function botService(): ResourceDefinition<BotServiceInput> {
                 );
                 if (stdout.trim().toLocaleLowerCase().includes("false")) {
                   const result = await exec(
-                    `az group create --name ${resourceGroup} --location westus`
+                    `az group create --name ${resourceGroup} --location westus --subscription ${subscriptionId}`
                   );
                   return { exists: { stdout, stderr }, create: result };
                 } else {
