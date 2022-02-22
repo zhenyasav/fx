@@ -74,7 +74,7 @@
               "environments": null,
               "globalEnvironmentProperties": null,
               "createdAt": "2022-02-22T15:04:47.4045604+00:00",
-              "updatedAt": "2022-02-22T15:04:47.8453206+00:00",
+              "updatedAt": "2022-02-22T18:51:52.5798196+00:00",
               "appId": "f1c8aa28-39a8-47f0-9c7c-e25afac748c8",
               "appName": "fx",
               "appStudioVersion": "",
@@ -96,10 +96,10 @@
               "configurableTabs": [],
               "staticTabs": [
                 {
-                  "objectId": "a78cda2a-eb24-41e8-9a2d-4b68d2573b81",
+                  "objectId": "125835ca-2b81-4e17-95f6-b25453112eb7",
                   "entityId": "tab-x",
                   "name": "Tab X",
-                  "contentUrl": "https://88cf-174-127-243-36.ngrok.io/",
+                  "contentUrl": "https://7d5a-174-127-243-36.ngrok.io/",
                   "websiteUrl": null,
                   "scopes": [
                     "personal"
@@ -172,7 +172,7 @@
       "outputs": {
         "dev": {
           "port": 3007,
-          "url": "https://88cf-174-127-243-36.ngrok.io"
+          "url": "https://7d5a-174-127-243-36.ngrok.io"
         }
       }
     }
