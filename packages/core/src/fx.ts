@@ -415,9 +415,10 @@ export class Fx {
           options?.description ? " " + options.description : ""
         }:`
       );
+      const oldAnswers = instance?.inputs?.[methodName];
       const input = await promise(
         method.inputs?.({
-          defaults,
+          defaults: { ...defaults, ...oldAnswers },
           questionGenerator: getResourceQuestionGenerator(config),
           resource,
           config,

@@ -59,9 +59,11 @@ export function getQuestions<
   const questions = [];
   function defaultHook(q: Question, key: string) {
     const d = q.default;
-    return (answers: any, ...rest: any[]) => {
+    return (answers: any) => {
       if (typeof options?.defaults == "function") {
         return options.defaults(answers)?.[key] ?? d;
+      } else if (typeof options?.defaults == "object") {
+        return options.defaults[key] ?? d;
       }
       return d;
     };
@@ -76,13 +78,14 @@ export function getQuestions<
     } else if (options?.questionGenerator) {
       const qqns = options.questionGenerator?.(v, k);
       if (qqns) {
-        questions.push(
-          ...qqns
-        );
+        questions.push(...qqns);
       }
     }
   }
-  return questions;
+  return questions?.map((r) => {
+    r.askAnswered = true;
+    return r;
+  });
 }
 
 function noUndefined<T extends object>(o: T) {

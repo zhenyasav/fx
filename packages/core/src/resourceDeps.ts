@@ -33,7 +33,7 @@ export function getDependents(resourceId: string, graph: Graph): string[] {
 export function getDependencyGraph({
   resources,
   methodName,
-  allowReverseDeps = true
+  allowReverseDeps = true,
 }: {
   resources: LoadedResource[];
   methodName: string;
@@ -88,8 +88,7 @@ export function parseReferenceLiteral(literalValue: string): ResourceReference {
 export function generateResourceChoiceQuestions(
   config: LoadedConfiguration,
   shape: z.ZodTypeAny,
-  key: string | number,
-  merge?: Partial<inquirer.DistinctQuestion>
+  key: string | number
 ): inquirer.DistinctQuestion[] {
   const { defaultValue: dv, description, typeName } = shape._def;
   const question: inquirer.DistinctQuestion = {} as any;
