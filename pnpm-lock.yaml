@@ -100,7 +100,7 @@ importers:
   packages/core:
     specifiers:
       '@endemolshinegroup/cosmiconfig-typescript-loader': ^3.0.2
-      '@fx/plugin': workspace:^0.1.0
+      '@fx/plugin': workspace:^0.1
       '@nice/plate': workspace:^0.1.0
       '@swc/cli': ^0.1.55
       '@swc/jest': ^0.2.17

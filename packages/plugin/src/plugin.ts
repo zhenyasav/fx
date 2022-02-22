@@ -171,13 +171,21 @@ export function getResourceDependencies(
 
 export type MethodResult = void | object;
 
+export type MethodInputsContext<TInput, TCreateInput> = {
+  defaults?: Partial<TInput>;
+  resource: LoadedResource<TCreateInput>;
+  config: LoadedConfiguration;
+  questionGenerator?: QuestionGenerator;
+};
+
 export type Method<TInput = any, TCreateInput = TInput> = {
-  inputs?(context: {
-    defaults?: Partial<TInput>;
-    resource: LoadedResource<TCreateInput>;
-    config: LoadedConfiguration;
-    questionGenerator?: QuestionGenerator;
-  }): MaybePromise<TInput>;
+  inputs?(
+    context: MethodInputsContext<TInput, TCreateInput>
+  ): MaybePromise<TInput>;
+  defaults?(
+    answers: Partial<TInput>,
+    context: MethodInputsContext<TInput, TCreateInput>
+  ): Partial<TInput>;
   body?(context: {
     input: TInput;
     resource: LoadedResource<TCreateInput>;
@@ -196,6 +204,8 @@ export type Transform<T, C = any> = (
   context: C
 ) => { [k in keyof T]: any };
 
+export type TypeofFirstArg<T> = T extends (v: infer A) => any ? A : T;
+
 export function method<
   T extends z.ZodObject<z.ZodRawShape>,
   TCreateInput = any
@@ -206,16 +216,25 @@ export function method<
 }: {
   inputShape?: T;
   inputTransform?: Transform<z.infer<T>>;
-  requires?: string[];
-  implies?: string[];
-  body?: Method<z.infer<T>, TCreateInput>["body"];
-}): Method<z.infer<T>, TCreateInput> {
+} & Omit<Method<z.infer<T>, TCreateInput>, "inputs">): Method<
+  z.infer<T>,
+  TCreateInput
+> {
   return inputShape
     ? {
         async inputs(context) {
           const { defaults, questionGenerator } = { ...context };
+          const methodDefaultsFn = rest?.defaults;
           const answers = await inquire(inputShape, {
-            defaults,
+            defaults:
+              typeof methodDefaultsFn == "function"
+                ? (answers: Partial<z.infer<T>>) => {
+                    return methodDefaultsFn(
+                      { ...defaults, ...answers },
+                      context
+                    );
+                  }
+                : defaults,
             questionGenerator,
           });
           return inputTransform

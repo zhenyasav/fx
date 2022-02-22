@@ -1,15 +1,6 @@
 import { z } from "zod";
-import inquirer from "inquirer";
+import inquirer, { Question } from "inquirer";
 import { debug } from "./debug";
-
-export type InputSpec<T = {}> = {
-  questions: inquirer.Question[];
-  defaults: Partial<T>;
-};
-
-export async function fulfillMissingInputs<I = any>(spec: InputSpec<I>) {
-  return inquirer.prompt(spec.questions, spec.defaults) as Promise<I>;
-}
 
 export function getQuestion(shape: z.ZodTypeAny): inquirer.Question | null {
   let defaultValue = void 0,
@@ -50,27 +41,48 @@ export function getQuestion(shape: z.ZodTypeAny): inquirer.Question | null {
   return type ? { message, type, default: defaultValue, validate } : null;
 }
 
-export type QuestionGenerator<T = any> = (
+export type QuestionGenerator<T extends z.ZodRawShape = z.ZodRawShape> = (
   shape: T[keyof T],
   key: keyof T
 ) => inquirer.DistinctQuestion[] | undefined;
 
-export function getQuestions(
-  shape: z.ZodRawShape,
-  defaultGenerator?: QuestionGenerator<z.ZodRawShape>
-) {
-  const q = [];
-  for (let k in shape) {
-    const v = shape[k];
+export type InquireOptions<T extends z.ZodObject<z.ZodRawShape>> = {
+  defaults?:
+    | Partial<z.infer<T>>
+    | ((answers: Partial<z.infer<T>>) => Partial<z.infer<T>>);
+  questionGenerator?: QuestionGenerator<z.ZodRawShape>;
+};
+
+export function getQuestions<
+  T extends z.ZodObject<z.ZodRawShape> = z.ZodObject<z.ZodRawShape>
+>(shape: T, options?: InquireOptions<T>): Question[] {
+  const questions = [];
+  function defaultHook(q: Question, key: string) {
+    const d = q.default;
+    return (answers: any, ...rest: any[]) => {
+      if (typeof options?.defaults == "function") {
+        return options.defaults(answers)?.[key] ?? d;
+      }
+      return d;
+    };
+  }
+  const rawShape = shape._def.shape();
+  for (let k in rawShape) {
+    const v = rawShape[k];
     const qqn = getQuestion(v);
     if (qqn) {
-      q.push({ ...qqn, name: k });
-    } else {
-      const qqns = defaultGenerator?.(v, k);
-      if (qqns) q.push(...qqns);
+      qqn.default = defaultHook(qqn, k);
+      questions.push({ ...qqn, name: k });
+    } else if (options?.questionGenerator) {
+      const qqns = options.questionGenerator?.(v, k);
+      if (qqns) {
+        questions.push(
+          ...qqns
+        );
+      }
     }
   }
-  return q;
+  return questions;
 }
 
 function noUndefined<T extends object>(o: T) {
@@ -86,19 +98,14 @@ function noUndefined<T extends object>(o: T) {
 
 export async function inquire<
   T extends z.ZodObject<z.ZodRawShape> = z.ZodObject<z.ZodRawShape>
->(
-  shape: T,
-  options?: {
-    defaults?: Partial<z.infer<T>>;
-    questionGenerator?: QuestionGenerator<z.infer<T>>;
-  }
-): Promise<z.infer<T>> {
-  const questions = getQuestions(
-    shape._def.shape(),
-    options?.questionGenerator
-  );
+>(shape: T, options?: InquireOptions<T>): Promise<z.infer<T>> {
+  const questions = getQuestions(shape, options);
   debug(questions);
-  const responses = (await inquirer.prompt(questions, options?.defaults)) ?? {};
+  const responses =
+    (await inquirer.prompt(
+      questions,
+      typeof options?.defaults != "function" ? options?.defaults : {}
+    )) ?? {};
   debug(responses);
   return noUndefined(responses);
 }

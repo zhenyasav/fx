@@ -9,7 +9,7 @@ import {
 } from "@fx/plugin";
 import { TeamsAppManifest, IBot } from "@fx/teams-dev-portal";
 import { JSONFile } from "@fx/templates";
-import {  } from "@fx/bots";
+import { BotServiceInput } from "@fx/bots";
 
 export function teamsBot(): ResourceDefinition {
   return {
@@ -19,7 +19,7 @@ export function teamsBot(): ResourceDefinition {
       create: method({
         inputShape: z.object({
           manifest: z
-            .literal("before:manifest")
+            .literal("before:teams-manifest")
             .describe("a Teams manifest file"),
           botService: z
             .literal("azure-bot-service")
@@ -41,24 +41,35 @@ export function teamsBot(): ResourceDefinition {
             transform(existing) {
               // create the tab:
               // figure out the url:
-              if (isResourceReference(input.botService)) {
-                const botref = config.getResource(input.botService);
-
+              if (!isResourceReference(input.botService)) {
+                console.warn(
+                  "bot manifest action: bot service reference not found"
+                );
+                return existing;
               }
-              // const botService = ;
-                // ? void 0
-                // : input.url;
+
+              const botsvc = config.getResource<BotServiceInput>(
+                input.botService
+              );
+
+              // TODO: finish this
+              const botId = botsvc?.instance.outputs.dev.az;
+
+              console.log('found az result', botId);
 
               const bot: IBot = {
                 botId: "",
                 scopes: ["team", "personal", "groupchat"],
+                supportsFiles: false,
+                isNotificationOnly: false,
+                // commandLists ?
               };
 
               existing.bots = existing.bots || [];
               existing.bots.push(bot);
 
               return existing;
-            }
+            },
           });
           return {
             manifest: effect({
