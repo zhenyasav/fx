@@ -5,6 +5,7 @@ import { MaybePromise } from "./promise";
 import { JSONFile, FileOptions } from "@nice/file";
 import { ResourceInstance } from "./resource";
 import { getPatternLocations, Location } from "./locations";
+import { PropertyPath } from "./effects";
 
 export const FRAMEWORK_FOLDER = `.fx`;
 export const PROJECT_FILE_NAME = "project.json";
@@ -76,10 +77,15 @@ export type LoadedConfiguration = {
     refOrId: string | ResourceReference
   ): LoadedResource<TInput> | undefined;
   setResource(instance: ResourceInstance): ResourceInstance;
-  setMethodResult(
-    resoureId: string,
+  setMethodInput(
+    resourceId: string,
     method: string,
-    path: (string | number)[],
+    input: any
+  ): ResourceInstance | undefined;
+  setMethodResult(
+    resourceId: string,
+    method: string,
+    path: PropertyPath,
     result: any
   ): ResourceInstance | undefined;
   removeResource(instanceId: string): boolean;

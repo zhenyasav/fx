@@ -4,6 +4,8 @@ import { ResourceInstance } from "./resource";
 import { Location, getPatternLocations } from "./locations";
 import { LoadedConfiguration } from ".";
 
+export type PropertyPath = (string | number)[];
+
 export namespace Effect {
   export type Base = { $effect: any };
 
@@ -27,15 +29,30 @@ export namespace Effect {
     async?: boolean;
   };
 
-  export type Resource<TArgs extends object = any> = {
-    $effect: "resource";
+  export type ResourceCreate<TArgs extends object = any> = {
+    $effect: "resource-create";
     description?: string;
     instance: ResourceInstance<TArgs>;
   };
 
-  export type RemoveResource = {
-    $effect: "remove-resource";
+  export type ResourceRemove = {
+    $effect: "resource-remove";
     resourceId: string;
+  };
+
+  export type ResourceInput<TArgs extends object = any> = {
+    $effect: "resource-input";
+    resourceId: string;
+    methodName: string;
+    input: TArgs;
+  };
+
+  export type ResourceOutput<TOut extends object = any> = {
+    $effect: "resource-output";
+    resourceId: string;
+    methodName: string;
+    output: TOut;
+    path?: PropertyPath;
   };
 
   export type ResourceMethod<TInput extends object = any> = {
@@ -50,13 +67,39 @@ export namespace Effect {
     | File
     | Function
     | Shell
-    | Resource
+    | ResourceCreate
     | ResourceMethod
-    | RemoveResource;
+    | ResourceRemove
+    | ResourceInput
+    | ResourceOutput;
 }
 
 export function isEffect(o: any): o is Effect.Base {
   return o && o?.$effect;
+}
+
+export function isResourceCreateEffect(
+  o: ResourceEffect<Effect.Any>
+): o is ResourceEffect<Effect.ResourceCreate> {
+  return o && o.effect?.$effect == "resource-create";
+}
+
+export function isResourceInputEffect(
+  o: ResourceEffect<Effect.Any>
+): o is ResourceEffect<Effect.ResourceInput> {
+  return o && o.effect?.$effect == "resource-input";
+}
+
+export function isResourceOutputEffect(
+  o: ResourceEffect<Effect.Any>
+): o is ResourceEffect<Effect.ResourceOutput> {
+  return o && o.effect?.$effect == "resource-output";
+}
+
+export function isResourceMethodEffect(
+  o: ResourceEffect<Effect.Any>
+): o is ResourceEffect<Effect.ResourceMethod> {
+  return o && o.effect?.$effect == "resource-method";
 }
 
 export function effects<T extends Effect.Base = Effect.Any>() {

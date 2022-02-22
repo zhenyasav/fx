@@ -13,6 +13,10 @@ import {
   Plan,
   LoadedConfiguration,
   scrubEffects,
+  isResourceInputEffect,
+  isResourceOutputEffect,
+  isResourceCreateEffect,
+  PropertyPath,
 } from "@fx/plugin";
 import { executeDirectoryTemplate } from "@nice/plate";
 import { randomString } from "./util/random";
@@ -31,12 +35,6 @@ import { getDependents } from ".";
 
 const clone = (o: any) => JSON.parse(JSON.stringify(o));
 
-function isResourceEffect(
-  o: ResourceEffect<Effect.Any>
-): o is ResourceEffect<Effect.Resource> {
-  return o && o.effect?.$effect == "resource";
-}
-
 export type FxOptions = ConfigLoaderOptions;
 
 function printEffect(
@@ -50,27 +48,29 @@ function printEffect(
   );
 }
 
-function isEffectVisible(plan: Plan, config?: LoadedConfiguration) {
-  const { effects } = plan;
+function isEffectVisible() {
+  // // args: plan: Plan, config?: LoadedConfiguration
+  // const { effects } = plan;
   return (e: ResourceEffect) => {
-    if (isResourceEffect(e)) {
-      // const exists = config?.getResource(resourceId(e.effect.instance));
-      const firstResourceEffectForInstance = effects.find(
-        (ex) =>
-          isResourceEffect(ex) &&
-          resourceId(ex.effect.instance) == resourceId(e.effect.instance)
-      );
-      return firstResourceEffectForInstance == e;
-      // if (!exists) {
-      //   if (firstResourceEffectForInstance == e) {
-      //     return true;
-      //   } else return false;
-      // } else {
-      //   return true;
-      // }
-    } else {
-      return true;
-    }
+    return !(isResourceInputEffect(e) || isResourceOutputEffect(e));
+    // if (isResourceEffect(e)) {
+    //   // const exists = config?.getResource(resourceId(e.effect.instance));
+    //   const firstResourceEffectForInstance = effects.find(
+    //     (ex) =>
+    //       isResourceEffect(ex) &&
+    //       resourceId(ex.effect.instance) == resourceId(e.effect.instance)
+    //   );
+    //   return firstResourceEffectForInstance == e;
+    //   // if (!exists) {
+    //   //   if (firstResourceEffectForInstance == e) {
+    //   //     return true;
+    //   //   } else return false;
+    //   // } else {
+    //   //   return true;
+    //   // }
+    // } else {
+    //   return true;
+    // }
   };
 }
 
@@ -120,7 +120,7 @@ export class Fx {
     const indent = "  ";
     const visibleEffects = showHiddenEffects
       ? effects
-      : effects.filter(isEffectVisible(plan, config));
+      : effects.filter(isEffectVisible());
     const desc = visibleEffects
       .map((e) => indent + printEffect(e, config))
       .join(os.EOL);
@@ -131,11 +131,10 @@ export class Fx {
     }\n${desc}`;
   }
   async executePlan(plan: Plan) {
-    // const config = await this.config();
     const { effects, finalConfig } = plan;
     const config = finalConfig ?? (await this.config());
     const createdResources = [];
-    const isVisible = isEffectVisible(plan, config);
+    const isVisible = isEffectVisible();
     const nextPlan: Plan = { effects: [] };
     for (let i in effects) {
       const effect = effects[i];
@@ -143,11 +142,7 @@ export class Fx {
       if (isVisible(effect)) {
         console.log("applying " + printEffect(effect, config));
       }
-      if (
-        config &&
-        isResourceEffect(effect) &&
-        !config.getResource(resourceId(effect.effect.instance))
-      ) {
+      if (config && isResourceCreateEffect(effect)) {
         createdResources.push(effect);
       }
       const result = await effector.apply(effect, {
@@ -284,9 +279,9 @@ export class Fx {
       id: randomString(),
       type,
     };
-    const createResourceEffect: ResourceEffect<Effect.Resource> = {
+    const createResourceEffect: ResourceEffect<Effect.ResourceCreate> = {
       effect: {
-        $effect: "resource",
+        $effect: "resource-create",
         instance: clone(instance),
         description: `create ${resourceId(instance)}`,
       },
@@ -318,7 +313,7 @@ export class Fx {
       effects: [
         ...resources.map((rs) => ({
           effect: {
-            $effect: "remove-resource" as "remove-resource",
+            $effect: "resource-remove" as "resource-remove",
             resourceId: resourceId(rs.instance),
           },
           origin: {
@@ -369,7 +364,8 @@ export class Fx {
     function writeResourceMethodValue(
       sectionKey: "inputs" | "outputs",
       instance: ResourceInstance,
-      value: any
+      value: any,
+      path?: PropertyPath
     ) {
       const existing = config.getResource(resourceId(instance));
       const s = (x: any) => JSON.stringify(x);
@@ -377,21 +373,30 @@ export class Fx {
         !existing?.instance?.[sectionKey]?.[methodName] ||
         s(existing.instance[sectionKey]?.[methodName]) != s(value)
       ) {
-        // const instanceClone = clone(instance);
         const section = (instance[sectionKey] = instance[sectionKey] || {});
         section[methodName] = value;
         const resourceEffect: ResourceEffect = {
-          effect: {
-            $effect: "resource",
-            instance: clone(instance),
-          },
+          effect:
+            sectionKey == "inputs"
+              ? {
+                  $effect: "resource-input",
+                  methodName,
+                  resourceId: resourceId(instance),
+                  input: value,
+                }
+              : {
+                  $effect: "resource-output",
+                  methodName,
+                  resourceId: resourceId(instance),
+                  output: value,
+                  path,
+                },
           origin: {
             method: methodName,
             resourceId: resourceId(instance),
           },
         };
         results.push(resourceEffect);
-        // config.setResource(instanceClone);
       }
     }
 
@@ -438,7 +443,7 @@ export class Fx {
           );
           const [newInstance, ...restOfNewPlan] = newResourcePlan.effects;
           if (newInstance) {
-            const n = newInstance as ResourceEffect<Effect.Resource>;
+            const n = newInstance as ResourceEffect<Effect.ResourceCreate>;
             ref.entity.$resource = resourceId(n.effect.instance);
             results.push(newInstance);
           }
