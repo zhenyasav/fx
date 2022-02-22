@@ -1,3 +1,219 @@
 {
-  "resources": []
+  "resources": [
+    {
+      "id": "7fdf",
+      "type": "teams-bot",
+      "inputs": {
+        "create": {
+          "manifest": {
+            "$resource": "teams-manifest:1c48",
+            "before": true
+          },
+          "botService": {
+            "$resource": "azure-bot-service:03ed"
+          }
+        }
+      },
+      "outputs": {
+        "create": {
+          "manifest": "/Users/zhenya/dev/fx/teams-manifest/manifest.json"
+        },
+        "dev": {
+          "manifest": "/Users/zhenya/dev/fx/teams-manifest/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "1c48",
+      "type": "teams-manifest",
+      "inputs": {
+        "create": {
+          "directory": "teams-manifest",
+          "buildDirectory": "teams-manifest/build",
+          "name": "fx",
+          "description": "fx",
+          "packageName": "com.zhenya.fx",
+          "developerName": "zhenya"
+        }
+      },
+      "outputs": {
+        "create": {
+          "files": [
+            "teams-manifest/resources/color.png",
+            "teams-manifest/resources/outline.png",
+            "teams-manifest/manifest.json"
+          ]
+        },
+        "test": {
+          "errors": {
+            "0": "bots[0].botId | String \"\" does not match regex pattern \"^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$\"."
+          }
+        },
+        "build": {
+          "output": "/Users/zhenya/dev/fx/teams-manifest/build/teams-app.zip"
+        },
+        "dev": {
+          "devPortal": {
+            "app": {
+              "teamsAppId": "72caadc7-3bde-436d-a86f-d4ddaccb1cdc",
+              "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+              "ownerAadId": "36ff5f38-6aef-4a01-940e-be3807b1466c",
+              "userList": [
+                {
+                  "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+                  "aadId": "36ff5f38-6aef-4a01-940e-be3807b1466c",
+                  "displayName": "Zhenya Savchenko",
+                  "userPrincipalName": "zhenyasa@microsoft.com",
+                  "isAdministrator": true
+                }
+              ],
+              "userAppSettings": null,
+              "environments": null,
+              "globalEnvironmentProperties": null,
+              "createdAt": "2022-02-22T11:32:37.4884831+00:00",
+              "updatedAt": "2022-02-22T11:32:37.718424+00:00",
+              "appId": "72caadc7-3bde-436d-a86f-d4ddaccb1cdc",
+              "appName": "fx",
+              "appStudioVersion": "",
+              "version": "1.0.0",
+              "manifestVersion": "1.11",
+              "packageName": "com.zhenya.fx",
+              "shortName": "fx",
+              "longName": "fx",
+              "developerName": "zhenya",
+              "websiteUrl": "https://microsoft.com",
+              "privacyUrl": "https://privacy.microsoft.com/en-us/privacystatement",
+              "termsOfUseUrl": "https://www.microsoft.com/en-us/legal/terms-of-use",
+              "mpnId": "",
+              "shortDescription": "fx",
+              "longDescription": "fx",
+              "colorIcon": "https://devappglobal.blob.core.windows.net/images/72caadc7-3bde-436d-a86f-d4ddaccb1cdc/color/e7c82b20-300b-4790-8c76-3c530ace8524",
+              "outlineIcon": "https://devappglobal.blob.core.windows.net/images/72caadc7-3bde-436d-a86f-d4ddaccb1cdc/outline/43bb8a67-387f-4e4f-86b3-7d4487288db6",
+              "accentColor": "#7B83EB",
+              "configurableTabs": [],
+              "staticTabs": [],
+              "bots": [
+                {
+                  "objectId": "0a3ea0c9-7c84-45b7-aa55-0cda28fbedf9",
+                  "botId": "10fbf2a9-9b2a-4bb6-92f0-5f9e88f64904",
+                  "needsChannelSelector": false,
+                  "isNotificationOnly": false,
+                  "supportsFiles": false,
+                  "supportsCalling": false,
+                  "supportsVideo": false,
+                  "scopes": [
+                    "team",
+                    "personal",
+                    "groupchat"
+                  ],
+                  "teamCommands": [],
+                  "personalCommands": [],
+                  "groupChatCommands": []
+                }
+              ],
+              "connectors": [],
+              "subscriptionOffer": null,
+              "graphConnector": null,
+              "messagingExtensions": [],
+              "validDomains": [],
+              "appStudioChecklistChecked": [],
+              "webApplicationInfoId": null,
+              "webApplicationInfoResource": null,
+              "devicePermissions": [],
+              "applicationPermissions": [],
+              "showLoadingIndicator": false,
+              "isFullScreen": false,
+              "isPublic": false,
+              "defaultInstallScope": null,
+              "defaultGroupCapability": null,
+              "configurableProperties": [],
+              "meetingExtensionDefinition": null,
+              "isTeamsOwned": null,
+              "isBlockable": null,
+              "isCoreApp": null,
+              "isPinnable": null,
+              "isFullTrust": null,
+              "isTenantConfigurable": null,
+              "supportedTenantRegions": null,
+              "applicableLicenseCategories": null,
+              "restrictedTenantTypes": null,
+              "screenshotUrls": null,
+              "keywords": null,
+              "videoUrl": null,
+              "categories": null,
+              "disabledScopes": null,
+              "thirdPartyNoticesUrl": null,
+              "mobileModules": null,
+              "isPreinstallable": null,
+              "activities": null,
+              "hostedCapabilities": null,
+              "validTrouterPaths": null,
+              "industries": null,
+              "appCatalogExtension": null,
+              "authorization": null,
+              "defaultBlockUntilAdminAction": null,
+              "publisherDocsUrl": null,
+              "hasPreviewFeature": false,
+              "localizationInfo": {
+                "defaultLanguageTag": "en-us",
+                "languages": null
+              }
+            }
+          },
+          "browser": "https://teams.microsoft.com/l/app/72caadc7-3bde-436d-a86f-d4ddaccb1cdc?installAppPackage=true&webjoin=true&login_hint=zhenyasa@microsoft.com"
+        }
+      }
+    },
+    {
+      "id": "03ed",
+      "type": "azure-bot-service",
+      "inputs": {
+        "create": {
+          "botDisplayName": "azure-bot-service:03ed",
+          "botServiceName": "azure-bot-service-03ed",
+          "resourceGroup": "azure-bot-service-03ed",
+          "bicepTemplateFolder": "./azure",
+          "messagingEndpoint-type": "tunnel",
+          "messagingEndpoint": {
+            "$resource": "tunnel:b4d4"
+          }
+        }
+      },
+      "outputs": {
+        "create": {
+          "params": "/Users/zhenya/dev/fx/azure/bot-service-parameters.json",
+          "bicep": "/Users/zhenya/dev/fx/azure/bot-service.bicep"
+        },
+        "dev": {
+          "params": "/Users/zhenya/dev/fx/azure/bot-service-parameters.json",
+          "rg": {
+            "exists": {
+              "stdout": "true\n",
+              "stderr": ""
+            }
+          },
+          "az": {
+            "stdout": "{\n  \"id\": \"/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/azure-bot-service-03ed/providers/Microsoft.Resources/deployments/bot-service\",\n  \"location\": null,\n  \"name\": \"bot-service\",\n  \"properties\": {\n    \"correlationId\": \"6db619e9-afa9-4b9d-864f-b8724862ab70\",\n    \"debugSetting\": null,\n    \"dependencies\": [\n      {\n        \"dependsOn\": [\n          {\n            \"id\": \"/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/azure-bot-service-03ed/providers/Microsoft.ManagedIdentity/userAssignedIdentities/azure-bot-service-03ed-msa\",\n            \"resourceGroup\": \"azure-bot-service-03ed\",\n            \"resourceName\": \"azure-bot-service-03ed-msa\",\n            \"resourceType\": \"Microsoft.ManagedIdentity/userAssignedIdentities\"\n          }\n        ],\n        \"id\": \"/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/azure-bot-service-03ed/providers/Microsoft.BotService/botServices/azure-bot-service-03ed\",\n        \"resourceGroup\": \"azure-bot-service-03ed\",\n        \"resourceName\": \"azure-bot-service-03ed\",\n        \"resourceType\": \"Microsoft.BotService/botServices\"\n      },\n      {\n        \"dependsOn\": [\n          {\n            \"id\": \"/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/azure-bot-service-03ed/providers/Microsoft.BotService/botServices/azure-bot-service-03ed\",\n            \"resourceGroup\": \"azure-bot-service-03ed\",\n            \"resourceName\": \"azure-bot-service-03ed\",\n            \"resourceType\": \"Microsoft.BotService/botServices\"\n          }\n        ],\n        \"id\": \"/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/azure-bot-service-03ed/providers/Microsoft.BotService/botServices/azure-bot-service-03ed/channels/MsTeamsChannel\",\n        \"resourceGroup\": \"azure-bot-service-03ed\",\n        \"resourceName\": \"azure-bot-service-03ed/MsTeamsChannel\",\n        \"resourceType\": \"Microsoft.BotService/botServices/channels\"\n      }\n    ],\n    \"duration\": \"PT3.7666907S\",\n    \"error\": null,\n    \"mode\": \"Incremental\",\n    \"onErrorDeployment\": null,\n    \"outputResources\": [\n      {\n        \"id\": \"/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/azure-bot-service-03ed/providers/Microsoft.BotService/botServices/azure-bot-service-03ed\",\n        \"resourceGroup\": \"azure-bot-service-03ed\"\n      },\n      {\n        \"id\": \"/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/azure-bot-service-03ed/providers/Microsoft.BotService/botServices/azure-bot-service-03ed/channels/MsTeamsChannel\",\n        \"resourceGroup\": \"azure-bot-service-03ed\"\n      },\n      {\n        \"id\": \"/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/azure-bot-service-03ed/providers/Microsoft.ManagedIdentity/userAssignedIdentities/azure-bot-service-03ed-msa\",\n        \"resourceGroup\": \"azure-bot-service-03ed\"\n      }\n    ],\n    \"outputs\": {\n      \"msaAppId\": {\n        \"type\": \"String\",\n        \"value\": \"10fbf2a9-9b2a-4bb6-92f0-5f9e88f64904\"\n      },\n      \"msaClientId\": {\n        \"type\": \"String\",\n        \"value\": \"10fbf2a9-9b2a-4bb6-92f0-5f9e88f64904\"\n      },\n      \"msaPrincipalId\": {\n        \"type\": \"String\",\n        \"value\": \"c8448d66-0e9d-41c3-9947-ce3b612dac40\"\n      },\n      \"msaTenantId\": {\n        \"type\": \"String\",\n        \"value\": \"72f988bf-86f1-41af-91ab-2d7cd011db47\"\n      }\n    },\n    \"parameters\": {\n      \"botDisplayName\": {\n        \"type\": \"String\",\n        \"value\": \"azure-bot-service:03ed\"\n      },\n      \"botEndpoint\": {\n        \"type\": \"String\",\n        \"value\": \"https://2724-174-127-243-36.ngrok.io/api/messages\"\n      },\n      \"botServiceName\": {\n        \"type\": \"String\",\n        \"value\": \"azure-bot-service-03ed\"\n      },\n      \"botServiceSku\": {\n        \"type\": \"String\",\n        \"value\": \"F0\"\n      }\n    },\n    \"parametersLink\": null,\n    \"providers\": [\n      {\n        \"id\": null,\n        \"namespace\": \"Microsoft.ManagedIdentity\",\n        \"providerAuthorizationConsentState\": null,\n        \"registrationPolicy\": null,\n        \"registrationState\": null,\n        \"resourceTypes\": [\n          {\n            \"aliases\": null,\n            \"apiProfiles\": null,\n            \"apiVersions\": null,\n            \"capabilities\": null,\n            \"defaultApiVersion\": null,\n            \"locationMappings\": null,\n            \"locations\": [\n              \"westus\"\n            ],\n            \"properties\": null,\n            \"resourceType\": \"userAssignedIdentities\"\n          }\n        ]\n      },\n      {\n        \"id\": null,\n        \"namespace\": \"Microsoft.BotService\",\n        \"providerAuthorizationConsentState\": null,\n        \"registrationPolicy\": null,\n        \"registrationState\": null,\n        \"resourceTypes\": [\n          {\n            \"aliases\": null,\n            \"apiProfiles\": null,\n            \"apiVersions\": null,\n            \"capabilities\": null,\n            \"defaultApiVersion\": null,\n            \"locationMappings\": null,\n            \"locations\": [\n              \"global\"\n            ],\n            \"properties\": null,\n            \"resourceType\": \"botServices\"\n          },\n          {\n            \"aliases\": null,\n            \"apiProfiles\": null,\n            \"apiVersions\": null,\n            \"capabilities\": null,\n            \"defaultApiVersion\": null,\n            \"locationMappings\": null,\n            \"locations\": [\n              \"global\"\n            ],\n            \"properties\": null,\n            \"resourceType\": \"botServices/channels\"\n          }\n        ]\n      }\n    ],\n    \"provisioningState\": \"Succeeded\",\n    \"templateHash\": \"14339081786051125366\",\n    \"templateLink\": null,\n    \"timestamp\": \"2022-02-22T11:40:38.742155+00:00\",\n    \"validatedResources\": null\n  },\n  \"resourceGroup\": \"azure-bot-service-03ed\",\n  \"tags\": null,\n  \"type\": \"Microsoft.Resources/deployments\"\n}\n",
+            "stderr": "WARNING: A new Bicep release is available: v0.4.1272. Upgrade now by running \"az bicep upgrade\".\n",
+            "code": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "b4d4",
+      "type": "tunnel",
+      "inputs": {
+        "create": {
+          "port": 3000
+        }
+      },
+      "outputs": {
+        "dev": {
+          "port": 3000,
+          "url": "https://2724-174-127-243-36.ngrok.io"
+        }
+      }
+    }
+  ]
 }

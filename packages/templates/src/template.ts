@@ -8,6 +8,7 @@ import {
   effect,
   LoadedResource,
   LoadedConfiguration,
+  Method,
 } from "@fx/plugin";
 
 export type TemplateResourceOptions<
@@ -17,6 +18,7 @@ export type TemplateResourceOptions<
   description?: string;
   templateDirectory: string;
   input?: I;
+  defaults?: Method<z.infer<I>, z.infer<I>>["defaults"];
   inputTransform?: Transform<
     z.infer<I>,
     { resource: LoadedResource; config: LoadedConfiguration }
@@ -38,6 +40,7 @@ export function template<
     name,
     input,
     inputTransform,
+    defaults,
     description,
     templateDirectory,
     outputDirectory,
@@ -53,6 +56,7 @@ export function template<
       create: method<I>({
         inputShape: input ?? (templateInput as any),
         inputTransform,
+        defaults,
         async body({ input, resource, ...rest }) {
           const inputXform = (v: any) =>
             inputTransform ? inputTransform?.(v, { resource, ...rest }) : v;

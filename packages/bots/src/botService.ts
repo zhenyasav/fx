@@ -1,5 +1,6 @@
 import path from "path";
-import { z } from "zod";
+import { promisify } from "util";
+import { exec as execCallback } from "child_process";
 import {
   File,
   Plugin,
@@ -9,8 +10,13 @@ import {
   effect,
   isResourceReference,
   resourceId,
+  displayNameToMachineName,
+  azureResourceGroupName,
+  z,
 } from "@fx/plugin";
 import { CreateTunnelInput } from "@fx/tunnel";
+
+const exec = promisify(execCallback);
 
 export const botServiceInput = z.object({
   botDisplayName: z.string().describe("bot display name"),
@@ -36,7 +42,17 @@ export type BotServiceOutput = {
   msaTenantId: string;
 };
 
-export type BotServiceTemplateParameters = {
+export type BicepParameterFile<T extends object> = {
+  $schema: "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#";
+  contentVersion: "1.0.0.0";
+  parameters: {
+    [key in keyof T]: {
+      value: T[key];
+    };
+  };
+};
+
+export type BotServiceParams = {
   botServiceName: string;
   botEndpoint: string;
   botDisplayName: string;
@@ -44,16 +60,6 @@ export type BotServiceTemplateParameters = {
 
 export const BOT_SERVICE_TEMPLATE_FILE = "bot-service.bicep";
 export const BOT_SERVICE_PARAMS_FILE = "bot-service-parameters.json";
-
-function validAzureResourceGroupName(s: string) {
-  const clean = s.replace(/[^a-z0-9A-Z_\(\)\-\.]/g, "-");
-  return clean;
-}
-
-function displayNameToResourceName(s: string) {
-  const clean = s.replace(/\s|[^a-zA-Z0-9]/g, "-").toLowerCase();
-  return clean;
-}
 
 export function botService(): ResourceDefinition<BotServiceInput> {
   return {
@@ -71,12 +77,12 @@ export function botService(): ResourceDefinition<BotServiceInput> {
             botDisplayName: rid,
             botServiceName:
               botDisplayName && botServiceName != rid
-                ? displayNameToResourceName(botDisplayName) +
+                ? displayNameToMachineName(botDisplayName) +
                   (botDisplayName.includes(id) ? "" : `-${id}`)
                 : rid,
-            resourceGroup: validAzureResourceGroupName(
+            resourceGroup: azureResourceGroupName(
               botServiceName && botServiceName != rid
-                ? displayNameToResourceName(botServiceName) +
+                ? displayNameToMachineName(botServiceName) +
                     (botServiceName.includes(id) ? "" : `-${id}`)
                 : rid
             ),
@@ -100,15 +106,26 @@ export function botService(): ResourceDefinition<BotServiceInput> {
           return {
             params: effect({
               $effect: "file",
-              file: new JSONFile<BotServiceTemplateParameters>({
+              file: new JSONFile<BicepParameterFile<BotServiceParams>>({
                 path: [destinationFolder, BOT_SERVICE_PARAMS_FILE],
                 content: {
-                  botServiceName,
-                  botDisplayName,
-                  botEndpoint:
-                    typeof messagingEndpoint == "string"
-                      ? messagingEndpoint
-                      : "",
+                  $schema:
+                    "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+                  contentVersion: "1.0.0.0",
+                  parameters: {
+                    botDisplayName: {
+                      value: botDisplayName,
+                    },
+                    botEndpoint: {
+                      value:
+                        typeof messagingEndpoint == "string"
+                          ? messagingEndpoint
+                          : "",
+                    },
+                    botServiceName: {
+                      value: botServiceName,
+                    },
+                  },
                 },
               }),
             }),
@@ -126,13 +143,7 @@ export function botService(): ResourceDefinition<BotServiceInput> {
         body({ config, resource }) {
           const { resourceGroup, bicepTemplateFolder, messagingEndpoint } =
             resource.instance.inputs?.create ?? {};
-          let url: string | null = null;
-          if (isResourceReference(messagingEndpoint)) {
-            const tunnel =
-              config.getResource<CreateTunnelInput>(messagingEndpoint);
-            const baseUrl = tunnel?.instance.outputs?.url;
-            url = `${baseUrl}/api/messages`;
-          }
+          let urlIsDynamic: boolean = isResourceReference(messagingEndpoint);
           const cwd = process.cwd();
           const destinationFolder = path.resolve(cwd, bicepTemplateFolder!);
           const templateFile = path.resolve(
@@ -144,21 +155,47 @@ export function botService(): ResourceDefinition<BotServiceInput> {
             BOT_SERVICE_PARAMS_FILE
           );
           return {
-            ...(url != null
+            ...(urlIsDynamic
               ? {
                   params: effect({
                     $effect: "file",
                     description: "write bot parameters file",
-                    file: new JSONFile<BotServiceTemplateParameters>({
+                    file: new JSONFile<BicepParameterFile<BotServiceParams>>({
                       path: [destinationFolder, BOT_SERVICE_PARAMS_FILE],
                       transform(existing) {
-                        const { botEndpoint, ...rest } = existing;
-                        return { botEndpoint: url!, ...rest };
+                        let url: string | null = null;
+                        if (isResourceReference(messagingEndpoint)) {
+                          const tunnel =
+                            config.getResource<CreateTunnelInput>(
+                              messagingEndpoint
+                            );
+                          const baseUrl = tunnel?.instance.outputs?.dev?.url;
+                          url = `${baseUrl}/api/messages`;
+                        }
+                        existing.parameters.botEndpoint.value = url!;
+                        return existing;
                       },
                     }),
                   }),
                 }
               : {}),
+            rg: effect({
+              $effect: "function",
+              description: `ensure resource group ${resourceGroup} exists`,
+              async body() {
+                const { stdout, stderr } = await exec(
+                  `az group exists --name ${resourceGroup}`
+                );
+                if (stdout.trim().toLocaleLowerCase().includes("false")) {
+                  const result = await exec(
+                    `az group create --name ${resourceGroup} --location westus`
+                  );
+                  return { exists: { stdout, stderr }, create: result };
+                } else {
+                  return { exists: { stdout, stderr } };
+                }
+              },
+            }),
             az: effect({
               $effect: "shell",
               command: `az deployment group create --resource-group ${resourceGroup} --template-file ${templateFile} --parameters ${paramsFile}`,

@@ -131,8 +131,9 @@ export class Fx {
     }\n${desc}`;
   }
   async executePlan(plan: Plan) {
-    const config = await this.config();
-    const { effects } = plan;
+    // const config = await this.config();
+    const { effects, finalConfig } = plan;
+    const config = finalConfig ?? await this.config();
     const createdResources = [];
     const isVisible = isEffectVisible(plan, config);
     const nextPlan: Plan = { effects: [] };
@@ -397,7 +398,7 @@ export class Fx {
       }
       console.log(
         `planning ${yellow(`[${methodName}]`)} on ${resourceId(instance)}${
-          options?.description ? ' ' + options.description : ""
+          options?.description ? " " + options.description : ""
         }:`
       );
       const input = await promise(

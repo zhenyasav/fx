@@ -5,5 +5,8 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "build"
-  }
+  },
+  "references": [
+    {"path": "../templates"}
+  ]
 }

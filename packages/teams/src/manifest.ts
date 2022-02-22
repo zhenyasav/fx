@@ -1,3 +1,4 @@
+import os from "os";
 import path from "path";
 import open from "open";
 import { cyan } from "chalk";
@@ -6,7 +7,12 @@ import ogfs from "fs";
 import sample from "./fixtures/manifest.json";
 import { template } from "@fx/templates";
 import { ManifestInput, manifestInput } from "./inputs/manifest";
-import { effect, LoadedResource, method } from "@fx/plugin";
+import {
+  effect,
+  LoadedResource,
+  method,
+  displayNameToMachineName,
+} from "@fx/plugin";
 import {
   AppStudioLogin,
   AppStudioClient,
@@ -24,6 +30,18 @@ export function manifest() {
     description: "a Teams application manifest bundle",
     templateDirectory: path.resolve(__dirname, "../templates/manifest"),
     input: manifestInput,
+    defaults(answers, { config }) {
+      const name = path.basename(process.cwd());
+      const username = os.userInfo().username;
+      return {
+        name,
+        description: answers?.name ? answers.name : name,
+        packageName: `com.${username}.${displayNameToMachineName(
+          answers.name ?? name
+        )}`,
+        ...answers,
+      };
+    },
     inputTransform: (input, context) => {
       const {
         config: { configFilePath },
@@ -123,7 +141,10 @@ export function manifest() {
                   const { appId, teamsAppId, appName } = existing;
                   console.log("app exists:", { appName, appId, teamsAppId });
                   const urls: string[] = [];
-                  manifest.staticTabs.forEach((mant) => {
+                  // TODO: this normally shouldn't happen here
+                  // if the API to work with TDP was == manifest schema (is it?)
+                  // there would be no need to translate these
+                  manifest.staticTabs?.forEach((mant) => {
                     const tab = existing?.staticTabs?.find(
                       (t) => t.entityId == mant.entityId
                     );

@@ -14,7 +14,7 @@ resource botService 'Microsoft.BotService/botServices@2021-03-01' = {
   name: botServiceName
   properties: {
     displayName: botDisplayName
-    endpoint: 'https://${botEndpoint}'
+    endpoint: botEndpoint
     msaAppId: managedIdentity.properties.clientId
   }
   sku: {

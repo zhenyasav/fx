@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.11/MicrosoftTeams.schema.json",
   "manifestVersion": "1.11",
   "version": "1.0.0",
-  "id": "cc6225cf-84be-4428-bd70-c13f21ada125",
-  "packageName": "com.zhenya.app",
+  "id": "72caadc7-3bde-436d-a86f-d4ddaccb1cdc",
+  "packageName": "com.zhenya.fx",
   "developer": {
     "name": "zhenya",
     "privacyUrl": "https://privacy.microsoft.com/en-us/privacystatement",
@@ -13,45 +13,27 @@
   },
   "accentColor": "#7B83EB",
   "name": {
-    "short": "foobar",
-    "full": "foobar"
+    "short": "fx",
+    "full": "fx"
   },
   "description": {
-    "short": "An app built with Teams Toolkit",
-    "full": "An app built with Teams Toolkit"
+    "short": "fx",
+    "full": "fx"
   },
   "icons": {
     "outline": "resources/color.png",
     "color": "resources/color.png"
   },
-  "staticTabs": [
+  "bots": [
     {
-      "name": "friendlyname",
+      "botId": "10fbf2a9-9b2a-4bb6-92f0-5f9e88f64904",
       "scopes": [
-        "personal"
+        "team",
+        "personal",
+        "groupchat"
       ],
-      "entityId": "com.foobar.short"
-    },
-    {
-      "name": "",
-      "scopes": [
-        "personal"
-      ],
-      "entityId": ""
-    },
-    {
-      "name": "tab1",
-      "scopes": [
-        "personal"
-      ],
-      "entityId": "tab1"
-    },
-    {
-      "name": "tab2",
-      "scopes": [
-        "personal"
-      ],
-      "entityId": "tab2"
+      "supportsFiles": false,
+      "isNotificationOnly": false
     }
   ]
 }

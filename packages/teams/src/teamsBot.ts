@@ -6,38 +6,41 @@ import {
   effect,
   isResourceReference,
   z,
+  resourceId,
 } from "@fx/plugin";
 import { TeamsAppManifest, IBot } from "@fx/teams-dev-portal";
 import { JSONFile } from "@fx/templates";
-import { BotServiceInput } from "@fx/bots";
+// import { BotServiceInput } from "@fx/bots";
 
-export function teamsBot(): ResourceDefinition {
+export const teamsBotInput = z.object({
+  manifest: z
+    .literal("before:teams-manifest")
+    .describe("a Teams manifest file"),
+  botService: z.literal("azure-bot-service").describe("an Azure Bot Service"),
+});
+
+export type TeamsBotInput = z.infer<typeof teamsBotInput>;
+
+export function teamsBot(): ResourceDefinition<TeamsBotInput> {
   return {
     type: "teams-bot",
     description: "an Azure Bot Service bot connected to Teams",
     methods: {
       create: method({
-        inputShape: z.object({
-          manifest: z
-            .literal("before:teams-manifest")
-            .describe("a Teams manifest file"),
-          botService: z
-            .literal("azure-bot-service")
-            .describe("an Azure Bot Service"),
-        }),
-        body({ input, config }) {
+        inputShape: teamsBotInput,
+        body({ input, config, resource }) {
           // find a reference to the manifest resource
           const manifestRef = input.manifest as any as ResourceReference;
           const manifestResource = config.getResource(manifestRef);
           if (!manifestResource)
             throw new Error(`resource ${manifestRef?.$resource} not found`);
-
+          const p = [
+            path.dirname(config.configFilePath),
+            manifestResource.instance.inputs?.create?.directory!,
+            "manifest.json",
+          ];
           const file = new JSONFile<TeamsAppManifest>({
-            path: [
-              path.dirname(config.configFilePath),
-              manifestResource.instance.inputs?.create?.directory!,
-              "manifest.json",
-            ],
+            path: p,
             transform(existing) {
               // create the tab:
               // figure out the url:
@@ -48,20 +51,12 @@ export function teamsBot(): ResourceDefinition {
                 return existing;
               }
 
-              const botsvc = config.getResource<BotServiceInput>(
-                input.botService
-              );
-
-              // TODO: finish this
-              const botId = botsvc?.instance.outputs.dev.az;
-
-              console.log('found az result', botId);
-
               const bot: IBot = {
-                botId: "",
+                botId: resourceId(resource.instance), // will do during dev
                 scopes: ["team", "personal", "groupchat"],
                 supportsFiles: false,
                 isNotificationOnly: false,
+
                 // commandLists ?
               };
 
@@ -74,8 +69,55 @@ export function teamsBot(): ResourceDefinition {
           return {
             manifest: effect({
               $effect: "file",
-              description: "add bot definition to manifest",
+              description: "update botId in manifest bot definition",
               file,
+            }),
+          };
+        },
+      }),
+      dev: method({
+        body({ resource, config }) {
+          const manifestRef = resource.instance.inputs?.create
+            ?.manifest as any as ResourceReference;
+          const manifestResource = config.getResource(manifestRef);
+          if (!manifestResource)
+            throw new Error(`resource ${manifestRef?.$resource} not found`);
+          const p = [
+            path.dirname(config.configFilePath),
+            manifestResource.instance.inputs?.create?.directory!,
+            "manifest.json",
+          ];
+          return {
+            manifest: effect({
+              $effect: "file",
+              description: "update botId from azure deploy in manifest",
+              file: new JSONFile<TeamsAppManifest>({
+                path: p,
+                transform(existing) {
+                  const botServiceRef =
+                    resource.instance.inputs?.create?.botService;
+                  if (!isResourceReference(botServiceRef)) {
+                    console.warn("unable to find bot service reference");
+                    return existing;
+                  }
+                  const botService = config.getResource(botServiceRef);
+                  const azStdout =
+                    botService?.instance?.outputs?.dev?.az?.stdout;
+                  const azResult = JSON.parse(azStdout);
+                  const { outputs } = azResult.properties;
+                  console.log('bot service outputs', outputs);
+                  const botId = outputs?.msaAppId?.value;
+
+                  const bot = existing?.bots?.find((b) => {
+                    return b.botId == resourceId(resource.instance);
+                  }); // TODO: do this better
+                  if (bot) {
+                    bot.botId = botId;
+                    console.log('amended teams manifest bot declaration:', bot);
+                  }
+                  return existing;
+                },
+              }),
             }),
           };
         },

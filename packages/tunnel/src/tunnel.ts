@@ -43,7 +43,12 @@ export function tunnel(): TunnelResourceDefinition {
               description: "start ngrok",
               async body() {
                 const url = await ngrok.connect(port);
-                console.log(`started ngrok:`, url, `http://localhost:${port}`);
+                console.log(
+                  `started ngrok:`,
+                  url,
+                  ">",
+                  `http://localhost:${port}`
+                );
                 return url;
               },
             }),

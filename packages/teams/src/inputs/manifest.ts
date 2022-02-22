@@ -4,14 +4,6 @@ import os from "os";
 const username = os.userInfo().username;
 
 export const manifestInput = z.object({
-  directory: z
-    .string()
-    .describe("choose a folder where to store the manifest and icons")
-    .default("./teams-manifest"),
-  buildDirectory: z
-    .string()
-    .describe("choose a folder where to produce the teams app zip bundle")
-    .default("./teams-manifest/build"),
   name: z.string().describe("enter a short, friendly application name"),
   description: z
     .string()
@@ -25,6 +17,14 @@ export const manifestInput = z.object({
     .string()
     .describe("enter your publisher name")
     .default(username),
+  directory: z
+    .string()
+    .describe("choose a folder where to store the manifest and icons")
+    .default("./teams-manifest"),
+  buildDirectory: z
+    .string()
+    .describe("choose a folder where to produce the teams app zip bundle")
+    .default("./teams-manifest/build"),
 });
 
 export type ManifestInput = z.infer<typeof manifestInput>;

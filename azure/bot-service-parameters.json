@@ -1,5 +1,15 @@
 {
-  "botServiceName": "foobot1",
-  "botDisplayName": "FooBot1",
-  "botEndpoint": ""
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "botDisplayName": {
+      "value": "azure-bot-service:03ed"
+    },
+    "botEndpoint": {
+      "value": "https://2724-174-127-243-36.ngrok.io/api/messages"
+    },
+    "botServiceName": {
+      "value": "azure-bot-service-03ed"
+    }
+  }
 }
