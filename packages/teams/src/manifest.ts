@@ -12,6 +12,7 @@ import {
   LoadedResource,
   method,
   displayNameToMachineName,
+  resourceId,
 } from "@fx/plugin";
 import {
   AppStudioLogin,
@@ -153,9 +154,27 @@ export function manifest() {
                       urls.push(tab.contentUrl);
                     }
                   });
-                  console.log("updating app with tab urls:", urls.join(", "));
-                  await AppStudioClient.updateApp(teamsAppId!, existing, token);
-                  return { app: existing };
+                  manifest.bots?.forEach((bot, i) => {
+                    const exbot = existing?.bots?.[i];
+                    if (exbot) {
+                      console.log(
+                        "setting bot id was",
+                        exbot.botId,
+                        "should",
+                        bot.botId
+                      );
+                      exbot.botId = bot.botId;
+                    }
+                  });
+                  console.log("updating app definition with TDP...");
+                  const upresult = await AppStudioClient.updateApp(
+                    teamsAppId!,
+                    existing,
+                    token
+                  );
+                  console.log("TDP update ok.");
+                  console.log(upresult);
+                  return { app: upresult };
                 }
               },
             }),
@@ -163,12 +182,16 @@ export function manifest() {
               $effect: "function",
               description: "open a browser window to your app",
               async body() {
-                const res = resource as LoadedResource<ManifestInput>;
+                const res = config.getResource(
+                  resourceId(resource.instance)
+                ) as LoadedResource<ManifestInput>;
                 const output = res.instance.outputs?.dev?.devPortal;
-                if (!output)
+                if (!output?.app) {
+                  console.log("tdp output:", output);
                   throw new Error(
                     "cannot find app registration from Teams Dev Portal"
                   );
+                }
                 const launchUrl = teamsAppLaunchUrl(output.app);
                 console.log("open:", cyan(launchUrl));
                 await open(launchUrl, {

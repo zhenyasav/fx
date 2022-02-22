@@ -3,13 +3,13 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "botDisplayName": {
-      "value": "Fx Test Bot"
+      "value": "fx4"
     },
     "botEndpoint": {
-      "value": "https://2724-174-127-243-36.ngrok.io/api/messages"
+      "value": "https://ad6d-174-127-243-36.ngrok.io/api/messages"
     },
     "botServiceName": {
-      "value": "fx-test-bot-03ed"
+      "value": "fx4-80a2"
     }
   }
 }

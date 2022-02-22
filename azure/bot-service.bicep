@@ -1,7 +1,8 @@
 param botServiceName string
 param botEndpoint string
 param botDisplayName string = botServiceName
-param botServiceSku string = 'F0'
+// param botServiceSku string = 'F0'
+param botServiceSku string = 'S1'
 
 resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
   name: '${botServiceName}-msa'

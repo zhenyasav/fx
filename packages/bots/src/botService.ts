@@ -21,7 +21,9 @@ const exec = promisify(execCallback);
 export const botServiceInput = z.object({
   botDisplayName: z.string().describe("bot display name"),
   botServiceName: z.string().describe("azure bot service name"),
-  subscriptionId: z.string().describe("azure subscription id"),
+  subscriptionId: z
+    .string()
+    .describe("azure subscription id (blank for default)"),
   resourceGroup: z.string().describe("resource group name"),
   bicepTemplateFolder: z
     .string()
@@ -193,7 +195,9 @@ export function botService(): ResourceDefinition<BotServiceInput> {
                 );
                 if (stdout.trim().toLocaleLowerCase().includes("false")) {
                   const result = await exec(
-                    `az group create --name ${resourceGroup} --location westus --subscription ${subscriptionId}`
+                    `az group create --name ${resourceGroup} --location eastus${
+                      subscriptionId ? ` --subscription ${subscriptionId}` : ""
+                    }`
                   );
                   return { exists: { stdout, stderr }, create: result };
                 } else {
