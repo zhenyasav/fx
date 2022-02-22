@@ -6,6 +6,7 @@ import {
   ResourceDefinition,
   ResourceReference,
   isResourceReference,
+  displayNameToMachineName,
 } from "@fx/plugin";
 import { JSONFile } from "@fx/templates";
 import { IStaticTab, TeamsAppManifest } from "@fx/teams-dev-portal";
@@ -17,14 +18,17 @@ export const tabInput = z.object({
   manifest: z
     .literal("before:teams-manifest")
     .describe("specify teams manifest"),
-  id: z.string().describe("enter a new short machine identifier for the tab"),
   name: z.string().describe("enter the friendly tab name"),
-  url: z
+  id: z.string().describe("enter a new short machine identifier for the tab"),
+  hostname: z
     .union([
-      z.string().describe("enter the https url of the tab"),
-      z.literal("tunnel").describe("use a tunnel resource"),
+      z.literal("tunnel").describe("use hostname of a tunnel resource"),
+      z.string().describe("enter the https hostname of the tab (without path)"),
     ])
-    .describe("identify the tab URL"),
+    .describe("identify the tab hostname"),
+  path: z
+    .string()
+    .describe("enter a url path for the tab (without the hostname):"),
 });
 
 export type TabInput = z.infer<typeof tabInput>;
@@ -36,6 +40,12 @@ export function tab(): ResourceDefinition<TabInput> {
     methods: {
       create: method({
         inputShape: tabInput,
+        defaults(answers) {
+          return {
+            id: answers?.name ? displayNameToMachineName(answers?.name) : "",
+            ...answers,
+          };
+        },
         async body({ input, config }) {
           // find a reference to the manifest resource
           const manifestRef = input.manifest as any as ResourceReference;
@@ -52,9 +62,9 @@ export function tab(): ResourceDefinition<TabInput> {
             transform(existing) {
               // create the tab:
               // figure out the url:
-              const contentUrl = isResourceReference(input.url)
+              const contentUrl = isResourceReference(input.hostname)
                 ? void 0
-                : input.url;
+                : new URL(input.path, input.hostname).href;
 
               const tab: IStaticTab = {
                 name: input.name,
@@ -80,9 +90,9 @@ export function tab(): ResourceDefinition<TabInput> {
       }),
       dev: method({
         body({ resource, config }) {
-          const url = resource.instance.inputs?.create?.url;
+          const hostname = resource.instance.inputs?.create?.hostname;
           const manifest = resource.instance.inputs?.create?.manifest;
-          if (isResourceReference(url) && isResourceReference(manifest)) {
+          if (isResourceReference(hostname) && isResourceReference(manifest)) {
             const manifestResource =
               config.getResource<ManifestInput>(manifest);
             const dir =
@@ -95,7 +105,8 @@ export function tab(): ResourceDefinition<TabInput> {
                   path: [dir, "manifest.json"],
                   transform(manifestDoc) {
                     // get the tunnel referenced resource
-                    const tunnel = config.getResource<CreateTunnelInput>(url);
+                    const tunnel =
+                      config.getResource<CreateTunnelInput>(hostname);
                     // extract the url from it's last output
                     const tunnelUrl = tunnel?.instance.outputs?.dev?.url;
                     // get the identifier of this tab
@@ -106,7 +117,9 @@ export function tab(): ResourceDefinition<TabInput> {
                     );
                     // set the content url
                     if (tab) {
-                      tab.contentUrl = tunnelUrl;
+                      const pname =
+                        resource.instance.inputs?.create?.path ?? "";
+                      tab.contentUrl = new URL(pname, tunnelUrl).href;
                     }
                     // return the manifest to write to disk
                     return manifestDoc;
