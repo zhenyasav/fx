@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import yargs from "yargs";
-import { Fx, resourceId } from "@fx/core";
+import { Fx } from "@fx/core";
 import {
   printLogo,
   printResourceInstance,
@@ -43,9 +43,10 @@ async function executePlan(dry: boolean, plan: Plan) {
         if (created.length) {
           info("new resources:");
           const config = await fx.requireConfig();
-          const newResources = created.map(
-            (c) => config.getResource(resourceId(c.effect.instance))!
-          );
+          const newResources = created.map((c) => ({
+            instance: c.instance,
+            definition: config.getResourceDefinition(c.instance.type),
+          }));
           console.group();
           printResources(newResources, { methods: true });
           console.groupEnd();
@@ -265,7 +266,7 @@ const parser = yargs(process.argv.slice(2))
         methodName,
         selectedResources ? { resources: selectedResources } : {}
       );
-      info(`invoking ${yellow(`[${methodName}]`)}:`);
+      // info(`invoking ${yellow(`[${methodName}]`)}:`);
       if (plan) await executePlan(dry, plan);
     }
   )

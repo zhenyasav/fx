@@ -16,7 +16,7 @@ import {
   ResourceEffect,
 } from "@fx/plugin";
 
-import { gray, yellow, cyan } from "chalk";
+import { gray, yellow } from "chalk";
 
 export type EffectorContext = {
   config?: LoadedConfiguration;
@@ -126,10 +126,32 @@ const ResourceEffector: Effector<ResourceEffect.OutputEffect, EffectorContext> =
         );
       const effector = getEffector(effect);
       const result = await effector.apply(effect, c);
-      config.setMethodResult(resourceId, methodName, path ?? [], result);
+      if (resourceId && methodName && typeof result != "undefined")
+        config.setMethodResult(resourceId, methodName, path ?? [], result);
       await config.projectFile.save();
     },
   };
+
+const ResourceMethod: Effector<ResourceEffect.Method, EffectorContext> = {
+  describe(e) {
+    const { methodName } = e;
+    return `run method ${yellow(`[${methodName}]`)}`;
+  },
+  async apply(e, c) {
+    const { methodName, resourceId, input } = e;
+    const { config } = c;
+    if (!config)
+      throw new Error(
+        "a valid fx project configuration is required to work with resources"
+      );
+    console.log("");
+    return c.planMethod?.(methodName, {
+      resources: [config.getResource(resourceId)!],
+      input,
+      config,
+    });
+  },
+};
 
 const ResourceEffectors: EffectorSet<ResourceEffect.Any, EffectorContext> = {
   "resource-create": ResourceCreate,
@@ -137,6 +159,7 @@ const ResourceEffectors: EffectorSet<ResourceEffect.Any, EffectorContext> = {
   "resource-input": ResourceInput,
   "resource-output": ResourceOutput,
   "resource-effect": ResourceEffector,
+  "resource-method": ResourceMethod,
 };
 
 export function getResourceEffector<
@@ -231,32 +254,10 @@ const Shell: Effector<Effect.Shell, EffectorContext> = {
   },
 };
 
-const ResourceMethod: Effector<Effect.ResourceMethod<any>, EffectorContext> = {
-  describe(e) {
-    const { method } = e;
-    return `run method ${yellow(`[${method}]`)}`;
-  },
-  async apply(e, c) {
-    const { method, resourceId, input } = e;
-    const { config } = c;
-    if (!config)
-      throw new Error(
-        "a valid fx project configuration is required to work with resources"
-      );
-    console.log("");
-    return c.planMethod?.(method, {
-      resources: [config.getResource(resourceId)!],
-      input,
-      config,
-    });
-  },
-};
-
 const Effectors: EffectorSet<Effect.Any, EffectorContext> = {
   file: File,
   function: Function,
   shell: Shell,
-  "resource-method": ResourceMethod,
 };
 
 export function getEffector<T extends Effect.Any = Effect.Any>(

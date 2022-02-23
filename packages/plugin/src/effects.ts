@@ -29,15 +29,7 @@ export namespace Effect {
     async?: boolean;
   };
 
-  export type ResourceMethod<TInput extends object = any> = {
-    $effect: "resource-method";
-    description?: string;
-    resourceId: string;
-    method: string;
-    input?: TInput;
-  };
-
-  export type Any = File | Function | Shell | ResourceMethod;
+  export type Any = File | Function | Shell;
 }
 
 export function isEffect(o: any): o is Effect.Base {
@@ -103,7 +95,7 @@ export function getEffectLocations<T extends Effect.Base = Effect.Any>(
 }
 
 export namespace ResourceEffect {
-  export type Base = Effect.Base & { resourceId: string };
+  export type Base = { resourceId?: string };
 
   export type Create<TArgs extends object = any> = {
     $effect: "resource-create";
@@ -134,36 +126,43 @@ export namespace ResourceEffect {
   export type OutputEffect<TEffect extends Effect.Base = Effect.Any> = {
     $effect: "resource-effect";
     effect: TEffect;
+    resourceId?: string;
+    methodName?: string;
+    path?: PropertyPath;
+  };
+
+  export type Method<TInput extends object = any> = {
+    $effect: "resource-method";
+    description?: string;
     resourceId: string;
     methodName: string;
-    path?: PropertyPath;
+    input?: TInput;
   };
 
   export type Any<TEffect extends Effect.Base = Effect.Any> =
     ResourceEffect.Base &
-      (Create | Remove | Input | Output | OutputEffect<TEffect>);
+      (Create | Remove | Input | Output | OutputEffect<TEffect> | Method);
 }
 
-export const resourceEffectTypes = [
+export const resourceEffectTypes: ResourceEffect.Any["$effect"][] = [
   "resource-create",
   "resource-remove",
   "resource-input",
   "resource-output",
   "resource-effect",
+  "resource-method",
 ];
 
 export function isResourceEffect(o: Effect.Base): o is ResourceEffect.Any {
   return o && o.$effect && resourceEffectTypes.indexOf(o.$effect) >= 0;
 }
 
-export function isResourceCreateEffect(
-  e: ResourceEffect.Base
-): e is ResourceEffect.Create {
+export function isResourceCreateEffect(e: any): e is ResourceEffect.Create {
   return e?.$effect == "resource-create";
 }
 
 export function isResourceOutputEffect(
-  e: ResourceEffect.Base
+  e: any
 ): e is ResourceEffect.OutputEffect {
   return e?.$effect == "resource-effect";
 }

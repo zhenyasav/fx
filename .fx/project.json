@@ -1,19 +1,19 @@
 {
   "resources": [
     {
-      "id": "e0ac",
+      "id": "776b",
       "type": "teams-tab",
       "inputs": {
         "create": {
           "manifest": {
-            "$resource": "teams-manifest:8101",
+            "$resource": "teams-manifest:1cad",
             "before": true
           },
-          "name": "tab-two",
-          "id": "tab-two",
+          "name": "",
+          "id": "",
           "hostname-type": "tunnel",
           "hostname": {
-            "$resource": "tunnel:3d51"
+            "$resource": "tunnel:6df6"
           },
           "path": ""
         }
@@ -32,15 +32,15 @@
       }
     },
     {
-      "id": "8101",
+      "id": "1cad",
       "type": "teams-manifest",
       "inputs": {
         "create": {
           "directory": "teams-manifest",
           "buildDirectory": "teams-manifest/build",
-          "name": "fxtwo",
-          "description": "fxtwo",
-          "packageName": "com.zhenya.fxtwo",
+          "name": "fx",
+          "description": "fx",
+          "packageName": "com.zhenya.fx",
           "developerName": "zhenya"
         }
       },
@@ -82,7 +82,7 @@
                 "dir": "teams-manifest",
                 "base": "manifest.json",
                 "ext": ".json",
-                "content": "{\n  \"$schema\": \"https://developer.microsoft.com/json-schemas/teams/v1.11/MicrosoftTeams.schema.json\",\n  \"manifestVersion\": \"1.11\",\n  \"version\": \"1.0.0\",\n  \"id\": \"da45fe20-141e-4d21-86f8-50aa842bea26\",\n  \"packageName\": \"com.zhenya.fxtwo\",\n  \"developer\": {\n    \"name\": \"zhenya\",\n    \"privacyUrl\": \"https://privacy.microsoft.com/en-us/privacystatement\",\n    \"termsOfUseUrl\": \"https://www.microsoft.com/en-us/legal/terms-of-use\",\n    \"websiteUrl\": \"https://microsoft.com\",\n    \"mpnId\": \"\"\n  },\n  \"accentColor\": \"#7B83EB\",\n  \"name\": {\n    \"short\": \"fxtwo\",\n    \"full\": \"fxtwo\"\n  },\n  \"description\": {\n    \"short\": \"fxtwo\",\n    \"full\": \"fxtwo\"\n  },\n  \"icons\": {\n    \"outline\": \"resources/color.png\",\n    \"color\": \"resources/color.png\"\n  }\n}",
+                "content": "{\n  \"$schema\": \"https://developer.microsoft.com/json-schemas/teams/v1.11/MicrosoftTeams.schema.json\",\n  \"manifestVersion\": \"1.11\",\n  \"version\": \"1.0.0\",\n  \"id\": \"1b621478-9139-4b93-8e91-89607485127a\",\n  \"packageName\": \"com.zhenya.fx\",\n  \"developer\": {\n    \"name\": \"zhenya\",\n    \"privacyUrl\": \"https://privacy.microsoft.com/en-us/privacystatement\",\n    \"termsOfUseUrl\": \"https://www.microsoft.com/en-us/legal/terms-of-use\",\n    \"websiteUrl\": \"https://microsoft.com\",\n    \"mpnId\": \"\"\n  },\n  \"accentColor\": \"#7B83EB\",\n  \"name\": {\n    \"short\": \"fx\",\n    \"full\": \"fx\"\n  },\n  \"description\": {\n    \"short\": \"fx\",\n    \"full\": \"fx\"\n  },\n  \"icons\": {\n    \"outline\": \"resources/color.png\",\n    \"color\": \"resources/color.png\"\n  }\n}",
                 "allowOverwrite": true
               }
             }
@@ -98,7 +98,34 @@
       }
     },
     {
-      "id": "3d51",
+      "id": "6df6",
+      "type": "tunnel",
+      "inputs": {
+        "create": {
+          "port": 3000
+        }
+      }
+    },
+    {
+      "id": "3bdb",
+      "type": "tunnel",
+      "inputs": {
+        "create": {
+          "port": 3000
+        }
+      }
+    },
+    {
+      "id": "fbc5",
+      "type": "tunnel",
+      "inputs": {
+        "create": {
+          "port": 3000
+        }
+      }
+    },
+    {
+      "id": "dda7",
       "type": "tunnel",
       "inputs": {
         "create": {

@@ -14,11 +14,11 @@ import {
   LoadedConfiguration,
   scrubEffects,
   PropertyPath,
-  isResourceCreateEffect
+  isResourceCreateEffect,
 } from "@fx/plugin";
 import { executeDirectoryTemplate } from "@nice/plate";
 import { randomString } from "./util/random";
-import { getEffector, getResourceEffector } from "./effectors";
+import { getResourceEffector } from "./effectors";
 import { ConfigLoaderOptions, ConfigLoader } from "./config";
 import {
   getResourceQuestionGenerator,
@@ -41,7 +41,10 @@ function printEffect(
 ): string {
   const effector = getResourceEffector(e);
   const { resourceId } = e;
-  return [cyan(resourceId), effector.describe(e, { config })].join(" ");
+  return [
+    resourceId ? cyan(resourceId) : "",
+    effector.describe(e, { config }),
+  ].join(" ");
 }
 
 function isEffectVisible() {
@@ -125,24 +128,30 @@ export class Fx {
       if (config && isResourceCreateEffect(effect)) {
         createdResources.push(effect);
       }
+
       const result = await effector.apply(effect, {
         config,
         planMethod: (method, options) => this.planMethod(method, options),
       });
-      if (
-        !isResourceInputEffect(effect) &&
-        !isResourceOutputEffect(effect) &&
-        !isResourceCreateEffect(effect) &&
-        typeof result != "undefined"
-      ) {
-        if (isPlan(result)) {
-          nextPlan.effects.push(...result.effects);
-        } else if (effect.origin && config) {
-          const { resourceId, method, path } = effect.origin;
-          config.setMethodResult(resourceId, method, path ?? [], result);
-          await config.projectFile.save();
-        }
+
+      if (isPlan(result)) {
+        nextPlan.effects.push(...result.effects);
       }
+
+      // if (
+      //   !isResourceInputEffect(effect) &&
+      //   !isResourceOutputEffect(effect) &&
+      //   !isResourceCreateEffect(effect) &&
+      //   typeof result != "undefined"
+      // ) {
+      //   if (isPlan(result)) {
+      //     nextPlan.effects.push(...result.effects);
+      //   } else if (effect.origin && config) {
+      //     const { resourceId, method, path } = effect.origin;
+      //     config.setMethodResult(resourceId, method, path ?? [], result);
+      //     await config.projectFile.save();
+      //   }
+      // }
     }
     return {
       created: createdResources,
@@ -199,17 +208,12 @@ export class Fx {
           : getDependentResourceSequence(rr, config);
         plan.effects.push(
           ...sequence.map((res) => {
-            return {
-              effect: {
-                $effect: "resource-method" as "resource-method",
-                method: "create",
-                resourceId: resourceId(res.instance),
-              },
-              origin: {
-                resourceId: resourceId(res.instance),
-                method: "create",
-              },
+            const reInitEffect: ResourceEffect.Method = {
+              $effect: "resource-method",
+              methodName: "create",
+              resourceId: resourceId(res.instance),
             };
+            return reInitEffect;
           })
         );
       }
@@ -225,19 +229,23 @@ export class Fx {
         outputDirectory: cwd,
       });
       if (files?.length) {
-        const filesPlan: ResourceEffect[] = files.map((file) => ({
-          effect: {
-            $effect: "file",
-            file,
-          },
-        }));
+        const filesPlan: ResourceEffect.OutputEffect<Effect.File>[] = files.map(
+          (file) => ({
+            $effect: "resource-effect",
+            effect: {
+              $effect: "file",
+              file,
+            },
+          })
+        );
         const plan: Plan = {
           effects: [
             ...filesPlan,
             {
+              $effect: "resource-effect",
               effect: {
-                description: "add @fx/core to dev dependencies",
                 $effect: "shell",
+                description: "add @fx/core to dev dependencies",
                 command: "npm i -D @fx/core",
               },
             },
@@ -264,16 +272,11 @@ export class Fx {
       id: randomString(),
       type,
     };
-    const createResourceEffect: ResourceEffect<Effect.ResourceCreate> = {
-      effect: {
-        $effect: "resource-create",
-        instance: clone(instance),
-        description: `create ${resourceId(instance)}`,
-      },
-      origin: {
-        resourceId: resourceId(instance),
-        method: "create",
-      },
+    const createResourceEffect: ResourceEffect.Create = {
+      $effect: "resource-create",
+      description: `create ${resourceId(instance)}`,
+      resourceId: resourceId(instance),
+      instance: clone(instance),
     };
     conf.setResource(instance);
     const createplan = await this.planMethod("create", {
@@ -297,14 +300,8 @@ export class Fx {
       finalConfig: config,
       effects: [
         ...resources.map((rs) => ({
-          effect: {
-            $effect: "resource-remove" as "resource-remove",
-            resourceId: resourceId(rs.instance),
-          },
-          origin: {
-            resourceId: resourceId(rs.instance),
-            method: "remove",
-          },
+          $effect: "resource-remove" as "resource-remove",
+          resourceId: resourceId(rs.instance),
         })),
       ],
     };
@@ -324,7 +321,7 @@ export class Fx {
       : await this.getResourcesWithMethod(methodName);
     if (!resources?.length) return null;
 
-    const results: ResourceEffect<Effect.Any>[] = [];
+    const results: ResourceEffect.Any[] = [];
     const config = options?.config ?? (await this.requireConfig()).clone();
 
     function orderResources(resources: LoadedResource[]): LoadedResource[] {
@@ -340,7 +337,7 @@ export class Fx {
       }
       const sequence = solve(graph);
       const combined = uniq([...sequence, ...independents]);
-      return combined.map((id) => config.getResource({ $resource: id })!);
+      return combined.map((id) => config.getResource(id)!);
     }
 
     const ordered =
@@ -354,34 +351,30 @@ export class Fx {
     ) {
       const existing = config.getResource(resourceId(instance));
       const s = (x: any) => JSON.stringify(x);
-      if (
-        !existing?.instance?.[sectionKey]?.[methodName] ||
-        s(existing.instance[sectionKey]?.[methodName]) != s(value)
-      ) {
+      const methodValueDoesntExist =
+        !existing?.instance?.[sectionKey]?.[methodName];
+      const methodValueDiffersFromStored =
+        s(existing?.instance[sectionKey]?.[methodName]) != s(value);
+      if (methodValueDoesntExist || methodValueDiffersFromStored) {
         const section = (instance[sectionKey] = instance[sectionKey] || {});
         section[methodName] = value;
-        const resourceEffect: ResourceEffect = {
-          effect:
-            sectionKey == "inputs"
-              ? {
-                  $effect: "resource-input",
-                  methodName,
-                  resourceId: resourceId(instance),
-                  input: value,
-                }
-              : {
-                  $effect: "resource-output",
-                  methodName,
-                  resourceId: resourceId(instance),
-                  output: value,
-                  path,
-                },
-          origin: {
-            method: methodName,
+        if (sectionKey == "inputs") {
+          const resourceEffect: ResourceEffect.Input = {
+            $effect: "resource-input",
+            methodName,
             resourceId: resourceId(instance),
-          },
-        };
-        results.push(resourceEffect);
+            input: value,
+          };
+          results.push(resourceEffect);
+        } else if (sectionKey == "outputs") {
+          const resourceEffect: ResourceEffect.Output = {
+            $effect: "resource-output",
+            methodName,
+            resourceId: resourceId(instance),
+            output: value,
+          };
+          results.push(resourceEffect);
+        }
       }
     }
 
@@ -428,8 +421,8 @@ export class Fx {
           );
           const [newInstance, ...restOfNewPlan] = newResourcePlan.effects;
           if (newInstance) {
-            const n = newInstance as ResourceEffect<Effect.ResourceCreate>;
-            ref.entity.$resource = resourceId(n.effect.instance);
+            const n = newInstance as ResourceEffect.Create;
+            ref.entity.$resource = resourceId(n.instance);
             results.push(newInstance);
           }
           results.push(...restOfNewPlan);
@@ -456,13 +449,12 @@ export class Fx {
         results.push(
           ...effectLocations.map((loc) => {
             const { entity, path } = loc;
-            const r: ResourceEffect = {
+            const r: ResourceEffect.OutputEffect = {
+              $effect: "resource-effect",
+              methodName,
+              resourceId: resourceId(resource.instance),
+              path,
               effect: entity,
-              origin: {
-                resourceId: resourceId(resource.instance),
-                method: methodName,
-                path,
-              },
             };
             return r;
           })
