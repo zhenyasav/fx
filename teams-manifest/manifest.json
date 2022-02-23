@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.11/MicrosoftTeams.schema.json",
   "manifestVersion": "1.11",
   "version": "1.0.0",
-  "id": "f1c8aa28-39a8-47f0-9c7c-e25afac748c8",
-  "packageName": "com.zhenya.fxx",
+  "id": "309e6c5a-2fa2-4cbc-9126-a097e883a6c5",
+  "packageName": "com.zhenya.fx",
   "developer": {
     "name": "zhenya",
     "privacyUrl": "https://privacy.microsoft.com/en-us/privacystatement",
@@ -26,12 +26,19 @@
   },
   "staticTabs": [
     {
-      "name": "Tab X",
+      "name": "tab1",
       "scopes": [
         "personal"
       ],
-      "entityId": "tab-x",
-      "contentUrl": "https://7d5a-174-127-243-36.ngrok.io/"
+      "entityId": "tab1",
+      "contentUrl": "https://bea4-174-127-243-36.ngrok.io/"
+    },
+    {
+      "name": "tab2",
+      "scopes": [
+        "personal"
+      ],
+      "entityId": "tab2"
     }
   ]
 }

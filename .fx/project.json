@@ -1,19 +1,34 @@
 {
   "resources": [
     {
-      "id": "2126",
+      "id": "f696",
+      "type": "tunnel",
+      "inputs": {
+        "create": {
+          "port": 3007
+        }
+      },
+      "outputs": {
+        "dev": {
+          "port": 3007,
+          "url": "https://bea4-174-127-243-36.ngrok.io"
+        }
+      }
+    },
+    {
+      "id": "0e04",
       "type": "teams-tab",
       "inputs": {
         "create": {
           "manifest": {
-            "$resource": "teams-manifest:5f1d",
+            "$resource": "teams-manifest:61f6",
             "before": true
           },
-          "name": "Tab X",
-          "id": "tab-x",
+          "name": "tab1",
+          "id": "tab1",
           "hostname-type": "tunnel",
           "hostname": {
-            "$resource": "tunnel:7a4e"
+            "$resource": "tunnel:f696"
           },
           "path": ""
         }
@@ -28,7 +43,7 @@
       }
     },
     {
-      "id": "5f1d",
+      "id": "61f6",
       "type": "teams-manifest",
       "inputs": {
         "create": {
@@ -36,7 +51,7 @@
           "buildDirectory": "teams-manifest/build",
           "name": "fx",
           "description": "fx",
-          "packageName": "com.zhenya.fxx",
+          "packageName": "com.zhenya.fx",
           "developerName": "zhenya"
         }
       },
@@ -58,7 +73,7 @@
         "dev": {
           "devPortal": {
             "app": {
-              "teamsAppId": "f1c8aa28-39a8-47f0-9c7c-e25afac748c8",
+              "teamsAppId": "309e6c5a-2fa2-4cbc-9126-a097e883a6c5",
               "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
               "ownerAadId": "36ff5f38-6aef-4a01-940e-be3807b1466c",
               "userList": [
@@ -73,14 +88,14 @@
               "userAppSettings": null,
               "environments": null,
               "globalEnvironmentProperties": null,
-              "createdAt": "2022-02-22T15:04:47.4045604+00:00",
-              "updatedAt": "2022-02-22T18:51:52.5798196+00:00",
-              "appId": "f1c8aa28-39a8-47f0-9c7c-e25afac748c8",
+              "createdAt": "2022-02-22T19:42:57.989332+00:00",
+              "updatedAt": "2022-02-22T19:42:58.2229197+00:00",
+              "appId": "309e6c5a-2fa2-4cbc-9126-a097e883a6c5",
               "appName": "fx",
               "appStudioVersion": "",
               "version": "1.0.0",
               "manifestVersion": "1.11",
-              "packageName": "com.zhenya.fxx",
+              "packageName": "com.zhenya.fx",
               "shortName": "fx",
               "longName": "fx",
               "developerName": "zhenya",
@@ -90,16 +105,16 @@
               "mpnId": "",
               "shortDescription": "fx",
               "longDescription": "fx",
-              "colorIcon": "https://devappglobal.blob.core.windows.net/images/f1c8aa28-39a8-47f0-9c7c-e25afac748c8/color/5bd88832-949f-4907-956f-82190416645a",
-              "outlineIcon": "https://devappglobal.blob.core.windows.net/images/f1c8aa28-39a8-47f0-9c7c-e25afac748c8/outline/7383c5e2-6ef6-4ba3-b513-fd3c216cd88a",
+              "colorIcon": "https://devappglobal.blob.core.windows.net/images/309e6c5a-2fa2-4cbc-9126-a097e883a6c5/color/088371c1-3477-44b8-b21b-32c1526af2c2",
+              "outlineIcon": "https://devappglobal.blob.core.windows.net/images/309e6c5a-2fa2-4cbc-9126-a097e883a6c5/outline/81c2587a-832d-464c-ad3b-7cef3708bf7b",
               "accentColor": "#7B83EB",
               "configurableTabs": [],
               "staticTabs": [
                 {
-                  "objectId": "125835ca-2b81-4e17-95f6-b25453112eb7",
-                  "entityId": "tab-x",
-                  "name": "Tab X",
-                  "contentUrl": "https://7d5a-174-127-243-36.ngrok.io/",
+                  "objectId": "335e559d-a26d-4f42-807e-f11892c46146",
+                  "entityId": "tab1",
+                  "name": "tab1",
+                  "contentUrl": "https://bea4-174-127-243-36.ngrok.io/",
                   "websiteUrl": null,
                   "scopes": [
                     "personal"
@@ -157,22 +172,62 @@
               }
             }
           },
-          "browser": "https://teams.microsoft.com/l/app/f1c8aa28-39a8-47f0-9c7c-e25afac748c8?installAppPackage=true&webjoin=true&login_hint=zhenyasa@microsoft.com"
+          "browser": "https://teams.microsoft.com/l/app/309e6c5a-2fa2-4cbc-9126-a097e883a6c5?installAppPackage=true&webjoin=true&login_hint=zhenyasa@microsoft.com"
         }
       }
     },
     {
-      "id": "7a4e",
-      "type": "tunnel",
+      "id": "195e",
+      "type": "teams-tab",
       "inputs": {
         "create": {
-          "port": 3007
+          "manifest": {
+            "$resource": "teams-manifest:61f6",
+            "before": true
+          },
+          "name": "tab2",
+          "id": "tab2",
+          "hostname-type": "tunnel",
+          "hostname": {
+            "$resource": "tunnel:f696"
+          },
+          "path": "/tab2"
         }
       },
       "outputs": {
-        "dev": {
-          "port": 3007,
-          "url": "https://7d5a-174-127-243-36.ngrok.io"
+        "create": {
+          "manifest": "/Users/zhenya/dev/fx/teams-manifest/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "795a",
+      "type": "cow",
+      "inputs": {
+        "create": {
+          "what": "i am a cow that runs on port $PORT",
+          "tunnel": {
+            "$resource": "tunnel:f696",
+            "before": true
+          }
+        }
+      },
+      "outputs": {
+        "create": {
+          "say": "i am a cow that runs on port $PORT",
+          "shell": {
+            "stdout": " _______________________________\n< i am a cow that runs on port  >\n -------------------------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
+            "stderr": "",
+            "code": 0
+          }
+        },
+        "moo": {
+          "say": "i am a cow that runs on port $PORT",
+          "shell": {
+            "stdout": " ___________________________________\n< i am a cow that runs on port 3007 >\n -----------------------------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
+            "stderr": "",
+            "code": 0
+          }
         }
       }
     }

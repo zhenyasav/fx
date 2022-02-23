@@ -1,9 +1,10 @@
-import { z, Config, effect, method, ResourceDefinition } from "@fx/core";
+import { z, Config, effect, method, ResourceDefinition, isResourceReference } from "@fx/core";
 import { packageTemplate } from "./templates/package/template.t";
 import { teams } from "@fx/teams";
 
 const inputShape = z.object({
   what: z.string().describe("what to say").default("moo"),
+  tunnel: z.literal('before:tunnel').describe('select a tunnel')
 });
 
 type CowsayInput = z.infer<typeof inputShape>;
@@ -19,20 +20,25 @@ const cowsay: ResourceDefinition<CowsayInput> = {
           say: input.what,
           shell: effect({
             $effect: "shell",
-            command: `npx cowsay "${input.what}"`,
+            // command: `npx cowsay "${input.what}"`,
+            command: 'yo teams',
             description: `the friendly cow will say: ${input.what}`,
           }),
         };
       },
     }),
-    moo: method({
-      body({ resource }) {
-        const what = resource.instance.inputs?.create?.what;
+    dev: method({
+      body({ resource, config }) {
+      const what = resource.instance.inputs?.create?.what;
+      const tunnel = resource.instance.inputs?.create?.tunnel;
+      if (!isResourceReference(tunnel)) return;
+      const res = config.getResource(tunnel);
+      const port = res?.instance.inputs?.create.port;
         return {
           say: what,
           shell: effect({
             $effect: "shell",
-            command: `npx cowsay ${what}`,
+            command: `npx cowsay ${what} and the port of the tunnel is ${port}`,
           }),
         };
       },
