@@ -1,5 +1,5 @@
 export * from "@fx/zod-inquirer";
-export { File, JSONFile, FileOptions } from "@nice/file";
+export { File, JSONFile, FileOptions, Path } from "@nice/file";
 export { z } from "zod";
 export * from "./resource";
 export * from "./plugin";

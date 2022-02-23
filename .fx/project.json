@@ -1,39 +1,31 @@
 {
   "resources": [
     {
-      "id": "f696",
-      "type": "tunnel",
-      "inputs": {
-        "create": {
-          "port": 3007
-        }
-      },
-      "outputs": {
-        "dev": {
-          "port": 3007,
-          "url": "https://bea4-174-127-243-36.ngrok.io"
-        }
-      }
-    },
-    {
-      "id": "0e04",
+      "id": "776b",
       "type": "teams-tab",
       "inputs": {
         "create": {
           "manifest": {
-            "$resource": "teams-manifest:61f6",
+            "$resource": "teams-manifest:1cad",
             "before": true
           },
           "name": "tab1",
           "id": "tab1",
           "hostname-type": "tunnel",
           "hostname": {
-            "$resource": "tunnel:f696"
+            "$resource": "tunnel:9b6c"
           },
           "path": ""
         }
       },
       "outputs": {
+        "undefined": {
+          "contentUrl": {
+            "$effect": "file",
+            "description": "amend contentUrl from ngrok tunnel",
+            "file": null
+          }
+        },
         "create": {
           "manifest": "/Users/zhenya/dev/fx/teams-manifest/manifest.json"
         },
@@ -43,7 +35,7 @@
       }
     },
     {
-      "id": "61f6",
+      "id": "1cad",
       "type": "teams-manifest",
       "inputs": {
         "create": {
@@ -56,6 +48,18 @@
         }
       },
       "outputs": {
+        "undefined": {
+          "devPortal": {
+            "$effect": "function",
+            "description": "send Teams app to Teams Dev Portal",
+            "body": null
+          },
+          "browser": {
+            "$effect": "function",
+            "description": "open a browser window to your app",
+            "body": null
+          }
+        },
         "create": {
           "files": [
             "teams-manifest/resources/color.png",
@@ -64,16 +68,12 @@
           ]
         },
         "build": {
-          "output": {
-            "$effect": "function",
-            "description": "zip manifest bundle",
-            "body": null
-          }
+          "output": "/Users/zhenya/dev/fx/teams-manifest/build/teams-app.zip"
         },
         "dev": {
           "devPortal": {
             "app": {
-              "teamsAppId": "309e6c5a-2fa2-4cbc-9126-a097e883a6c5",
+              "teamsAppId": "1b621478-9139-4b93-8e91-89607485127a",
               "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
               "ownerAadId": "36ff5f38-6aef-4a01-940e-be3807b1466c",
               "userList": [
@@ -88,9 +88,9 @@
               "userAppSettings": null,
               "environments": null,
               "globalEnvironmentProperties": null,
-              "createdAt": "2022-02-22T19:42:57.989332+00:00",
-              "updatedAt": "2022-02-22T19:42:58.2229197+00:00",
-              "appId": "309e6c5a-2fa2-4cbc-9126-a097e883a6c5",
+              "createdAt": "2022-02-23T11:01:45.4406302+00:00",
+              "updatedAt": "2022-02-23T11:01:45.6590719+00:00",
+              "appId": "1b621478-9139-4b93-8e91-89607485127a",
               "appName": "fx",
               "appStudioVersion": "",
               "version": "1.0.0",
@@ -105,16 +105,16 @@
               "mpnId": "",
               "shortDescription": "fx",
               "longDescription": "fx",
-              "colorIcon": "https://devappglobal.blob.core.windows.net/images/309e6c5a-2fa2-4cbc-9126-a097e883a6c5/color/088371c1-3477-44b8-b21b-32c1526af2c2",
-              "outlineIcon": "https://devappglobal.blob.core.windows.net/images/309e6c5a-2fa2-4cbc-9126-a097e883a6c5/outline/81c2587a-832d-464c-ad3b-7cef3708bf7b",
+              "colorIcon": "https://devappglobal.blob.core.windows.net/images/1b621478-9139-4b93-8e91-89607485127a/color/1f503851-53ab-488c-9d24-76524faecce7",
+              "outlineIcon": "https://devappglobal.blob.core.windows.net/images/1b621478-9139-4b93-8e91-89607485127a/outline/f79de690-57be-415f-83ae-08f449e297f7",
               "accentColor": "#7B83EB",
               "configurableTabs": [],
               "staticTabs": [
                 {
-                  "objectId": "335e559d-a26d-4f42-807e-f11892c46146",
+                  "objectId": "fb0f6395-d9f7-4066-9a67-9e2014062279",
                   "entityId": "tab1",
                   "name": "tab1",
-                  "contentUrl": "https://bea4-174-127-243-36.ngrok.io/",
+                  "contentUrl": "https://0ab7-174-127-243-36.ngrok.io/",
                   "websiteUrl": null,
                   "scopes": [
                     "personal"
@@ -122,7 +122,25 @@
                   "context": []
                 }
               ],
-              "bots": [],
+              "bots": [
+                {
+                  "objectId": "1d125695-2874-44ea-b597-16f0a5f7f7f7",
+                  "botId": "5665e448-f088-46e8-b13e-e24d7b9a299d",
+                  "needsChannelSelector": false,
+                  "isNotificationOnly": false,
+                  "supportsFiles": false,
+                  "supportsCalling": false,
+                  "supportsVideo": false,
+                  "scopes": [
+                    "team",
+                    "personal",
+                    "groupchat"
+                  ],
+                  "teamCommands": [],
+                  "personalCommands": [],
+                  "groupChatCommands": []
+                }
+              ],
               "connectors": [],
               "subscriptionOffer": null,
               "graphConnector": null,
@@ -172,61 +190,116 @@
               }
             }
           },
-          "browser": "https://teams.microsoft.com/l/app/309e6c5a-2fa2-4cbc-9126-a097e883a6c5?installAppPackage=true&webjoin=true&login_hint=zhenyasa@microsoft.com"
+          "browser": "https://teams.microsoft.com/l/app/1b621478-9139-4b93-8e91-89607485127a?installAppPackage=true&webjoin=true&login_hint=zhenyasa@microsoft.com"
         }
       }
     },
     {
-      "id": "195e",
-      "type": "teams-tab",
+      "id": "e2c1",
+      "type": "teams-bot",
       "inputs": {
         "create": {
           "manifest": {
-            "$resource": "teams-manifest:61f6",
+            "$resource": "teams-manifest:1cad",
             "before": true
           },
-          "name": "tab2",
-          "id": "tab2",
-          "hostname-type": "tunnel",
-          "hostname": {
-            "$resource": "tunnel:f696"
-          },
-          "path": "/tab2"
+          "botService": {
+            "$resource": "azure-bot-service:abba"
+          }
         }
       },
       "outputs": {
+        "undefined": {
+          "manifest": {
+            "$effect": "file",
+            "description": "update botId from azure deploy in manifest",
+            "file": null
+          }
+        },
         "create": {
+          "manifest": "/Users/zhenya/dev/fx/teams-manifest/manifest.json"
+        },
+        "dev": {
           "manifest": "/Users/zhenya/dev/fx/teams-manifest/manifest.json"
         }
       }
     },
     {
-      "id": "795a",
-      "type": "cow",
+      "id": "abba",
+      "type": "azure-bot-service",
       "inputs": {
         "create": {
-          "what": "i am a cow that runs on port $PORT",
-          "tunnel": {
-            "$resource": "tunnel:f696",
-            "before": true
+          "botDisplayName": "azure-bot-service:abba",
+          "botServiceName": "azure-bot-service-abba",
+          "subscriptionId": "",
+          "resourceGroup": "azure-bot-service-abba",
+          "bicepTemplateFolder": "./azure",
+          "messagingEndpoint-type": "tunnel",
+          "messagingEndpoint": {
+            "$resource": "tunnel:9b6c"
           }
         }
       },
       "outputs": {
-        "create": {
-          "say": "i am a cow that runs on port $PORT",
-          "shell": {
-            "stdout": " _______________________________\n< i am a cow that runs on port  >\n -------------------------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
-            "stderr": "",
-            "code": 0
+        "undefined": {
+          "params": {
+            "$effect": "file",
+            "description": "write bot parameters file",
+            "file": null
+          },
+          "rg": {
+            "$effect": "function",
+            "description": "ensure resource group azure-bot-service-abba exists",
+            "body": null
+          },
+          "az": {
+            "$effect": "shell",
+            "command": "az deployment group create --resource-group azure-bot-service-abba --template-file /Users/zhenya/dev/fx/azure/bot-service.bicep --parameters /Users/zhenya/dev/fx/azure/bot-service-parameters.json"
           }
         },
-        "moo": {
-          "say": "i am a cow that runs on port $PORT",
-          "shell": {
-            "stdout": " ___________________________________\n< i am a cow that runs on port 3007 >\n -----------------------------------\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||\n",
-            "stderr": "",
+        "create": {
+          "params": "/Users/zhenya/dev/fx/azure/bot-service-parameters.json",
+          "bicep": "/Users/zhenya/dev/fx/azure/bot-service.bicep"
+        },
+        "dev": {
+          "params": "/Users/zhenya/dev/fx/azure/bot-service-parameters.json",
+          "rg": {
+            "exists": {
+              "stdout": "false\n",
+              "stderr": ""
+            },
+            "create": {
+              "stdout": "{\n  \"id\": \"/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/azure-bot-service-abba\",\n  \"location\": \"eastus\",\n  \"managedBy\": null,\n  \"name\": \"azure-bot-service-abba\",\n  \"properties\": {\n    \"provisioningState\": \"Succeeded\"\n  },\n  \"tags\": null,\n  \"type\": \"Microsoft.Resources/resourceGroups\"\n}\n",
+              "stderr": ""
+            }
+          },
+          "az": {
+            "stdout": "{\n  \"id\": \"/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/azure-bot-service-abba/providers/Microsoft.Resources/deployments/bot-service\",\n  \"location\": null,\n  \"name\": \"bot-service\",\n  \"properties\": {\n    \"correlationId\": \"4a932187-11f7-414a-bb23-a9d9eecf5326\",\n    \"debugSetting\": null,\n    \"dependencies\": [\n      {\n        \"dependsOn\": [\n          {\n            \"id\": \"/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/azure-bot-service-abba/providers/Microsoft.ManagedIdentity/userAssignedIdentities/azure-bot-service-abba-msa\",\n            \"resourceGroup\": \"azure-bot-service-abba\",\n            \"resourceName\": \"azure-bot-service-abba-msa\",\n            \"resourceType\": \"Microsoft.ManagedIdentity/userAssignedIdentities\"\n          }\n        ],\n        \"id\": \"/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/azure-bot-service-abba/providers/Microsoft.BotService/botServices/azure-bot-service-abba\",\n        \"resourceGroup\": \"azure-bot-service-abba\",\n        \"resourceName\": \"azure-bot-service-abba\",\n        \"resourceType\": \"Microsoft.BotService/botServices\"\n      },\n      {\n        \"dependsOn\": [\n          {\n            \"id\": \"/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/azure-bot-service-abba/providers/Microsoft.BotService/botServices/azure-bot-service-abba\",\n            \"resourceGroup\": \"azure-bot-service-abba\",\n            \"resourceName\": \"azure-bot-service-abba\",\n            \"resourceType\": \"Microsoft.BotService/botServices\"\n          }\n        ],\n        \"id\": \"/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/azure-bot-service-abba/providers/Microsoft.BotService/botServices/azure-bot-service-abba/channels/MsTeamsChannel\",\n        \"resourceGroup\": \"azure-bot-service-abba\",\n        \"resourceName\": \"azure-bot-service-abba/MsTeamsChannel\",\n        \"resourceType\": \"Microsoft.BotService/botServices/channels\"\n      }\n    ],\n    \"duration\": \"PT10.3768S\",\n    \"error\": null,\n    \"mode\": \"Incremental\",\n    \"onErrorDeployment\": null,\n    \"outputResources\": [\n      {\n        \"id\": \"/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/azure-bot-service-abba/providers/Microsoft.BotService/botServices/azure-bot-service-abba\",\n        \"resourceGroup\": \"azure-bot-service-abba\"\n      },\n      {\n        \"id\": \"/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/azure-bot-service-abba/providers/Microsoft.BotService/botServices/azure-bot-service-abba/channels/MsTeamsChannel\",\n        \"resourceGroup\": \"azure-bot-service-abba\"\n      },\n      {\n        \"id\": \"/subscriptions/52462f3d-9226-4c1a-ae95-9a1f2b2c2e0f/resourceGroups/azure-bot-service-abba/providers/Microsoft.ManagedIdentity/userAssignedIdentities/azure-bot-service-abba-msa\",\n        \"resourceGroup\": \"azure-bot-service-abba\"\n      }\n    ],\n    \"outputs\": {\n      \"msaAppId\": {\n        \"type\": \"String\",\n        \"value\": \"5665e448-f088-46e8-b13e-e24d7b9a299d\"\n      },\n      \"msaClientId\": {\n        \"type\": \"String\",\n        \"value\": \"5665e448-f088-46e8-b13e-e24d7b9a299d\"\n      },\n      \"msaPrincipalId\": {\n        \"type\": \"String\",\n        \"value\": \"e82a223b-a6c2-4f54-8d9d-a88f25679748\"\n      },\n      \"msaTenantId\": {\n        \"type\": \"String\",\n        \"value\": \"72f988bf-86f1-41af-91ab-2d7cd011db47\"\n      }\n    },\n    \"parameters\": {\n      \"botDisplayName\": {\n        \"type\": \"String\",\n        \"value\": \"azure-bot-service:abba\"\n      },\n      \"botEndpoint\": {\n        \"type\": \"String\",\n        \"value\": \"https://0ab7-174-127-243-36.ngrok.io/api/messages\"\n      },\n      \"botServiceName\": {\n        \"type\": \"String\",\n        \"value\": \"azure-bot-service-abba\"\n      },\n      \"botServiceSku\": {\n        \"type\": \"String\",\n        \"value\": \"S1\"\n      }\n    },\n    \"parametersLink\": null,\n    \"providers\": [\n      {\n        \"id\": null,\n        \"namespace\": \"Microsoft.ManagedIdentity\",\n        \"providerAuthorizationConsentState\": null,\n        \"registrationPolicy\": null,\n        \"registrationState\": null,\n        \"resourceTypes\": [\n          {\n            \"aliases\": null,\n            \"apiProfiles\": null,\n            \"apiVersions\": null,\n            \"capabilities\": null,\n            \"defaultApiVersion\": null,\n            \"locationMappings\": null,\n            \"locations\": [\n              \"eastus\"\n            ],\n            \"properties\": null,\n            \"resourceType\": \"userAssignedIdentities\"\n          }\n        ]\n      },\n      {\n        \"id\": null,\n        \"namespace\": \"Microsoft.BotService\",\n        \"providerAuthorizationConsentState\": null,\n        \"registrationPolicy\": null,\n        \"registrationState\": null,\n        \"resourceTypes\": [\n          {\n            \"aliases\": null,\n            \"apiProfiles\": null,\n            \"apiVersions\": null,\n            \"capabilities\": null,\n            \"defaultApiVersion\": null,\n            \"locationMappings\": null,\n            \"locations\": [\n              \"global\"\n            ],\n            \"properties\": null,\n            \"resourceType\": \"botServices\"\n          },\n          {\n            \"aliases\": null,\n            \"apiProfiles\": null,\n            \"apiVersions\": null,\n            \"capabilities\": null,\n            \"defaultApiVersion\": null,\n            \"locationMappings\": null,\n            \"locations\": [\n              \"global\"\n            ],\n            \"properties\": null,\n            \"resourceType\": \"botServices/channels\"\n          }\n        ]\n      }\n    ],\n    \"provisioningState\": \"Succeeded\",\n    \"templateHash\": \"15730746491151470066\",\n    \"templateLink\": null,\n    \"timestamp\": \"2022-02-23T11:01:13.764711+00:00\",\n    \"validatedResources\": null\n  },\n  \"resourceGroup\": \"azure-bot-service-abba\",\n  \"tags\": null,\n  \"type\": \"Microsoft.Resources/deployments\"\n}\n",
+            "stderr": "WARNING: A new Bicep release is available: v0.4.1272. Upgrade now by running \"az bicep upgrade\".\n",
             "code": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "9b6c",
+      "type": "tunnel",
+      "inputs": {
+        "create": {
+          "port": 3000
+        }
+      },
+      "outputs": {
+        "dev": {
+          "port": 3000,
+          "url": "https://0ab7-174-127-243-36.ngrok.io"
+        },
+        "undefined": {
+          "port": 3000,
+          "url": {
+            "$effect": "function",
+            "description": "start ngrok",
+            "body": null
           }
         }
       }

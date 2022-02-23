@@ -13,7 +13,9 @@ import {
   LoadedConfiguration,
   LoadedResource,
   Plan,
+  ResourceEffect,
 } from "@fx/plugin";
+
 import { gray, yellow } from "chalk";
 
 export type EffectorContext = {
@@ -28,9 +30,147 @@ export type EffectorContext = {
   ): Promise<Plan | null>;
 };
 
+const ResourceCreate: Effector<ResourceEffect.Create<any>, EffectorContext> = {
+  describe(e, c) {
+    const { description, instance } = e;
+    const { config } = c;
+    if (!config)
+      throw new Error(
+        "a valid fx project configuration is required to work with resources"
+      );
+    const desc = description ?? `create resource ${resourceId(instance)}`;
+    return `${desc} ${gray("in")} ${path.relative(
+      process.cwd(),
+      config.projectFile.path
+    )}`;
+  },
+  async apply(e, c) {
+    const { instance } = e;
+    const { config } = c;
+    if (!config)
+      throw new Error(
+        "a valid fx project configuration is required to work with resources"
+      );
+    config.setResource(instance);
+    await config.projectFile.save();
+  },
+};
+
+const ResourceRemove: Effector<ResourceEffect.Remove, EffectorContext> = {
+  describe(e, c) {
+    const { resourceId } = e;
+    return `delete resource ${resourceId}`;
+  },
+  async apply(e, c) {
+    const { resourceId } = e;
+    const { config } = c;
+    if (!config)
+      throw new Error(
+        "a valid fx project configuration is required to work with resources"
+      );
+    config?.removeResource(resourceId);
+    await config.projectFile.save();
+  },
+};
+
+const ResourceInput: Effector<ResourceEffect.Input<any>, EffectorContext> = {
+  describe(e) {
+    const { methodName, input } = e;
+    const isEmpty = Object.keys(input)?.length == 0;
+    return `store inputs for method ${methodName}${
+      !isEmpty ? os.EOL + prettyjson.render(input, {}, 2) : ""
+    }`;
+  },
+  async apply(e, c) {
+    const { input, methodName, resourceId } = e;
+    const { config } = c;
+    if (!config)
+      throw new Error(
+        "a valid fx project configuration is required to work with resources"
+      );
+    config.setMethodInput(resourceId, methodName, input);
+    await config.projectFile.save();
+  },
+};
+
+const ResourceOutput: Effector<ResourceEffect.Output<any>, EffectorContext> = {
+  describe(e) {
+    const { methodName } = e;
+    return `store output for method ${methodName}`;
+  },
+  async apply(e, c) {
+    const { resourceId, methodName, output } = e;
+    const { config } = c;
+    if (!config)
+      throw new Error(
+        "a valid fx project configuration is required to work with resources"
+      );
+    config.setMethodResult(resourceId, methodName, [], output);
+    await config.projectFile.save();
+  },
+};
+
+const ResourceEffector: Effector<ResourceEffect.OutputEffect, EffectorContext> =
+  {
+    describe(e, c) {
+      const { effect } = e;
+      const effector = getEffector(effect);
+      return effector.describe(effect, c);
+    },
+    async apply(e, c) {
+      const { effect, resourceId, methodName, path } = e;
+      const { config } = c;
+      if (!config)
+        throw new Error(
+          "a valid fx project configuration is required to work with resources"
+        );
+      const effector = getEffector(effect);
+      const result = await effector.apply(effect, c);
+      if (resourceId && methodName && typeof result != "undefined")
+        config.setMethodResult(resourceId, methodName, path ?? [], result);
+      await config.projectFile.save();
+    },
+  };
+
+const ResourceMethod: Effector<ResourceEffect.Method, EffectorContext> = {
+  describe(e) {
+    const { methodName } = e;
+    return `run method ${yellow(`[${methodName}]`)}`;
+  },
+  async apply(e, c) {
+    const { methodName, resourceId, input } = e;
+    const { config } = c;
+    if (!config)
+      throw new Error(
+        "a valid fx project configuration is required to work with resources"
+      );
+    console.log("");
+    return c.planMethod?.(methodName, {
+      resources: [config.getResource(resourceId)!],
+      input,
+      config,
+    });
+  },
+};
+
+const ResourceEffectors: EffectorSet<ResourceEffect.Any, EffectorContext> = {
+  "resource-create": ResourceCreate,
+  "resource-remove": ResourceRemove,
+  "resource-input": ResourceInput,
+  "resource-output": ResourceOutput,
+  "resource-effect": ResourceEffector,
+  "resource-method": ResourceMethod,
+};
+
+export function getResourceEffector<
+  T extends ResourceEffect.Any = ResourceEffect.Any
+>(e: T): Effector<T, EffectorContext> {
+  return ResourceEffectors[e.$effect] as Effector<T, EffectorContext>;
+}
+
 const File: Effector<Effect.File, EffectorContext> = {
   describe(e) {
-    const { file, description } = e.effect;
+    const { file, description } = e;
     return description
       ? description + " " + file.shortDescription()
       : file.isCopy()
@@ -41,7 +181,7 @@ const File: Effector<Effect.File, EffectorContext> = {
       : `create file: ${file.shortDescription()}`;
   },
   async apply(e) {
-    const { file } = e.effect;
+    const { file } = e;
     await file.save();
     return file.path;
   },
@@ -49,23 +189,12 @@ const File: Effector<Effect.File, EffectorContext> = {
 
 const Function: Effector<Effect.Function, EffectorContext> = {
   describe(e) {
-    const {
-      effect: { description },
-      origin,
-    } = e;
-    const { resourceId, method, path } = origin ?? {};
-    return `${
-      resourceId
-        ? resourceId +
-          "/" +
-          method +
-          (path?.length ? "." + path.join(".") : "") +
-          ": "
-        : ""
-    }${description ?? "execute a function"}`;
+    const { description } = e;
+    return `${description ?? "execute a function"}`;
   },
   async apply(e) {
-    return e.effect.body?.();
+    const { body } = e;
+    return body?.();
   },
 };
 
@@ -77,7 +206,7 @@ export type ProcessResult = {
 
 const Shell: Effector<Effect.Shell, EffectorContext> = {
   describe(e) {
-    const { command, cwd, description } = e.effect;
+    const { command, cwd, description } = e;
     const desc = description ? `# ${description}` : "";
     const cwds = cwd
       ? ` in ${ellipsis(path.relative(process.cwd(), cwd))}`
@@ -85,8 +214,8 @@ const Shell: Effector<Effect.Shell, EffectorContext> = {
     return `shell${cwds}: ${[green(command), gray(desc)].join(" ")}`;
   },
   async apply(e) {
-    const { command, cwd, async } = e.effect;
-    const onComplete = e.origin?.onMethodResultAsync;
+    const { command, cwd, async } = e;
+    // const onComplete = e.origin?.onMethodResultAsync;
     if (!command) return;
     return new Promise<ProcessResult | void>((resolve, reject) => {
       const [cmd, ...args] = command.split(" ");
@@ -114,7 +243,8 @@ const Shell: Effector<Effect.Shell, EffectorContext> = {
       proc.on("close", (code) => {
         result.code = code;
         if (async) {
-          onComplete?.(result);
+          // onComplete?.(result);
+          // TODO: capture async shell results?
         } else {
           resolve(result);
         }
@@ -124,101 +254,10 @@ const Shell: Effector<Effect.Shell, EffectorContext> = {
   },
 };
 
-const RemoveResource: Effector<Effect.RemoveResource, EffectorContext> = {
-  describe(e, c) {
-    const {
-      effect: { resourceId },
-    } = e;
-    return `delete resource ${resourceId}`;
-  },
-  async apply(e, c) {
-    const {
-      effect: { resourceId },
-    } = e;
-    const { config } = c;
-    if (!config)
-      throw new Error(
-        "a valid fx project configuration is required to work with resources"
-      );
-    config?.removeResource(resourceId);
-    await config.projectFile.save();
-  },
-};
-
-const Resource: Effector<Effect.Resource<any>, EffectorContext> = {
-  describe(e, c) {
-    const {
-      effect: { instance },
-      origin,
-    } = e;
-    const { config } = c;
-    if (!config)
-      throw new Error(
-        "a valid fx project configuration is required to work with resources"
-      );
-    const existing = config?.project?.resources?.find(
-      (r) => resourceId(r) == resourceId(instance)
-    );
-    const detail = origin ? instance.inputs?.[origin.method] : {};
-    const detailString =
-      detail && Object.keys(detail).length
-        ? os.EOL + prettyjson.render(detail, {}, 4)
-        : "";
-    return `${!!existing ? "update" : "create"} resource ${
-      resourceId(instance) != origin?.resourceId ? resourceId(instance) : ""
-    }${gray("in")} ${path.relative(
-      process.cwd(),
-      config.projectFile.path
-    )}${detailString}`;
-  },
-  async apply(e, c) {
-    const {
-      effect: { instance },
-    } = e;
-    const { config } = c;
-    if (!config)
-      throw new Error(
-        "a valid fx project configuration is required to work with resources"
-      );
-    config.setResource(instance);
-    await config.projectFile.save();
-  },
-};
-
-const ResourceMethod: Effector<Effect.ResourceMethod<any>, EffectorContext> = {
-  describe(e) {
-    const {
-      effect: { method, resourceId },
-      origin,
-    } = e;
-    const target = origin?.resourceId != resourceId ? ` on ${resourceId}` : "";
-    return `run method ${yellow(`[${method}]`)}${target}`;
-  },
-  async apply(e, c) {
-    const {
-      effect: { method, resourceId, input },
-    } = e;
-    const { config } = c;
-    if (!config)
-      throw new Error(
-        "a valid fx project configuration is required to work with resources"
-      );
-    console.log("");
-    return c.planMethod?.(method, {
-      resources: [config.getResource(resourceId)!],
-      input,
-      config,
-    });
-  },
-};
-
 const Effectors: EffectorSet<Effect.Any, EffectorContext> = {
   file: File,
   function: Function,
   shell: Shell,
-  resource: Resource,
-  "resource-method": ResourceMethod,
-  "remove-resource": RemoveResource,
 };
 
 export function getEffector<T extends Effect.Any = Effect.Any>(

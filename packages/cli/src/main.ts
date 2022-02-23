@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import yargs from "yargs";
-import { Fx, resourceId } from "@fx/core";
+import { Fx } from "@fx/core";
 import {
   printLogo,
   printResourceInstance,
@@ -9,7 +9,7 @@ import {
   error,
 } from "./prettyPrint";
 import { Plan } from "@fx/core";
-import { gray, green, red, yellow } from "chalk";
+import { gray, green, red, yellow, magentaBright } from "chalk";
 import inquirer from "inquirer";
 
 const fx = new Fx();
@@ -30,7 +30,7 @@ async function executePlan(dry: boolean, plan: Plan) {
         },
       ]);
       if (confirmed) {
-        info(`\nexecuting ${plan?.description ?? ""}...`);
+        info(`\n${magentaBright("executing")} ${plan?.description ?? ""}...`);
         console.group();
         const { created, nextPlan } = await fx.executePlan(plan);
         console.groupEnd();
@@ -38,14 +38,17 @@ async function executePlan(dry: boolean, plan: Plan) {
           await executePlan(dry, nextPlan);
         }
         info(
-          green(`\n${plan?.description ? plan.description + " " : ""}done.\n`)
+          `\n${green("done")}${
+            plan?.description ? " " + plan.description : ""
+          }.\n`
         );
         if (created.length) {
           info("new resources:");
           const config = await fx.requireConfig();
-          const newResources = created.map(
-            (c) => config.getResource(resourceId(c.effect.instance))!
-          );
+          const newResources = created.map((c) => ({
+            instance: c.instance,
+            definition: config.getResourceDefinition(c.instance.type),
+          }));
           console.group();
           printResources(newResources, { methods: true });
           console.groupEnd();
@@ -210,6 +213,7 @@ const parser = yargs(process.argv.slice(2))
       resources?.forEach((r) =>
         printResourceInstance(r, config.getResourceDefinition(r.type)!)
       );
+      console.log("");
     }
   )
   .command(
@@ -265,7 +269,7 @@ const parser = yargs(process.argv.slice(2))
         methodName,
         selectedResources ? { resources: selectedResources } : {}
       );
-      info(`invoking ${yellow(`[${methodName}]`)}:`);
+      // info(`invoking ${yellow(`[${methodName}]`)}:`);
       if (plan) await executePlan(dry, plan);
     }
   )

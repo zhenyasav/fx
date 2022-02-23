@@ -19,15 +19,11 @@ function promiseExec(cmd: string, options?: ExecOptions): Promise<string> {
 
 export const yo: Effector<RunYo> = {
   describe(y) {
-    const {
-      effect: { generator },
-    } = y;
+    const { generator } = y;
     return `run yo ${generator}`;
   },
   async apply(y) {
-    const {
-      effect: { generator },
-    } = y;
+    const { generator } = y;
     return promiseExec(`yo ${generator}`);
   },
 };

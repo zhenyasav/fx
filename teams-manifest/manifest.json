@@ -2,7 +2,7 @@
   "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.11/MicrosoftTeams.schema.json",
   "manifestVersion": "1.11",
   "version": "1.0.0",
-  "id": "309e6c5a-2fa2-4cbc-9126-a097e883a6c5",
+  "id": "1b621478-9139-4b93-8e91-89607485127a",
   "packageName": "com.zhenya.fx",
   "developer": {
     "name": "zhenya",
@@ -31,14 +31,19 @@
         "personal"
       ],
       "entityId": "tab1",
-      "contentUrl": "https://bea4-174-127-243-36.ngrok.io/"
-    },
+      "contentUrl": "https://0ab7-174-127-243-36.ngrok.io/"
+    }
+  ],
+  "bots": [
     {
-      "name": "tab2",
+      "botId": "5665e448-f088-46e8-b13e-e24d7b9a299d",
       "scopes": [
-        "personal"
+        "team",
+        "personal",
+        "groupchat"
       ],
-      "entityId": "tab2"
+      "supportsFiles": false,
+      "isNotificationOnly": false
     }
   ]
 }
