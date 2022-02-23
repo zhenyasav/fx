@@ -52,7 +52,8 @@ function isEffectVisible() {
     return (
       e.$effect == "resource-create" ||
       e.$effect == "resource-effect" ||
-      e.$effect == "resource-remove"
+      e.$effect == "resource-remove" ||
+      e.$effect == "resource-method"
     );
   };
 }
@@ -201,7 +202,6 @@ export class Fx {
         effects: [],
         finalConfig: config,
       };
-
       for (let rr of resources) {
         const sequence = !recursive
           ? [rr]

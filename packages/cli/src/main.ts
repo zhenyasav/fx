@@ -38,7 +38,9 @@ async function executePlan(dry: boolean, plan: Plan) {
           await executePlan(dry, nextPlan);
         }
         info(
-          `\n${green("done")} ${plan?.description ? plan.description : ""}.\n`
+          `\n${green("done")}${
+            plan?.description ? " " + plan.description : ""
+          }.\n`
         );
         if (created.length) {
           info("new resources:");
@@ -211,6 +213,7 @@ const parser = yargs(process.argv.slice(2))
       resources?.forEach((r) =>
         printResourceInstance(r, config.getResourceDefinition(r.type)!)
       );
+      console.log("");
     }
   )
   .command(

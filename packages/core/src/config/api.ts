@@ -109,7 +109,7 @@ export async function createLoadedConfiguration(options: {
     setMethodInput(resourceId, method, input) {
       const res = this.getResource(resourceId);
       if (!res) return;
-      const inputs = res.instance.inputs = res.instance.inputs || {};
+      const inputs = (res.instance.inputs = res.instance.inputs || {});
       inputs[method] = input;
       return res.instance;
     },

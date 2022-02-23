@@ -26,11 +26,24 @@
   },
   "staticTabs": [
     {
-      "name": "",
+      "name": "tab1",
       "scopes": [
         "personal"
       ],
-      "entityId": ""
+      "entityId": "tab1",
+      "contentUrl": "https://0ab7-174-127-243-36.ngrok.io/"
+    }
+  ],
+  "bots": [
+    {
+      "botId": "5665e448-f088-46e8-b13e-e24d7b9a299d",
+      "scopes": [
+        "team",
+        "personal",
+        "groupchat"
+      ],
+      "supportsFiles": false,
+      "isNotificationOnly": false
     }
   ]
 }
