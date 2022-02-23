@@ -9,7 +9,7 @@ import {
   error,
 } from "./prettyPrint";
 import { Plan } from "@fx/core";
-import { gray, green, red, yellow } from "chalk";
+import { gray, green, red, yellow, magentaBright } from "chalk";
 import inquirer from "inquirer";
 
 const fx = new Fx();
@@ -30,7 +30,7 @@ async function executePlan(dry: boolean, plan: Plan) {
         },
       ]);
       if (confirmed) {
-        info(`\nexecuting ${plan?.description ?? ""}...`);
+        info(`\n${magentaBright("executing")} ${plan?.description ?? ""}...`);
         console.group();
         const { created, nextPlan } = await fx.executePlan(plan);
         console.groupEnd();
@@ -38,7 +38,7 @@ async function executePlan(dry: boolean, plan: Plan) {
           await executePlan(dry, nextPlan);
         }
         info(
-          green(`\n${plan?.description ? plan.description + " " : ""}done.\n`)
+          `\n${green("done")} ${plan?.description ? plan.description : ""}.\n`
         );
         if (created.length) {
           info("new resources:");

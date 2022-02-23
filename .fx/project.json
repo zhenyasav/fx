@@ -96,42 +96,6 @@
           ]
         }
       }
-    },
-    {
-      "id": "6df6",
-      "type": "tunnel",
-      "inputs": {
-        "create": {
-          "port": 3000
-        }
-      }
-    },
-    {
-      "id": "3bdb",
-      "type": "tunnel",
-      "inputs": {
-        "create": {
-          "port": 3000
-        }
-      }
-    },
-    {
-      "id": "fbc5",
-      "type": "tunnel",
-      "inputs": {
-        "create": {
-          "port": 3000
-        }
-      }
-    },
-    {
-      "id": "dda7",
-      "type": "tunnel",
-      "inputs": {
-        "create": {
-          "port": 3000
-        }
-      }
     }
   ]
 }
