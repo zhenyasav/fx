@@ -31,7 +31,7 @@ export function manifest() {
     description: "a Teams application manifest bundle",
     templateDirectory: path.resolve(__dirname, "../templates/manifest"),
     input: manifestInput,
-    defaults(answers, { config }) {
+    defaults({ answers }) {
       const name = path.basename(process.cwd());
       const username = os.userInfo().username;
       return {

@@ -40,7 +40,7 @@ export function tab(): ResourceDefinition<TabInput> {
     methods: {
       create: method({
         inputShape: tabInput,
-        defaults(answers) {
+        defaults({answers}) {
           return {
             id: answers?.name ? displayNameToMachineName(answers?.name) : "",
             ...answers,

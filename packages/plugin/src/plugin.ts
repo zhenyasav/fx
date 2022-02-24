@@ -178,6 +178,7 @@ export function getResourceDependencies(
 export type MethodResult = void | object;
 
 export type MethodInputsContext<TInput, TCreateInput> = {
+  methodName: string;
   defaults?: Partial<TInput>;
   resource: LoadedResource<TCreateInput>;
   config: LoadedConfiguration;
@@ -189,10 +190,13 @@ export type Method<TInput = any, TCreateInput = TInput> = {
     context: MethodInputsContext<TInput, TCreateInput>
   ): MaybePromise<TInput>;
   defaults?(
-    answers: Partial<TInput>,
-    context: MethodInputsContext<TInput, TCreateInput>
-  ): Partial<TInput>;
+    context: MethodInputsContext<TInput, TCreateInput> & {
+      answers: Partial<TInput>;
+      methodName: string;
+    }
+  ): MaybePromise<Partial<TInput>>;
   body?(context: {
+    methodName: string;
     input: TInput;
     resource: LoadedResource<TCreateInput>;
     config: LoadedConfiguration;
@@ -203,6 +207,7 @@ export type Method<TInput = any, TCreateInput = TInput> = {
 
 export type Methods<TCreateInput = any> = {
   create?: Method<TCreateInput, TCreateInput>;
+  "*"?: Method<any, TCreateInput>;
 } & { [methodName: string]: Method<any, TCreateInput> };
 
 export type Transform<T, C = any> = (
@@ -235,10 +240,10 @@ export function method<
             defaults:
               typeof methodDefaultsFn == "function"
                 ? (answers: Partial<z.infer<T>>) => {
-                    return methodDefaultsFn(
-                      { ...defaults, ...answers },
-                      context
-                    );
+                    return methodDefaultsFn({
+                      answers: { ...defaults, ...answers },
+                      ...context,
+                    });
                   }
                 : defaults,
             questionGenerator,

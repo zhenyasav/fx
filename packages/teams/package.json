@@ -8,11 +8,11 @@
     "clean": "rm -rf build && tsc --build --clean"
   },
   "dependencies": {
-    "@fx/bots": "workspace:^0.1.0",
-    "@fx/plugin": "workspace:^0.1.0",
+    "@fx/bots": "workspace:^0.1",
+    "@fx/plugin": "workspace:^0.1",
     "@fx/teams-dev-portal": "workspace:^0.1",
     "@fx/templates": "workspace:^0.1",
-    "@fx/tunnel": "workspace:^0.1.0",
+    "@fx/tunnel": "workspace:^0.1",
     "@nice/plate": "workspace:^0.1",
     "axios": "^0.24.0",
     "chalk": "4",

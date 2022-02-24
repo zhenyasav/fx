@@ -91,7 +91,9 @@ export class Fx {
     const config = await this.requireConfig();
     const resources = config?.getResources();
     return resources?.filter(
-      (r) => r.definition?.methods && methodName in r.definition.methods
+      (r) =>
+        r.definition?.methods &&
+        (methodName in r.definition.methods || "*" in r.definition.methods)
     );
   }
   async printPlan(
@@ -300,6 +302,8 @@ export class Fx {
       description?: string;
     }
   ): Promise<Plan | null> {
+    if (!methodName) throw new Error("a method name is required");
+    if (methodName === "*") throw new Error("the * method is not invokable");
     const { resources: rs, input: defaults } = { ...options };
     const resources: LoadedResource[] = rs?.length
       ? rs
@@ -366,7 +370,8 @@ export class Fx {
     for (let resource of ordered) {
       const { definition, instance } = resource;
 
-      const method = definition?.methods?.[methodName];
+      const method =
+        definition?.methods?.[methodName] ?? definition?.methods?.["*"];
       if (!method) continue;
 
       if (method.implies?.length) {
@@ -390,6 +395,7 @@ export class Fx {
           questionGenerator: getResourceQuestionGenerator(config),
           resource,
           config,
+          methodName,
         })
       );
 
@@ -420,6 +426,7 @@ export class Fx {
           input,
           resource,
           config,
+          methodName,
         })
       );
 

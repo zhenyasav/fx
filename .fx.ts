@@ -1,7 +1,8 @@
-import { Config } from "@fx/core";
+import { Config, packageScripts } from "@fx/core";
+import { packageTemplate } from "./templates/package/template.t";
 
 const config: Config = {
-  resources: [],
+  resourceDefinitions: [packageTemplate(), packageScripts()],
   plugins: [],
 };
 

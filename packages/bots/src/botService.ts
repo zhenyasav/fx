@@ -71,7 +71,7 @@ export function botService(): ResourceDefinition<BotServiceInput> {
     methods: {
       create: method({
         inputShape: botServiceInput,
-        defaults(answers, { resource }) {
+        defaults({ answers, resource }) {
           const { instance } = resource;
           const { id } = instance;
           const rid = resourceId(instance);

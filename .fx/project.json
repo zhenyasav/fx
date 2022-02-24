@@ -1,3 +1,175 @@
 {
-  "resources": []
+  "resources": [
+    {
+      "id": "60d8",
+      "type": "package",
+      "inputs": {
+        "create": {
+          "name": "@fx/essentials",
+          "flattenScope": true
+        }
+      },
+      "outputs": {
+        "undefined": {
+          "files": [
+            {
+              "$effect": "file",
+              "file": {
+                "path": "/Users/zhenya/dev/fx/packages/essentials/.gitignore",
+                "name": ".gitignore",
+                "root": "/",
+                "dir": "/Users/zhenya/dev/fx/packages/essentials",
+                "base": ".gitignore",
+                "ext": "",
+                "copyFrom": "/Users/zhenya/dev/fx/templates/package/.gitignore",
+                "allowOverwrite": true
+              }
+            },
+            {
+              "$effect": "file",
+              "file": {
+                "path": "/Users/zhenya/dev/fx/packages/essentials/.npmignore",
+                "name": ".npmignore",
+                "root": "/",
+                "dir": "/Users/zhenya/dev/fx/packages/essentials",
+                "base": ".npmignore",
+                "ext": "",
+                "copyFrom": "/Users/zhenya/dev/fx/templates/package/.npmignore",
+                "allowOverwrite": true
+              }
+            },
+            {
+              "$effect": "file",
+              "file": {
+                "path": "/Users/zhenya/dev/fx/packages/essentials/jest.config.js",
+                "name": "jest.config",
+                "root": "/",
+                "dir": "/Users/zhenya/dev/fx/packages/essentials",
+                "base": "jest.config.js",
+                "ext": ".js",
+                "copyFrom": "/Users/zhenya/dev/fx/templates/package/jest.config.js",
+                "allowOverwrite": true
+              }
+            },
+            {
+              "$effect": "file",
+              "file": {
+                "path": "/Users/zhenya/dev/fx/packages/essentials/.swcrc",
+                "name": ".swcrc",
+                "root": "/",
+                "dir": "/Users/zhenya/dev/fx/packages/essentials",
+                "base": ".swcrc",
+                "ext": "",
+                "copyFrom": "/Users/zhenya/dev/fx/templates/package/.swcrc",
+                "allowOverwrite": true
+              }
+            },
+            {
+              "$effect": "file",
+              "file": {
+                "path": "/Users/zhenya/dev/fx/packages/essentials/.vscode/launch.json",
+                "name": "launch",
+                "root": "/",
+                "dir": "/Users/zhenya/dev/fx/packages/essentials/.vscode",
+                "base": "launch.json",
+                "ext": ".json",
+                "copyFrom": "/Users/zhenya/dev/fx/templates/package/.vscode/launch.json",
+                "allowOverwrite": true
+              }
+            },
+            {
+              "$effect": "file",
+              "file": {
+                "path": "/Users/zhenya/dev/fx/packages/essentials/package.json",
+                "name": "package",
+                "root": "/",
+                "dir": "/Users/zhenya/dev/fx/packages/essentials",
+                "base": "package.json",
+                "ext": ".json",
+                "content": "\n{\n  \"name\": \"@fx/essentials\",\n  \"version\": \"0.0.1\",\n  \"main\": \"build/index.js\",\n  \"typings\": \"build/index.d.ts\",\n  \"types\": \"build/index.d.ts\",\n  \"scripts\": {\n    \"clean\": \"rm -rf build && tsc --build --clean\",\n    \"build\": \"tsc\",\n    \"check\": \"tsc --noEmit\",\n    \"test\": \"jest\"\n  },\n  \"devDependencies\": {\n    \"@swc/core\": \"^1.2.137\",\n    \"@swc/jest\": \"^0.2.17\",\n    \"@types/jest\": \"^27.4.0\",\n    \"@types/node\": \"^16.11.11\",\n    \"jest\": \"^27.4.5\",\n    \"ts-jest\": \"^27.1.2\",\n    \"typescript\": \"^4.5.5\"\n  }\n}\n",
+                "allowOverwrite": true
+              }
+            },
+            {
+              "$effect": "file",
+              "file": {
+                "path": "/Users/zhenya/dev/fx/packages/essentials/tsconfig.json",
+                "name": "tsconfig",
+                "root": "/",
+                "dir": "/Users/zhenya/dev/fx/packages/essentials",
+                "base": "tsconfig.json",
+                "ext": ".json",
+                "content": "{\n  \"extends\": \"../../tsconfig.json\",\n  \"include\": [\"./src/**/*.ts\"],\n  \"exclude\": [\"build\", \"node_modules\"],\n  \"compilerOptions\": {\n    \"rootDir\": \"src\",\n    \"outDir\": \"build\"\n  }\n}",
+                "allowOverwrite": true
+              }
+            },
+            {
+              "$effect": "file",
+              "file": {
+                "path": "/Users/zhenya/dev/fx/packages/essentials/src/index.ts",
+                "name": "index",
+                "root": "/",
+                "dir": "/Users/zhenya/dev/fx/packages/essentials/src",
+                "base": "index.ts",
+                "ext": ".ts",
+                "content": "// package @fx/essentials\n",
+                "allowOverwrite": true
+              }
+            },
+            {
+              "$effect": "file",
+              "file": {
+                "path": "/Users/zhenya/dev/fx/packages/essentials/test/test.ts",
+                "name": "test",
+                "root": "/",
+                "dir": "/Users/zhenya/dev/fx/packages/essentials/test",
+                "base": "test.ts",
+                "ext": ".ts",
+                "content": "\nimport { expect } from \"chai\";\n\ndescribe(\"@fx/essentials\", () => {\n  it(\"exists\", () => {\n    expect(true).to.exist;\n  });\n});\n",
+                "allowOverwrite": true
+              }
+            }
+          ]
+        },
+        "create": {
+          "files": [
+            "/Users/zhenya/dev/fx/packages/essentials/.gitignore",
+            "/Users/zhenya/dev/fx/packages/essentials/.npmignore",
+            "/Users/zhenya/dev/fx/packages/essentials/jest.config.js",
+            "/Users/zhenya/dev/fx/packages/essentials/.swcrc",
+            "/Users/zhenya/dev/fx/packages/essentials/.vscode/launch.json",
+            "/Users/zhenya/dev/fx/packages/essentials/package.json",
+            "/Users/zhenya/dev/fx/packages/essentials/tsconfig.json",
+            "/Users/zhenya/dev/fx/packages/essentials/src/index.ts",
+            "/Users/zhenya/dev/fx/packages/essentials/test/test.ts"
+          ]
+        }
+      }
+    },
+    {
+      "id": "a256",
+      "type": "package-scripts",
+      "inputs": {
+        "create": {
+          "packageManager": "pnpm"
+        }
+      },
+      "outputs": {
+        "undefined": {
+          "script": {
+            "$effect": "shell",
+            "description": "invoke script 'dev' using pnpm",
+            "command": "echo \"pnpm dev\""
+          }
+        },
+        "dev": {
+          "script": {
+            "stdout": "pnpm dev\n",
+            "stderr": "",
+            "code": 0
+          }
+        }
+      }
+    }
+  ]
 }

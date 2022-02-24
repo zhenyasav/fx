@@ -1,7 +1,7 @@
 import { Config } from "@fx/core";
 
 const config: Config = {
-  resources: [],
+  resourceDefinitions: [],
   plugins: [],
 };
 

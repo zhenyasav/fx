@@ -1,12 +1,5 @@
-import { TemplateContext, TemplateFunction } from "@fx/templates";
-
-export type Input = {
-  name: string;
-};
-
-const template: TemplateFunction<Input> = ({ input }: TemplateContext<Input>) => /*javascript*/ `
 {
-  "name": "${input?.name}",
+  "name": "@fx/essentials",
   "version": "0.1.0",
   "main": "build/index.js",
   "typings": "build/index.d.ts",
@@ -25,8 +18,9 @@ const template: TemplateFunction<Input> = ({ input }: TemplateContext<Input>) =>
     "jest": "^27.4.5",
     "ts-jest": "^27.1.2",
     "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "@fx/plugin": "workspace:^0.1.6",
+    "detect-package-manager": "^2.0.1"
   }
 }
-`;
-
-export default template;

@@ -2,6 +2,14 @@ import { z } from "zod";
 import inquirer, { Question } from "inquirer";
 import { debug } from "./debug";
 
+type MaybePromise<T> = T | Promise<T>;
+function isPromise<T = any>(o: any): o is Promise<T> {
+  return o?.then && typeof o.then == "function";
+}
+function promise<T = any>(o: any): Promise<T> {
+  return isPromise(o) ? o : Promise.resolve(o);
+}
+
 export function getQuestion(shape: z.ZodTypeAny): inquirer.Question | null {
   let defaultValue = void 0,
     message = "",
@@ -49,19 +57,19 @@ export type QuestionGenerator<T extends z.ZodRawShape = z.ZodRawShape> = (
 export type InquireOptions<T extends z.ZodObject<z.ZodRawShape>> = {
   defaults?:
     | Partial<z.infer<T>>
-    | ((answers: Partial<z.infer<T>>) => Partial<z.infer<T>>);
+    | ((answers: Partial<z.infer<T>>) => MaybePromise<Partial<z.infer<T>>>);
   questionGenerator?: QuestionGenerator<z.ZodRawShape>;
 };
 
-export function getQuestions<
+export async function getQuestions<
   T extends z.ZodObject<z.ZodRawShape> = z.ZodObject<z.ZodRawShape>
->(shape: T, options?: InquireOptions<T>): Question[] {
+>(shape: T, options?: InquireOptions<T>): Promise<Question[]> {
   const questions = [];
   function defaultHook(q: Question, key: string) {
     const d = q.default;
-    return (answers: any) => {
+    return async (answers: any) => {
       if (typeof options?.defaults == "function") {
-        return options.defaults(answers)?.[key] ?? d;
+        return (await promise(options.defaults(answers)))?.[key] ?? d;
       } else if (typeof options?.defaults == "object") {
         return options.defaults[key] ?? d;
       }
@@ -102,7 +110,7 @@ function noUndefined<T extends object>(o: T) {
 export async function inquire<
   T extends z.ZodObject<z.ZodRawShape> = z.ZodObject<z.ZodRawShape>
 >(shape: T, options?: InquireOptions<T>): Promise<z.infer<T>> {
-  const questions = getQuestions(shape, options);
+  const questions = await getQuestions(shape, options);
   debug(questions);
   const responses =
     (await inquirer.prompt(
