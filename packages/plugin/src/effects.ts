@@ -27,6 +27,8 @@ export namespace Effect {
     command: string;
     cwd?: string;
     async?: boolean;
+    captureStdout?: boolean;
+    captureStderr?: boolean;
   };
 
   export type Any = File | Function | Shell;

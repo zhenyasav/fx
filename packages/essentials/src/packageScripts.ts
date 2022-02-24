@@ -7,7 +7,14 @@ export const packageScriptsInput = z.object({
 
 export type PackageScriptsInput = z.infer<typeof packageScriptsInput>;
 
-export function packageScripts(): ResourceDefinition<PackageScriptsInput> {
+export type PackageScriptsOptions = {
+  captureStderr?: boolean;
+  captureStdout?: boolean;
+};
+
+export function packageScripts(
+  options?: PackageScriptsOptions
+): ResourceDefinition<PackageScriptsInput> {
   return {
     type: "package-scripts",
     description: "runs scripts in the npm package",
@@ -25,11 +32,18 @@ export function packageScripts(): ResourceDefinition<PackageScriptsInput> {
       "*": method({
         body({ resource, methodName }) {
           const { packageManager } = resource.instance.inputs?.create ?? {};
+          const { captureStderr, captureStdout } = {
+            captureStderr: false,
+            captureStdout: false,
+            ...options,
+          };
           return {
             script: effect({
               $effect: "shell",
               description: `invoke script '${methodName}' using ${packageManager}`,
               command: `${packageManager} run ${methodName}`,
+              captureStderr,
+              captureStdout,
             }),
           };
         },

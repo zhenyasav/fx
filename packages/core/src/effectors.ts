@@ -197,8 +197,8 @@ const Function: Effector<Effect.Function, EffectorContext> = {
 
 export type ProcessResult = {
   code: number | null;
-  stdout: string;
-  stderr: string;
+  stdout?: string;
+  stderr?: string;
 };
 
 const Shell: Effector<Effect.Shell, EffectorContext> = {
@@ -211,7 +211,7 @@ const Shell: Effector<Effect.Shell, EffectorContext> = {
     return `shell${cwds}: ${[green(command), gray(desc)].join(" ")}`;
   },
   async apply(e) {
-    const { command, cwd, async } = e;
+    const { command, cwd, async, captureStderr, captureStdout } = e;
     // const onComplete = e.origin?.onMethodResultAsync;
     if (!command) return;
     return new Promise<ProcessResult | void>((resolve, reject) => {
@@ -243,7 +243,12 @@ const Shell: Effector<Effect.Shell, EffectorContext> = {
           // onComplete?.(result);
           // TODO: capture async shell results?
         } else {
-          resolve(result);
+          const { code, stderr, stdout } = result;
+          resolve({
+            code,
+            ...(captureStdout ? { stdout } : {}),
+            ...(captureStderr ? { stderr } : {}),
+          });
         }
       });
       if (async) resolve();
