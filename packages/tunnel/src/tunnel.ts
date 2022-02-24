@@ -1,4 +1,3 @@
-import { z } from "zod";
 import {
   LoadedResource,
   method,
@@ -6,6 +5,7 @@ import {
   Plugin,
   ResourceInstance,
   ResourceDefinition,
+  z,
 } from "@fx/plugin";
 import ngrok from "ngrok";
 

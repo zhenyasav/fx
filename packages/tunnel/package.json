@@ -1,6 +1,6 @@
 {
   "name": "@fx/tunnel",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "main": "build/index.js",
   "typings": "build/index.d.ts",
   "types": "build/index.d.ts",
