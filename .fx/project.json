@@ -159,12 +159,12 @@
           "script": {
             "$effect": "shell",
             "description": "invoke script 'dev' using pnpm",
-            "command": "echo \"pnpm dev\""
+            "command": "echo \"pnpm run dev\""
           }
         },
         "dev": {
           "script": {
-            "stdout": "pnpm dev\n",
+            "stdout": "pnpm run dev\n",
             "stderr": "",
             "code": 0
           }

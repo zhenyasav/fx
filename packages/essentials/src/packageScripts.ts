@@ -29,7 +29,7 @@ export function packageScripts(): ResourceDefinition<PackageScriptsInput> {
             script: effect({
               $effect: "shell",
               description: `invoke script '${methodName}' using ${packageManager}`,
-              command: `echo "${packageManager} run ${methodName}"`,
+              command: `${packageManager} run ${methodName}`,
             }),
           };
         },
