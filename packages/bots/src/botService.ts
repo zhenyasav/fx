@@ -32,8 +32,8 @@ export const botServiceInput = z.object({
     .default("./azure"),
   messagingEndpoint: z
     .union([
-      z.string().describe("Enter a static URL"),
       z.literal("tunnel").describe("Dynamic URL from a tunneling service"),
+      z.string().describe("Enter a static URL"),
     ])
     .describe("Enter your bot's messaging endpoint URL"),
 });

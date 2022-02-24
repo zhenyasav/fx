@@ -211,7 +211,13 @@ const Shell: Effector<Effect.Shell, EffectorContext> = {
     return `shell${cwds}: ${[green(command), gray(desc)].join(" ")}`;
   },
   async apply(e) {
-    const { command, cwd, async, captureStderr, captureStdout } = e;
+    const {
+      command,
+      cwd,
+      async,
+      captureStderr = true,
+      captureStdout = true,
+    } = e;
     // const onComplete = e.origin?.onMethodResultAsync;
     if (!command) return;
     return new Promise<ProcessResult | void>((resolve, reject) => {
