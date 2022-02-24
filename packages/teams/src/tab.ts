@@ -40,7 +40,7 @@ export function tab(): ResourceDefinition<TabInput> {
     methods: {
       create: method({
         inputShape: tabInput,
-        defaults({answers}) {
+        defaults({ answers }) {
           return {
             id: answers?.name ? displayNameToMachineName(answers?.name) : "",
             ...answers,
@@ -59,9 +59,10 @@ export function tab(): ResourceDefinition<TabInput> {
               manifestResource.instance.inputs?.create?.directory!,
               "manifest.json",
             ],
-            transform(existing) {
+            transform(ex) {
               // create the tab:
               // figure out the url:
+              const existing = ex ?? { staticTabs: [] };
               const contentUrl = isResourceReference(input.hostname)
                 ? void 0
                 : new URL(input.path, input.hostname).href;
@@ -76,7 +77,7 @@ export function tab(): ResourceDefinition<TabInput> {
               existing.staticTabs = existing.staticTabs || [];
               existing.staticTabs.push(tab);
 
-              return existing;
+              return existing as any;
             },
           });
           return {
@@ -103,7 +104,10 @@ export function tab(): ResourceDefinition<TabInput> {
                 description: "amend contentUrl from ngrok tunnel",
                 file: new JSONFile<Manifest>({
                   path: [dir, "manifest.json"],
-                  transform(manifestDoc) {
+                  transform(md) {
+                    const manifestDoc = md ?? {
+                      staticTabs: [],
+                    };
                     // get the tunnel referenced resource
                     const tunnel =
                       config.getResource<CreateTunnelInput>(hostname);
@@ -122,7 +126,7 @@ export function tab(): ResourceDefinition<TabInput> {
                       tab.contentUrl = new URL(pname, tunnelUrl).href;
                     }
                     // return the manifest to write to disk
-                    return manifestDoc;
+                    return manifestDoc as any;
                   },
                 }),
               }),

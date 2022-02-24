@@ -214,6 +214,20 @@ export interface IComposeExtensionMessageHandler {
   };
 }
 
+export interface ILocalizationInfo {
+  /**
+   * The language tag of the strings in this top level manifest file.
+   */
+  defaultLanguageTag: string;
+  additionalLanguages?: {
+    languageTag: string;
+    /**
+     * A relative file path to a the .json file containing the translated strings.
+     */
+    file: string;
+  }[];
+}
+
 export interface IMessagingExtensionCommand {
   /**
    * Id of the command.
@@ -310,19 +324,7 @@ export interface IActivityType {
   templateText: string;
 }
 
-export interface ILocalizationInfo {
-  /**
-   * The language tag of the strings in this top level manifest file.
-   */
-  defaultLanguageTag: string;
-  additionalLanguages?: {
-    languageTag: string;
-    /**
-     * A relative file path to a the .json file containing the translated strings.
-     */
-    file: string;
-  }[];
-}
+
 
 export type AppManifest = Json;
 

@@ -21,13 +21,13 @@ export type FileOptions<D> = {
   path: Path;
   copyFrom?: Path;
   content?: D;
-  transform?: AsyncFunctor<D>;
+  transform?: AsyncFunctor<D | null>;
   overwrite?: boolean;
 };
 
 export class File<D = string> {
   public content: D | undefined;
-  public transform: AsyncFunctor<D> | undefined;
+  public transform: AsyncFunctor<D | null> | undefined;
   public path: string = "";
   public name: string = "";
   public root: string = "";
@@ -85,13 +85,19 @@ export class File<D = string> {
     return !!this.copyFrom && !this.content;
   }
   async load(loadOptions?: any): Promise<File<D>> {
-    const content = await fs.readFile(this.copyFrom || this.path);
-    const parsed = await this.parse(content, loadOptions);
+    let content: Buffer | undefined;
+    try {
+      content = await fs.readFile(this.copyFrom || this.path);
+    } catch (err) {
+      // faild to read / maybe no file at all
+    }
+    const parsed = !!content ? (await this.parse(content!, loadOptions)) : null;
     const transformed = this.transform
       ? await promise(this.transform(parsed))
       : parsed;
-    this.content = transformed;
+    this.content = transformed ?? void 0;
     return this;
+  
   }
   async ensureLoaded() {
     if (!this.isLoaded()) await this.load();

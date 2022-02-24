@@ -25,6 +25,7 @@ export const botServiceInput = z.object({
     .string()
     .describe("azure subscription id (blank for default)"),
   resourceGroup: z.string().describe("resource group name"),
+  aadApp: z.literal("aad-app").describe("specify an aad app registration"),
   bicepTemplateFolder: z
     .string()
     .describe("folder where to place bicep files")
@@ -40,9 +41,10 @@ export const botServiceInput = z.object({
 export type BotServiceInput = z.infer<typeof botServiceInput>;
 
 export type BotServiceOutput = {
-  msaClientId: string;
-  msaPrincipalId: string;
-  msaTenantId: string;
+  // msaClientId: string;
+  // msaPrincipalId: string;
+  // msaTenantId: string;
+  msaAppId: string;
 };
 
 export type BicepParameterFile<T extends object> = {
@@ -59,6 +61,7 @@ export type BotServiceParams = {
   botServiceName: string;
   botEndpoint: string;
   botDisplayName: string;
+  botAadAppId: string;
 };
 
 export const BOT_SERVICE_TEMPLATE_FILE = "bot-service.bicep";
@@ -116,6 +119,9 @@ export function botService(): ResourceDefinition<BotServiceInput> {
                     "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
                   contentVersion: "1.0.0.0",
                   parameters: {
+                    botAadAppId: {
+                      value: "",
+                    },
                     botDisplayName: {
                       value: botDisplayName,
                     },
@@ -149,6 +155,7 @@ export function botService(): ResourceDefinition<BotServiceInput> {
             bicepTemplateFolder,
             messagingEndpoint,
             subscriptionId,
+            aadApp,
           } = resource.instance.inputs?.create ?? {};
           let urlIsDynamic: boolean = isResourceReference(messagingEndpoint);
           const cwd = process.cwd();
@@ -170,6 +177,12 @@ export function botService(): ResourceDefinition<BotServiceInput> {
                     file: new JSONFile<BicepParameterFile<BotServiceParams>>({
                       path: [destinationFolder, BOT_SERVICE_PARAMS_FILE],
                       transform(existing) {
+                        const ex = existing ?? {
+                          parameters: {
+                            botEndpoint: { value: "" },
+                            botAadAppId: { value: "" },
+                          },
+                        };
                         let url: string | null = null;
                         if (isResourceReference(messagingEndpoint)) {
                           const tunnel =
@@ -179,7 +192,15 @@ export function botService(): ResourceDefinition<BotServiceInput> {
                           const baseUrl = tunnel?.instance.outputs?.dev?.url;
                           url = `${baseUrl}/api/messages`;
                         }
-                        existing.parameters.botEndpoint.value = url!;
+                        ex.parameters.botEndpoint.value = url!;
+                        if (isResourceReference(aadApp)) {
+                          const aadAppResource = config.getResource(aadApp);
+                          const botAadAppId =
+                            aadAppResource?.instance?.outputs?.provision?.aad
+                              ?.app?.appId;
+                          ex.parameters = ex.parameters ?? {};
+                          ex.parameters.botAadAppId.value = botAadAppId;
+                        }
                         return existing;
                       },
                     }),

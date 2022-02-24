@@ -41,7 +41,8 @@ export function teamsBot(): ResourceDefinition<TeamsBotInput> {
           ];
           const file = new JSONFile<TeamsAppManifest>({
             path: p,
-            transform(existing) {
+            transform(ex) {
+              const existing = ex ?? { bots: [] };
               // create the tab:
               // figure out the url:
               if (!isResourceReference(input.botService)) {
@@ -63,7 +64,7 @@ export function teamsBot(): ResourceDefinition<TeamsBotInput> {
               existing.bots = existing.bots || [];
               existing.bots.push(bot);
 
-              return existing;
+              return existing as any;
             },
           });
           return {
@@ -105,7 +106,7 @@ export function teamsBot(): ResourceDefinition<TeamsBotInput> {
                     botService?.instance?.outputs?.dev?.az?.stdout;
                   const azResult = JSON.parse(azStdout);
                   const { outputs } = azResult.properties;
-                  console.log('bot service outputs', outputs);
+                  console.log("bot service outputs", outputs);
                   const botId = outputs?.msaAppId?.value;
 
                   const bot = existing?.bots?.find((b) => {
@@ -113,7 +114,7 @@ export function teamsBot(): ResourceDefinition<TeamsBotInput> {
                   }); // TODO: do this better
                   if (bot) {
                     bot.botId = botId;
-                    console.log('amended teams manifest bot declaration:', bot);
+                    console.log("amended teams manifest bot declaration:", bot);
                   }
                   return existing;
                 },

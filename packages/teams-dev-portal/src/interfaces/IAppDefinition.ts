@@ -6,6 +6,7 @@ import {
   IStaticTab,
   IMessagingExtensionCommand,
   IActivityType,
+  ILocalizationInfo,
 } from "./manifest";
 
 export interface IAppDefinition {
@@ -89,11 +90,6 @@ export interface IPersonalCommand {
 export interface IGroupChatCommand {
   title: string;
   description: string;
-}
-
-export interface ILocalizationInfo {
-  defaultLanguageTag: string;
-  languages: ILanguage[];
 }
 
 export interface ILanguage {

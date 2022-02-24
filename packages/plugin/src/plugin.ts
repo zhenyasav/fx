@@ -74,7 +74,7 @@ export type LoadedConfiguration = {
   ): ResourceDefinition<TInput> | undefined;
   getResources(selector?: string): LoadedResource[];
   getResource<TInput = any>(
-    refOrId: string | ResourceReference
+    refOrId: string | ResourceReference | ResourceInstance
   ): LoadedResource<TInput> | undefined;
   setResource(instance: ResourceInstance): ResourceInstance;
   setMethodInput(
@@ -226,7 +226,10 @@ export function method<
   ...rest
 }: {
   inputShape?: T;
-  inputTransform?: Transform<z.infer<T>>;
+  inputTransform?: Transform<
+    z.infer<T>,
+    MethodInputsContext<z.infer<T>, TCreateInput>
+  >;
 } & Omit<Method<z.infer<T>, TCreateInput>, "inputs">): Method<
   z.infer<T>,
   TCreateInput

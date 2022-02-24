@@ -1,6 +1,6 @@
 {
   "name": "@fx/bots",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "build/index.js",
   "typings": "build/index.d.ts",
   "types": "build/index.d.ts",
@@ -9,7 +9,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@fx/plugin": "workspace:^0.1.0",
-    "@fx/tunnel": "workspace:^0.1.0"
+    "@fx/plugin": "workspace:^0.1",
+    "@fx/tunnel": "workspace:^0.1"
   }
 }

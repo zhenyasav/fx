@@ -1,0 +1,29 @@
+{
+  "name": "fx-test-bot-app-feabc12",
+  "allowPublicClient": null,
+  "appRoles": [],
+  "oauth2AllowUrlPathMatching": false,
+  "description": null,
+  "identifierUris": [],
+  "informationalUrls": {
+    "termsOfService": null,
+    "support": null,
+    "privacy": null,
+    "marketing": null
+  },
+  "keyCredentials": [],
+  "logoUrl": null,
+  "logoutUrl": null,
+  "notes": null,
+  "oauth2AllowIdTokenImplicitFlow": false,
+  "oauth2AllowImplicitFlow": false,
+  "oauth2Permissions": [],
+  "oauth2RequirePostResponse": false,
+  "optionalClaims": null,
+  "orgRestrictions": [],
+  "preAuthorizedApplications": [],
+  "replyUrlsWithType": [],
+  "signInUrl": null,
+  "signInAudience": "AzureADMultipleOrgs",
+  "tags": []
+}

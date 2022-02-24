@@ -1,6 +1,6 @@
 {
   "name": "@fx/teams",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "typings": "build/index.d.ts",
   "main": "build/index.js",
   "scripts": {
@@ -8,6 +8,7 @@
     "clean": "rm -rf build && tsc --build --clean"
   },
   "dependencies": {
+    "@fx/aad": "workspace:^0.1.1",
     "@fx/bots": "workspace:^0.1",
     "@fx/plugin": "workspace:^0.1",
     "@fx/teams-dev-portal": "workspace:^0.1",

@@ -13,7 +13,6 @@ import {
   Plan,
   LoadedConfiguration,
   scrubEffects,
-  PropertyPath,
   isResourceCreateEffect,
 } from "@fx/plugin";
 import { executeDirectoryTemplate } from "@nice/plate";
@@ -335,8 +334,7 @@ export class Fx {
     function writeResourceMethodValue(
       sectionKey: "inputs" | "outputs",
       instance: ResourceInstance,
-      value: any,
-      path?: PropertyPath
+      value: any
     ) {
       const existing = config.getResource(resourceId(instance));
       const s = (x: any) => JSON.stringify(x);
@@ -431,7 +429,6 @@ export class Fx {
       );
 
       if (typeof methodResult != "undefined") {
-        // config.getResource(resourceId(instance))?.instance!,
         writeResourceMethodValue(
           "outputs",
           instance,

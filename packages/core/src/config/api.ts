@@ -12,6 +12,7 @@ import {
   LoadedResource,
   scrubEffects,
   matchesSelector,
+  isResourceReference,
 } from "@fx/plugin";
 import { ensurePath } from "../util/objects";
 
@@ -86,9 +87,14 @@ export async function createLoadedConfiguration(options: {
       );
     },
     getResource(
-      refOrId: string | ResourceReference
+      refOrId: string | ResourceReference | ResourceInstance
     ): LoadedResource | undefined {
-      const id = typeof refOrId == "string" ? refOrId : refOrId.$resource;
+      const id =
+        typeof refOrId == "string"
+          ? refOrId
+          : isResourceReference(refOrId)
+          ? refOrId.$resource
+          : resourceId(refOrId);
       return this.getResources()?.find((lr) => {
         const instId = resourceId(lr.instance);
         return instId == id || instId.includes(id);
@@ -117,7 +123,7 @@ export async function createLoadedConfiguration(options: {
       const res = this.getResource(resourceId);
       if (!res) return;
       const v = ensurePath(res.instance, ["outputs", method, ...path]);
-      const lastKey = path[path.length - 1];
+      const lastKey = path?.length ? path[path.length - 1] : method;
       v[lastKey] = scrubEffects(result);
       return res.instance;
     },

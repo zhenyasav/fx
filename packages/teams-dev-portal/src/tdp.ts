@@ -7,6 +7,8 @@ import { AppStudioError } from "./errors";
 import { IPublishingAppDenition } from "./interfaces/IPublishingAppDefinition";
 import { AppStudioResultFactory } from "./results";
 import { Constants, ErrorMessages } from "./constants";
+import { IAADDefinition, IAADPassword } from "./interfaces/AAD";
+import { AppStudioErrorMessage } from "./interfaces/errors";
 
 /**
  * Get app studio endpoint for prod/int environment, mainly for ux e2e test
@@ -38,7 +40,9 @@ export namespace AppStudioClient {
     const instance = axios.create({
       baseURL: baseUrl,
     });
-    instance.defaults.headers.common["Authorization"] = `Bearer ${appStudioToken}`;
+    instance.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${appStudioToken}`;
     instance.defaults.headers.common["Client-Source"] = "teamstoolkit";
     instance.interceptors.request.use(function (config) {
       config.params = { teamstoolkit: true, ...config.params };
@@ -46,6 +50,9 @@ export namespace AppStudioClient {
     });
     return instance;
   }
+
+  // to avoid renaming too many symbols from AAD app studio code
+  const initAxiosInstance = createRequesterWithToken;
 
   /**
    * Creates an app registration in app studio with the given archived file and returns the app definition.
@@ -60,9 +67,13 @@ export namespace AppStudioClient {
   ): Promise<IAppDefinition> {
     try {
       const requester = createRequesterWithToken(appStudioToken);
-      const response = await requester.post(`/api/appdefinitions/v2/import`, file, {
-        headers: { "Content-Type": "application/zip" },
-      });
+      const response = await requester.post(
+        `/api/appdefinitions/v2/import`,
+        file,
+        {
+          headers: { "Content-Type": "application/zip" },
+        }
+      );
       if (response && response.data) {
         const app = <IAppDefinition>response.data;
         // await logProvider?.debug(`recieved data from app studio ${JSON.stringify(app)}`);
@@ -87,7 +98,7 @@ export namespace AppStudioClient {
     teamsAppId: string,
     appStudioToken: string,
     colorIconContent: string,
-    outlineIconContent: string,
+    outlineIconContent: string
   ): Promise<{ colorIconUrl: string; outlineIconUrl: string }> {
     // await logProvider?.info(`Uploading icon for teams ${teamsAppId}`);
     const requester = createRequesterWithToken(appStudioToken);
@@ -102,7 +113,10 @@ export namespace AppStudioClient {
         type: "outline",
         base64String: outlineIconContent,
       };
-      const colorIconResult = requester.post(`/api/appdefinitions/${teamsAppId}/image`, colorIcon);
+      const colorIconResult = requester.post(
+        `/api/appdefinitions/${teamsAppId}/image`,
+        colorIcon
+      );
       const outlineIconResult = requester.post(
         `/api/appdefinitions/${teamsAppId}/image`,
         outlineIcon
@@ -126,7 +140,7 @@ export namespace AppStudioClient {
 
   export async function getApp(
     teamsAppId: string,
-    appStudioToken: string,
+    appStudioToken: string
   ): Promise<IAppDefinition> {
     const requester = createRequesterWithToken(appStudioToken);
     try {
@@ -184,7 +198,7 @@ export namespace AppStudioClient {
         teamsAppId,
         appStudioToken,
         colorIconContent,
-        outlineIconContent,
+        outlineIconContent
       );
       if (!result) {
         // await logProvider?.error(`failed to upload color icon for: ${teamsAppId}`);
@@ -204,7 +218,9 @@ export namespace AppStudioClient {
         return app;
       } else {
         throw new Error(
-          `Cannot update teams app ${teamsAppId}, response: ${JSON.stringify(response)}`
+          `Cannot update teams app ${teamsAppId}, response: ${JSON.stringify(
+            response
+          )}`
         );
       }
     } catch (e: any) {
@@ -227,9 +243,13 @@ export namespace AppStudioClient {
     try {
       const requester = createRequesterWithToken(appStudioToken);
       const buffer = Buffer.from(manifestString, "utf8");
-      const response = await requester.post("/api/appdefinitions/prevalidation", buffer, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await requester.post(
+        "/api/appdefinitions/prevalidation",
+        buffer,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
       if (response && response.data) {
         let validationResult: string[] = [];
         validationResult = validationResult.concat(response.data.errors);
@@ -280,7 +300,10 @@ export namespace AppStudioClient {
           // To avoid App Studio BadGateway error
           // The app is actually published to app catalog.
           if (response.data.error.code === "BadGateway") {
-            const appDefinition = await getAppByTeamsAppId(teamsAppId, appStudioToken);
+            const appDefinition = await getAppByTeamsAppId(
+              teamsAppId,
+              appStudioToken
+            );
             if (appDefinition) {
               return appDefinition.teamsAppId;
             }
@@ -306,7 +329,10 @@ export namespace AppStudioClient {
         const correlationId = e.response?.headers[Constants.CORRELATION_ID];
         throw AppStudioResultFactory.SystemError(
           AppStudioError.TeamsAppPublishFailedError.name,
-          AppStudioError.TeamsAppPublishFailedError.message(teamsAppId, correlationId),
+          AppStudioError.TeamsAppPublishFailedError.message(
+            teamsAppId,
+            correlationId
+          ),
           e
         );
       }
@@ -327,7 +353,10 @@ export namespace AppStudioClient {
   ): Promise<string> {
     try {
       // Get App Definition from Teams App Catalog
-      const appDefinition = await getAppByTeamsAppId(teamsAppId, appStudioToken);
+      const appDefinition = await getAppByTeamsAppId(
+        teamsAppId,
+        appStudioToken
+      );
 
       const requester = createRequesterWithToken(appStudioToken);
       let response = null;
@@ -368,7 +397,10 @@ export namespace AppStudioClient {
         const correlationId = error.response?.headers[Constants.CORRELATION_ID];
         throw AppStudioResultFactory.SystemError(
           AppStudioError.TeamsAppPublishFailedError.name,
-          AppStudioError.TeamsAppPublishFailedError.message(teamsAppId, correlationId),
+          AppStudioError.TeamsAppPublishFailedError.message(
+            teamsAppId,
+            correlationId
+          ),
           error
         );
       }
@@ -381,9 +413,14 @@ export namespace AppStudioClient {
   ): Promise<IPublishingAppDenition | undefined> {
     const requester = createRequesterWithToken(appStudioToken);
     const response = await requester.get(`/api/publishing/${teamsAppId}`);
-    if (response && response.data && response.data.value && response.data.value.length > 0) {
-      const appdefinitions: IPublishingAppDenition[] = response.data.value[0].appDefinitions.map(
-        (item: any) => {
+    if (
+      response &&
+      response.data &&
+      response.data.value &&
+      response.data.value.length > 0
+    ) {
+      const appdefinitions: IPublishingAppDenition[] =
+        response.data.value[0].appDefinitions.map((item: any) => {
           return {
             lastModifiedDateTime: item.lastModifiedDateTime
               ? new Date(item.lastModifiedDateTime)
@@ -392,8 +429,7 @@ export namespace AppStudioClient {
             teamsAppId: item.teamsAppId,
             displayName: item.displayName,
           };
-        }
-      );
+        });
       return appdefinitions[appdefinitions.length - 1];
     } else {
       return undefined;
@@ -426,7 +462,9 @@ export namespace AppStudioClient {
       return Constants.PERMISSIONS.noPermission;
     }
 
-    const findUser = userList?.find((user: IUserList) => user.aadId === userObjectId);
+    const findUser = userList?.find(
+      (user: IUserList) => user.aadId === userObjectId
+    );
     if (!findUser) {
       return Constants.PERMISSIONS.noPermission;
     }
@@ -454,25 +492,136 @@ export namespace AppStudioClient {
       return;
     }
 
-    const findUser = app.userList?.findIndex((user: IUserList) => user["aadId"] === newUser.aadId);
+    const findUser = app.userList?.findIndex(
+      (user: IUserList) => user["aadId"] === newUser.aadId
+    );
     if (findUser && findUser >= 0) {
       return;
     }
 
     app.userList?.push(newUser);
     const requester = createRequesterWithToken(appStudioToken);
-    const response = await requester.post(`/api/appdefinitions/${teamsAppId}/owner`, app);
-    if (!response || !response.data || !checkUser(response.data as IAppDefinition, newUser)) {
+    const response = await requester.post(
+      `/api/appdefinitions/${teamsAppId}/owner`,
+      app
+    );
+    if (
+      !response ||
+      !response.data ||
+      !checkUser(response.data as IAppDefinition, newUser)
+    ) {
       throw new Error(ErrorMessages.GrantPermissionFailed);
     }
   }
 
   function checkUser(app: IAppDefinition, newUser: IUserList): boolean {
-    const findUser = app.userList?.findIndex((user: IUserList) => user["aadId"] === newUser.aadId);
+    const findUser = app.userList?.findIndex(
+      (user: IUserList) => user["aadId"] === newUser.aadId
+    );
     if (findUser != undefined && findUser >= 0) {
       return true;
     } else {
       return false;
     }
+  }
+
+  export async function getAadApp(
+    appStudioToken: string,
+    aadAppObjectId: string
+  ): Promise<IAADDefinition> {
+    if (!aadAppObjectId) {
+      throw new Error(
+        `${AppStudioErrorMessage.GetFailed}: ${AppStudioErrorMessage.AppObjectIdIsNull}.`
+      );
+    }
+
+    const instance = initAxiosInstance(appStudioToken);
+    const response = await instance.get(
+      `${baseUrl}/api/aadapp/v2/${aadAppObjectId}`
+    );
+    if (response && response.data) {
+      const app = <IAADDefinition>response.data;
+
+      if (app) {
+        return app;
+      }
+    }
+
+    throw new Error(
+      `${AppStudioErrorMessage.GetFailed}: ${AppStudioErrorMessage.EmptyResponse}.`
+    );
+  }
+
+  export async function createAADAppPassword(
+    appStudioToken: string,
+    aadAppObjectId: string
+  ): Promise<IAADPassword> {
+    if (!aadAppObjectId) {
+      throw new Error(
+        `${AppStudioErrorMessage.CreateSecretFailed}: ${AppStudioErrorMessage.AppObjectIdIsNull}.`
+      );
+    }
+
+    const instance = initAxiosInstance(appStudioToken);
+    const response = await instance.post(
+      `${baseUrl}/api/aadapp/${aadAppObjectId}/passwords`
+    );
+    if (response && response.data) {
+      const app = <IAADPassword>response.data;
+
+      if (app) {
+        return app;
+      }
+    }
+
+    throw new Error(
+      `${AppStudioErrorMessage.CreateSecretFailed}: ${AppStudioErrorMessage.EmptyResponse}.`
+    );
+  }
+
+  export async function updateAADApp(
+    appStudioToken: string,
+    appId: string,
+    aadApp: IAADDefinition
+  ): Promise<void> {
+    if (!aadApp) {
+      throw new Error(
+        `${AppStudioErrorMessage.UpdateFailed}: ${AppStudioErrorMessage.AppDefinitionIsNull}.`
+      );
+    }
+
+    if (!appId) {
+      throw new Error(
+        `${AppStudioErrorMessage.UpdateFailed}: ${AppStudioErrorMessage.AppObjectIdIsNull}.`
+      );
+    }
+
+    const instance = initAxiosInstance(appStudioToken);
+    await instance.post(`${baseUrl}/api/aadapp/${appId}`, aadApp);
+  }
+
+  export async function createAADAppV2(
+    appStudioToken: string,
+    aadApp: IAADDefinition
+  ): Promise<IAADDefinition> {
+    if (!aadApp) {
+      throw new Error(
+        `${AppStudioErrorMessage.CreateFailed}: ${AppStudioErrorMessage.AppDefinitionIsNull}.`
+      );
+    }
+
+    const instance = initAxiosInstance(appStudioToken);
+    const response = await instance.post(`${baseUrl}/api/aadapp/v2`, aadApp);
+    if (response && response.data) {
+      const app = <IAADDefinition>response.data;
+
+      if (app) {
+        return app;
+      }
+    }
+
+    throw new Error(
+      `${AppStudioErrorMessage.CreateFailed}: ${AppStudioErrorMessage.EmptyResponse}.`
+    );
   }
 }

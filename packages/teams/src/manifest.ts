@@ -21,7 +21,7 @@ import {
 } from "@fx/teams-dev-portal";
 import jszip from "jszip";
 import mkdirp from "mkdirp";
-import { IAppDefinition } from "@fx/teams-dev-portal/build/interfaces/IAppDefinition";
+import { IAppDefinition } from "@fx/teams-dev-portal";
 
 export type Manifest = typeof sample;
 
