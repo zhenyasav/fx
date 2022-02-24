@@ -152,6 +152,9 @@ export function manifest() {
                     if (tab) {
                       tab.contentUrl = mant.contentUrl;
                       urls.push(tab.contentUrl);
+                    } else {
+                      //TODO: need a better centralized Manifest typing that is compatible with the TDP API.
+                      existing?.staticTabs?.push(mant as any);
                     }
                   });
                   manifest.bots?.forEach((bot, i) => {
