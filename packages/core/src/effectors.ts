@@ -250,6 +250,8 @@ const Shell: Effector<Effect.Shell, EffectorContext> = {
           // TODO: capture async shell results?
         } else {
           const { code, stderr, stdout } = result;
+          console.log('shell cmd finished');
+          console.log({ captureStderr, captureStdout });
           resolve({
             code,
             ...(captureStdout ? { stdout } : {}),
