@@ -1,6 +1,6 @@
 {
   "name": "@fx/teams",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "typings": "build/index.d.ts",
   "main": "build/index.js",
   "scripts": {

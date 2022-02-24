@@ -10,6 +10,7 @@ export type PackageScriptsInput = z.infer<typeof packageScriptsInput>;
 export type PackageScriptsOptions = {
   captureStderr?: boolean;
   captureStdout?: boolean;
+  async?: boolean;
 };
 
 export function packageScripts(
@@ -32,7 +33,8 @@ export function packageScripts(
       "*": method({
         body({ resource, methodName }) {
           const { packageManager } = resource.instance.inputs?.create ?? {};
-          const { captureStderr, captureStdout } = {
+          const { captureStderr, captureStdout, async } = {
+            async: true,
             captureStderr: false,
             captureStdout: false,
             ...options,
@@ -44,6 +46,7 @@ export function packageScripts(
               command: `${packageManager} run ${methodName}`,
               captureStderr,
               captureStdout,
+              async,
             }),
           };
         },

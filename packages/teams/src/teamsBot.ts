@@ -69,7 +69,7 @@ export function teamsBot(): ResourceDefinition<TeamsBotInput> {
           return {
             manifest: effect({
               $effect: "file",
-              description: "update botId in manifest bot definition",
+              description: "create bot entry in manifest.bots",
               file,
             }),
           };
