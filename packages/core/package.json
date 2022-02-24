@@ -10,10 +10,10 @@
     "test": "jest"
   },
   "dependencies": {
-    "@endemolshinegroup/cosmiconfig-typescript-loader": "^3.0.2",
     "@fx/essentials": "workspace:^0.1",
     "@fx/plugin": "workspace:^0.1",
     "@nice/plate": "workspace:^0.1",
+    "@endemolshinegroup/cosmiconfig-typescript-loader": "^3.0.2",
     "@types/dependency-solver": "^1.0.1",
     "chalk": "4",
     "cosmiconfig": "^7.0.1",
