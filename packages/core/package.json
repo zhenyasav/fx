@@ -1,6 +1,6 @@
 {
   "name": "@fx/core",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "build/index.js",
   "scripts": {
     "clean": "rm -rf build && tsc --build --clean",

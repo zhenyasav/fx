@@ -138,21 +138,6 @@ export class Fx {
       if (isPlan(result)) {
         nextPlan.effects.push(...result.effects);
       }
-
-      // if (
-      //   !isResourceInputEffect(effect) &&
-      //   !isResourceOutputEffect(effect) &&
-      //   !isResourceCreateEffect(effect) &&
-      //   typeof result != "undefined"
-      // ) {
-      //   if (isPlan(result)) {
-      //     nextPlan.effects.push(...result.effects);
-      //   } else if (effect.origin && config) {
-      //     const { resourceId, method, path } = effect.origin;
-      //     config.setMethodResult(resourceId, method, path ?? [], result);
-      //     await config.projectFile.save();
-      //   }
-      // }
     }
     return {
       created: createdResources,

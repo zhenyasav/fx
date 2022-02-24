@@ -118,7 +118,7 @@ const parser = yargs(process.argv.slice(2))
     async () => {
       const resources = await withLoader("loading resources", async () => {
         try {
-          return (await fx.config())?.getResourceDefinitions();
+          return (await fx.requireConfig())?.getResourceDefinitions();
         } catch (err) {
           error(err);
           process.exit(1);

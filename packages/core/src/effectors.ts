@@ -120,15 +120,12 @@ const ResourceEffector: Effector<ResourceEffect.OutputEffect, EffectorContext> =
     async apply(e, c) {
       const { effect, resourceId, methodName, path } = e;
       const { config } = c;
-      if (!config)
-        throw new Error(
-          "a valid fx project configuration is required to work with resources"
-        );
       const effector = getEffector(effect);
       const result = await effector.apply(effect, c);
-      if (resourceId && methodName && typeof result != "undefined")
+      if (config && resourceId && methodName && typeof result != "undefined") {
         config.setMethodResult(resourceId, methodName, path ?? [], result);
-      await config.projectFile.save();
+        await config.projectFile.save();
+      }
     },
   };
 
