@@ -157,13 +157,9 @@ export function manifest() {
                   manifest.bots?.forEach((bot, i) => {
                     const exbot = existing?.bots?.[i];
                     if (exbot) {
-                      console.log(
-                        "setting bot id was",
-                        exbot.botId,
-                        "should",
-                        bot.botId
-                      );
-                      exbot.botId = bot.botId;
+                      Object.assign(exbot, bot);
+                    } else {
+                      existing?.bots?.push(bot);
                     }
                   });
                   console.log("updating app definition with TDP...");
