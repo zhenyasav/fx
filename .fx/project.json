@@ -92,6 +92,96 @@
           "env": "/Users/zhenya/dev/fx/.env"
         }
       }
+    },
+    {
+      "id": "17cb",
+      "type": "teams-bot",
+      "inputs": {
+        "create": {
+          "manifest": {
+            "$resource": "teams-manifest:8d5b",
+            "before": true
+          },
+          "botService": {
+            "$resource": "azure-bot-service:c22b"
+          }
+        }
+      },
+      "outputs": {
+        "create": {
+          "manifest": "/Users/zhenya/dev/fx/teams-manifest/manifest.json"
+        }
+      }
+    },
+    {
+      "id": "8d5b",
+      "type": "teams-manifest",
+      "inputs": {
+        "create": {
+          "directory": "teams-manifest",
+          "buildDirectory": "teams-manifest/build",
+          "name": "fx",
+          "description": "fx",
+          "packageName": "com.zhenya.fx",
+          "developerName": "zhenya"
+        }
+      },
+      "outputs": {
+        "create": {
+          "files": [
+            "teams-manifest/resources/color.png",
+            "teams-manifest/resources/outline.png",
+            "teams-manifest/manifest.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "c22b",
+      "type": "azure-bot-service",
+      "inputs": {
+        "create": {
+          "botDisplayName": "azure-bot-service:c22b",
+          "botServiceName": "azure-bot-service-c22b",
+          "subscriptionId": "",
+          "resourceGroup": "azure-bot-service-c22b",
+          "aadApp": {
+            "$resource": "aad-app:fac2"
+          },
+          "bicepTemplateFolder": "./azure",
+          "messagingEndpoint-type": "tunnel",
+          "messagingEndpoint": {
+            "$resource": "tunnel:5a54"
+          }
+        }
+      },
+      "outputs": {
+        "create": {
+          "params": "/Users/zhenya/dev/fx/azure/bot-service-parameters.json",
+          "bicep": "/Users/zhenya/dev/fx/azure/bot-service.bicep"
+        }
+      }
+    },
+    {
+      "id": "fac2",
+      "type": "aad-app",
+      "inputs": {
+        "create": {
+          "dotEnvFile": ".env",
+          "displayName": "",
+          "dotEnvAppIdName": "MICROSOFT_APP_ID",
+          "dotEnvAppSecretName": "MICROSOFT_APP_PASSWORD"
+        }
+      }
+    },
+    {
+      "id": "5a54",
+      "type": "tunnel",
+      "inputs": {
+        "create": {
+          "port": 3000
+        }
+      }
     }
   ]
 }

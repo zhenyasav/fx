@@ -1,6 +1,6 @@
 import { Config, packageScripts } from "@fx/core";
 import { packageTemplate } from "./templates/package/template.t";
-import { aadAppRegistration } from "@fx/teams";
+import { aadAppRegistration, teams } from "@fx/teams";
 
 const config: Config = {
   resourceDefinitions: [
@@ -8,7 +8,7 @@ const config: Config = {
     packageScripts(),
     aadAppRegistration(),
   ],
-  plugins: [],
+  plugins: [teams()],
 };
 
 export default config;

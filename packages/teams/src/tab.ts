@@ -28,7 +28,8 @@ export const tabInput = z.object({
     .describe("identify the tab hostname"),
   path: z
     .string()
-    .describe("enter a url path for the tab (without the hostname):"),
+    .describe("enter a url path for the tab (without the hostname):")
+    .default("/"),
 });
 
 export type TabInput = z.infer<typeof tabInput>;
