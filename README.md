@@ -5,10 +5,12 @@
 > using the CLI, developers can "stack resources" to scaffold working projects with multiple integrated systems working together without manual configuration.
 
 ## Currently Supported Scenarios:
+
 - Developer can add a Teams custom tab feature via `fx add teams-tab` to any existing web app and obtain the ability to F5 directly into the Teams client via the `fx dev` command.
 - Developer can scaffold a new package in the repo using a template they can control
 
 ## Feature Highlights:
+
 - Plugins and resource definitions can be implemented in separate packages
 - Plugins and resource definitions can be implemented "locally" by the developer within the project they are working on
 - Any number of any kind of resource can be added to a project
@@ -79,6 +81,41 @@ export default {
 ```
 
 This repo shows how plugins (resource definitions) can be created locally (see `package` resource), or loaded from other npm modules like the `teams` plugin.
+
+## Testing
+
+You can publish to a [verdaccio local registry](https://verdaccio.org/) to test npm -g commands:
+
+```bash
+npm i -g verdaccio
+verdaccio
+```
+
+Drop an `.npmrc` file in the root of the repo:
+
+```
+registry=http://localhost:4873/
+```
+
+Publish the cli and all its deps:
+
+```
+pnpm publish -r --filter cli...
+```
+
+Publish the teams support:
+
+```
+pnpm publish -r --filter teams...
+```
+
+Now you can
+
+```
+npm i -g @fx/cli
+```
+
+anywhere else you like, provided npm is [configured to read from the local registry](https://verdaccio.org/docs/installation#basic-usage) in that context.
 
 ## Task List:
 
