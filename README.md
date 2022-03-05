@@ -198,7 +198,6 @@ export const cow: ResourceDefinition<CowInput> = {
   },
 };
 ```
-Now when developers say `fx moo`, all the cows will speak after their best friends :)
 
 ### Method Context
 
@@ -318,6 +317,7 @@ const cowResource: ResourceDefinition<CowInput> = {
   }
 }
 ```
+Now when developers say `fx moo`, all the cows will speak after their best friends :)
 
 ## TODO:
 
