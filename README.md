@@ -185,7 +185,8 @@ export const cow: ResourceDefinition<CowInput> = {
     }),
     moo: method({
       body({ resource }) {
-        const { sayWhat } = resource.instance.inputs.create; // strong types
+        // strong types, no further validation necessary:
+        const { sayWhat } = resource.instance.inputs.create; 
         return {
           say: effect({
             $effect: "shell",
