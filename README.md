@@ -131,7 +131,7 @@ anywhere else you like, provided npm is [configured to read from the local regis
 
 ## Extending
 
-Developers can write `ResourceDefinition`s and group them with `Plugin`s. Both of these should be supplied in the project's `Config` object defined by `.fx.ts` (as a default export).
+Developers can write `ResourceDefinition`s and group them with `Plugin`s. Either of these can be supplied in the project's `Config` object defined by `.fx.ts` (as a default export).
 
 ```ts
 import { ResourceDefinition, method, effect } from "@fx/plugin";
