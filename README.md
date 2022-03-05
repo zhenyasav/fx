@@ -281,7 +281,7 @@ body() {
 }
 ```
 
-#### Expressing resource dependencies
+### Expressing resource dependencies
 
 Resources can read values from other resources by asking for them as inputs to any of the methods in a `ResourceDefinition`. The package `@fx/core` collaborates with `zod-inquirer` to ask the user questions when a "resource" input type is encountered, allowing users to select from an existing list of matching resources or create new resources on the fly.
 
