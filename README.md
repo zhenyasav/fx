@@ -186,17 +186,137 @@ export const cow: ResourceDefinition<CowInput> = {
     moo: method({
       body({ resource }) {
         // strong types, no further validation necessary:
-        const { sayWhat } = resource.instance.inputs.create; 
+        const { sayWhat } = resource.instance.inputs.create;
         return {
           say: effect({
             $effect: "shell",
-            command: `cowsay "${sayWhat}"`,
+            command: `npx cowsay "${sayWhat}"`,
           }),
         };
       },
     }),
   },
 };
+```
+Now when developers say `fx moo`, all the cows will speak after their best friends :)
+
+### Method Context
+
+Method bodies receive a context object as a single argument:
+
+```ts
+type Method<TInput> = {
+  body(context: {
+    methodName: string;
+    input: TInput;
+    resource: LoadedResource;
+    config: LoadedConfiguration;
+  }): any;
+};
+```
+
+This way methods can read information from the current project, resource, or the inputs supplied to the method.
+
+### Effects
+
+Methods return objects with "effects" in them, which are integral to a friendly, plannable, dry-runnable CLI interface for developers. An effect is just a delayed function invocation.
+
+Currently supported effects are described in `effects.ts` (declarations) and `effectors.ts` (implementation).
+
+#### Shell commands:
+
+```ts
+// in some method body:
+body() {
+  return {
+    shellEffect: effect({
+      $effect: 'shell',
+      command: `npx cowsay foo`,
+      description: 'not everyone understands shell incantations',
+      cwd: process.cwd(), // optional cwd
+      async: false, // wait for process to terminate before "finishing" effect
+      captureStdout: true, // collect all stdout and write to project.json
+      captureStderr: true, // collect all stderr
+    })
+  }
+}
+```
+
+#### Files
+
+```ts
+import { File } from "@nice/file";
+
+// in some method body:
+body() {
+  return {
+    fileEffect: effect({
+      $effect: 'file',
+      description: 'description of this file write effect',
+      file: new File({
+        path: ['array','path','members.txt'],
+        content: `this will be file contents`,
+        // other properties:
+        // transform(parsed) { return parsed; } // for modifying existing files
+        // copyFrom: string // for copying files
+      })
+    })
+  }
+}
+```
+
+#### Everything else (Functions)
+
+```ts
+// in some method body:
+body() {
+  return {
+    functionEffect: effect({
+      $effect: 'function',
+      description: 'explanation',
+      async body() {
+        // do stuff
+      }
+    })
+  }
+}
+```
+
+#### Expressing resource dependencies
+
+Resources can read values from other resources by asking for them as inputs to any of the methods in a `ResourceDefinition`. The package `@fx/core` collaborates with `zod-inquirer` to ask the user questions when a "resource" input type is encountered, allowing users to select from an existing list of matching resources or create new resources on the fly.
+
+To express a resource dependency, the `zod` `literal` schema pattern is used (hijacked / overloaded).
+
+```ts
+import { ResourceDefinition, method, effect, z } from "@fx/plugin";
+
+const cowInput = z.object({
+  name: z.string().describe("this cow's name"),
+  bestFriend: z.literal("cow").describe("this cow's best friend"),
+});
+
+type CowInput = z.infer<typeof cowInput>;
+
+const cowResource: ResourceDefinition<CowInput> = {
+  type: 'cow'
+  methods: {
+    create: method({
+      inputShape: cowInput,
+    }),
+    moo: method({
+      body({ resource, config }) {
+        const { name, bestFriend } = resource.instance.inputs.create;
+        // converts { $resource: 'cow:41ef' } into an actual LoadedResource from this project for you;
+        const friend = config.getResource(bestFriend);
+        const bestFriendName = friend.instance.inputs.create.name;
+        return {
+          message: `this cow's name is ${name} and it's best friend's name is ${bestFriendName}`
+        }
+      }
+    })
+  }
+}
 ```
 
 ## TODO:
