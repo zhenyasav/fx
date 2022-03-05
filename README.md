@@ -6,6 +6,9 @@
 
 ## Currently Supported Scenarios:
 
+- Developer can add a Teams manifest and routines to validate, package, and deploy it to Teams Developer Portal
+- Developer can add an idempotent AAD app registration
+- Developer can add a tunneling function
 - Developer can add a Teams custom tab feature via `fx add teams-tab` to any existing web app and obtain the ability to F5 directly into the Teams client via the `fx dev` command.
 - Developer can scaffold a new package in the repo using a template they can control
 
@@ -72,12 +75,21 @@ This will execute the template found in `./templates/package`. Every file with a
 
 The plugin configuration is found in `.fx.ts` at the root, which is a module that exports a single default export that looks like this:
 
-```js
-export default {
+```ts
+import { Config } from "@fx/core";
+import { teams } from "@fx/teams";
+
+const config: Config = {
+  resourceDefinitions: [
+    /* individual resource definitions { ResourceDefinition } from "@fx/plugin" */
+  ],
   plugins: [
     /* plugins go here, instances of { Plugin } from "@fx/plugin" ... */
+    teams(),
   ],
 };
+
+export default config;
 ```
 
 This repo shows how plugins (resource definitions) can be created locally (see `package` resource), or loaded from other npm modules like the `teams` plugin.
@@ -117,14 +129,83 @@ npm i -g @fx/cli
 
 anywhere else you like, provided npm is [configured to read from the local registry](https://verdaccio.org/docs/installation#basic-usage) in that context.
 
-## Task List:
+## Extending
+
+Developers can write `ResourceDefinition`s and group them with `Plugin`s. Both of these should be supplied in the project's `Config` object defined by `.fx.ts` (as a default export).
+
+```ts
+import { ResourceDefinition, method, effect } from "@fx/plugin";
+
+export const myResourceDef: ResourceDefinition = {
+  type: "cow", // developers identify resource defs by type like `fx add <type>`
+  description: "", // describe what this does
+  methods: {
+    // behaviors will execute like `fx <method>`
+    create: {
+      // runs every time the resource is created
+      inputs(context) {
+        // expected to collect the inputs to the method from the user or elsewhere
+        return { ... };
+      }
+      body(context) {
+        // expected to return an object that may have delayed "effects" such as this shell command
+        return {
+          effectKey: effect({ $effect: 'shell', command: 'echo foo' })
+        }
+      }
+    },
+    "*": {
+      // runs for any method
+    },
+  },
+};
+```
+
+### Receiving input:
+
+Developers are free to supply their own input gathering technique by implementing `input() {}` on any method.
+
+A default input-collection technique is provided by `@fx/plugin` as `method`. It uses [`zod`](https://github.com/colinhacks/zod) schemas to express input schemas that are automatically fulfilled by [`inquirer`](https://www.npmjs.com/package/inquirer) prompts on the command line. See `@fx/zod-inquirer`.
+
+```ts
+import { ResourceDefinition, method, effect, z } from "@fx/plugin";
+
+const cowInput = z.object({
+  sayWhat: z.string().describe("what shall the cow say").default("moo"),
+});
+
+type CowInput = z.infer<typeof cowInput>; // strong type inferred from schema
+
+export const cow: ResourceDefinition<CowInput> = {
+  type: "cow",
+  description: "a talking cow",
+  methods: {
+    create: method({
+      inputShape: cowInput,
+    }),
+    moo: method({
+      body({ resource }) {
+        const { sayWhat } = resource.instance.inputs.create; // strong types
+        return {
+          say: effect({
+            $effect: "shell",
+            command: `cowsay "${sayWhat}"`,
+          }),
+        };
+      },
+    }),
+  },
+};
+```
+
+## TODO:
 
 - [x] resources, methods, cli, and resource dependencies
 - [x] generate a new package from a customizeable template
 - [x] drop in a teams manifest template
 - [x] ngrok tunnels
 - [x] teams tabs
-- [ ] add a bot registration
+- [x] add a bot registration
 - [ ] multiple environment support
 - [ ] add SSO auth to my existing code:
   - [ ] SPA
@@ -135,7 +216,7 @@ anywhere else you like, provided npm is [configured to read from the local regis
 - [ ] add more teams features
   - [ ] add an adaptive card notification
   - [ ] add a messaging extension
-  - [ ] add a bot app to existing
+  - [x] add a bot app to existing
 - [ ] generate teams sample code (invoke other generators)
   - [ ] production tab app
   - [ ] production bot app
