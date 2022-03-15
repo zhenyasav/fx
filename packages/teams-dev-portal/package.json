@@ -6,7 +6,7 @@
   "types": "build/index.d.ts",
   "scripts": {
     "clean": "rm -rf build && tsc --build --clean",
-    "build": "tsc && mkdir -p build/auth && cp -r src/auth/codeFlowResult build/auth/",
+    "build": "node scripts/build.js",
     "check": "tsc --noEmit",
     "test": "jest"
   },
@@ -17,6 +17,7 @@
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^27.4.0",
     "@types/node": "^16.11.11",
+    "fs-extra": "^10.0.0",
     "jest": "^27.4.5",
     "ts-jest": "^27.1.2",
     "typescript": "^4.5.5"
@@ -26,7 +27,6 @@
     "async-mutex": "^0.3.2",
     "axios": "^0.24.0",
     "express": "^4.17.2",
-    "fs-extra": "^10.0.0",
     "keytar": "^7.8.0",
     "open": "^8.4.0"
   }
