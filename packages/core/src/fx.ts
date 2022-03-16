@@ -292,6 +292,12 @@ export class Fx {
       ],
     };
   }
+  /**
+   * Compute the plan of effects for a given method name in a loaded project
+   * @param methodName the name of the method to plan
+   * @param options execution context with inputs, config, and loaded project
+   * @returns Plan
+   */
   async planMethod(
     methodName: string,
     options?: {
@@ -304,14 +310,22 @@ export class Fx {
     if (!methodName) throw new Error("a method name is required");
     if (methodName === "*") throw new Error("the * method is not invokable");
     const { resources: rs, input: defaults } = { ...options };
+    // this will be the set of resources we're going to consider
     const resources: LoadedResource[] = rs?.length
       ? rs
       : await this.getResourcesWithMethod(methodName);
     if (!resources?.length) return null;
 
     const results: ResourceEffect.Any[] = [];
+    // we need to clone a configuration because it will be mutated during
+    // planning by the various methods as they collect inputs. this is required
+    // for resources to read each other's inputs while planning their effects.
+    // this configuration will be made available as plan.finalConfiguration in
+    // the output
     const config = options?.config ?? (await this.requireConfig()).clone();
 
+    // this will sequence the resources we're considering in correct dependency
+    // order
     function orderResources(resources: LoadedResource[]): LoadedResource[] {
       if (methodName == "create") {
         return resources;
@@ -331,6 +345,10 @@ export class Fx {
     const ordered =
       resources?.length > 1 ? orderResources(resources) : resources;
 
+    // this will help write values into the input and output slots of the
+    // resource instances. It both generates effects to represent this, and
+    // mutates the cloned configuration to enable it to be in the right state
+    // for the next resource in the consideration sequence
     function writeResourceMethodValue(
       sectionKey: "inputs" | "outputs",
       instance: ResourceInstance,
@@ -365,13 +383,16 @@ export class Fx {
       }
     }
 
+    // consider the resources in the right order
     for (let resource of ordered) {
       const { definition, instance } = resource;
 
+      // get the method declaration from this resource's definition
       const method =
         definition?.methods?.[methodName] ?? definition?.methods?.["*"];
       if (!method) continue;
 
+      // if the method implies other methods, those need to execute first
       if (method.implies?.length) {
         for (let implied of method.implies) {
           const plan = await this.planMethod(implied, {
@@ -381,12 +402,18 @@ export class Fx {
           results.push(...(plan?.effects ?? []));
         }
       }
+      // not a great way to log here (trying to keep core free of UI), but the
+      // user needs to know we're entering another resource here
       console.log(
         `planning ${yellow(`[${methodName}]`)} on ${resourceId(instance)}${
           options?.description ? " " + options.description : ""
         }:`
       );
+      
+      // we may be re-running the method so let's assume previous values
       const oldAnswers = instance?.inputs?.[methodName];
+
+      // collect the inputs for the method (my be inquirer on cli or vscode etc)
       const input = await promise(
         method.inputs?.({
           defaults: { ...defaults, ...oldAnswers },
@@ -396,7 +423,12 @@ export class Fx {
           methodName,
         })
       );
-
+      
+      // if the input is not empty, it may have requests to create new resources
+      // expressed as { $resource: 'type' } without an ':id' suffix. If we
+      // encounter these, we must plan their create methods as well. Once they
+      // have been created, we replace 'type' with a real 'type:id' making the
+      // connection real
       if (input && Object.keys(input).length) {
         const pendingResourceRefs = getPendingResourceReferences(input) ?? [];
         for (let ref of pendingResourceRefs) {
@@ -419,6 +451,7 @@ export class Fx {
         writeResourceMethodValue("inputs", instance, input);
       }
 
+      // we have inputs in hand, let's call the method
       const methodResult = await promise<MethodResult>(
         method.body?.({
           input,
@@ -428,6 +461,8 @@ export class Fx {
         })
       );
 
+      // if the result is not empty, it may have effects. Let's add the effects
+      // to the plan and commit the output to the resource instance state.
       if (typeof methodResult != "undefined") {
         writeResourceMethodValue(
           "outputs",
