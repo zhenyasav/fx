@@ -1,5 +1,6 @@
 import os from "os";
 import path from "path";
+import { detect } from "detect-package-manager";
 import {
   resourceId,
   promise,
@@ -14,6 +15,8 @@ import {
   LoadedConfiguration,
   scrubEffects,
   isResourceCreateEffect,
+  inquire,
+  z,
 } from "@fx/plugin";
 import { executeDirectoryTemplate } from "@nice/plate";
 import { randomString } from "./util/random";
@@ -224,6 +227,12 @@ export class Fx {
             },
           })
         );
+        const pm = (await detect()) ?? "npm";
+        const result = await inquire(
+          z.object({
+            pm: z.string().describe("confirm package manager").default(pm),
+          })
+        );
         const plan: Plan = {
           effects: [
             ...filesPlan,
@@ -232,7 +241,7 @@ export class Fx {
               effect: {
                 $effect: "shell",
                 description: "add @fx/core to dev dependencies",
-                command: "npm i -D @fx/core",
+                command: `${result.pm} i -D @fx/core`,
               },
             },
           ],
@@ -409,7 +418,7 @@ export class Fx {
           options?.description ? " " + options.description : ""
         }:`
       );
-      
+
       // we may be re-running the method so let's assume previous values
       const oldAnswers = instance?.inputs?.[methodName];
 
@@ -423,7 +432,7 @@ export class Fx {
           methodName,
         })
       );
-      
+
       // if the input is not empty, it may have requests to create new resources
       // expressed as { $resource: 'type' } without an ':id' suffix. If we
       // encounter these, we must plan their create methods as well. Once they
